@@ -15,7 +15,7 @@ def main():
 	if Dao.Paths.check_exists(semester, year):
 		answer = ""
 		while answer != "y" and answer != "n":
-			answer = input(f"{semester}_{year} is already cached ({Dao.Paths.check_date(semester, year)}) Use that result? (y/n)").lower()
+			answer = input(f"{semester}_{year} is already cached ({Dao.Paths.check_date(semester, year)}) Use that result? (y/n) ").lower()
 		if answer == "y":
 			print("loading semester")
 		if answer == "n":

@@ -74,7 +74,7 @@ def get(semester, year):
 			if (len(threads) + 1) % 10 == 0:
 				elapsed = time.time() - start_time
 				seconds_left = elapsed * len(classes_response) / (len(threads) + 1) - elapsed
-				print(f"\rGot sections for {len(threads) + 1}/{len(classes_response)} classes... ETA ~{int(seconds_left / 60):02}:{round(seconds_left % 60):02}", end="         ")
+				print(f"\rGot sections for {len(threads) + 1}/{len(classes_response)} classes... ETA ~{int(seconds_left / 60):02}:{int(seconds_left % 60):02}", end="         ")
 		else:
 			time.sleep(rest_time)
 
