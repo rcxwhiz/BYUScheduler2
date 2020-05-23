@@ -30,29 +30,29 @@ def get_section(course, session_id, year, semester, section_responses):
 		print("Encountered an error getting a section")
 
 
-def get(year, semester):
+def get(semester, year):
 	session_id = make_id()
 	print(f"\nUsing session id: {session_id}")
 
-	print(f"Getting departments for {semester} {year}...")
+	print(f"Getting departments for {semester} {year}...", end="")
 	try:
 		semester_response = requests.post(url=semester_api, data={"yearterm": year + semester_nums[semester]}).json()
 		assert (len(semester_response["department_list"]) > 0)
 	except:
-		print("There was an error getting that semester")
+		print("\nThere was an error getting that semester")
 		return None
-	print(f"Got departments for {semester} {year}")
+	print(f"\rGot departments for {semester} {year}                ")
 
 	classes_data = {"searchObject[teaching_areas][]": semester_response["department_list"], "searchObject[yearterm]": year + semester_nums[semester], "sessionId": session_id}
 
-	print(f"Getting class data...")
+	print(f"Getting class data...", end="")
 	try:
 		classes_response = requests.post(url=classes_api, data=classes_data).json()
 		assert (len(classes_response) > 0)
 	except:
-		print("There was an error getting that semester")
+		print("\nThere was an error getting that semester")
 		return None
-	print(f"Got classes")
+	print(f"\rGot classes           ")
 
 	start_time = time.time()
 	section_responses = []
@@ -74,13 +74,13 @@ def get(year, semester):
 			if (len(threads) + 1) % 10 == 0:
 				elapsed = time.time() - start_time
 				seconds_left = elapsed * len(classes_response) / (len(threads) + 1) - elapsed
-				print(f"\rGot sections for {len(threads) + 1}/{len(classes_response)} classes... ETA ~{int(seconds_left / 60):02}:{round(seconds_left % 60):02}          ", end="")
+				print(f"\rGot sections for {len(threads) + 1}/{len(classes_response)} classes... ETA ~{int(seconds_left / 60):02}:{round(seconds_left % 60):02}", end="         ")
 		else:
 			time.sleep(rest_time)
 
 	for thread in threads:
 		thread.join()
 
-	print("\nGot class sections")
+	print(f"\rGot sections for {len(classes_response)} classes                         ")
 
-	return year + semester_nums[semester], semester_response, classes_response, section_responses
+	return semester + "_" + year, semester_response, classes_response, section_responses
