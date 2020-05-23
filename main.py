@@ -25,8 +25,6 @@ def main():
 		test = BYUAPI.get(semester, year)
 		Dao.MakeDatabase.save(test)
 
-	print("done")
-
 
 if __name__ == "__main__":
 	main()
