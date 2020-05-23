@@ -79,6 +79,7 @@ def create_tables(semester_year):
 
 	DROP TABLE IF EXISTS sections;
 	CREATE TABLE sections (
+	curriculum_id_title_code TEXT NOT NULL,
 	class_size TEXT,
 	seats_available TEXT,
 	waitlist_size TEXT,
@@ -102,7 +103,7 @@ def create_tables(semester_year):
 
 	DROP TABLE IF EXISTS times;
 	CREATE TABLE times (
-	cirriculum_id TEXT NOT NULL,
+	cirriculum_id_title_code TEXT NOT NULL,
 	section_number TEXT NOT NULL,
 	begin_time TEXT,
 	building TEXT,
@@ -240,13 +241,13 @@ def save(yso):
 			start_date = section["start_date"]
 			title_code = section["title_code"]
 			year_term = section["year_term"]
-			sql_cmd = """INSERT INTO sections VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"""
+			sql_cmd = """INSERT INTO sections VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"""
 			try:
-				cursor.execute(sql_cmd, (class_size, seats_available, waitlist_size, catalog_number, catalog_suffix, credit_hours, credit_type, curriculum_id, dept_name, end_date, fixed_or_variable, honors, minimum_credit_hours, mode, mode_desc, section_number, section_type, start_date, title_code, year_term))
+				cursor.execute(sql_cmd, (curriculum_id + title_code, class_size, seats_available, waitlist_size, catalog_number, catalog_suffix, credit_hours, credit_type, curriculum_id, dept_name, end_date, fixed_or_variable, honors, minimum_credit_hours, mode, mode_desc, section_number, section_type, start_date, title_code, year_term))
 			except sqlite3.IntegrityError:
-				print(f"Got duplicate: {(class_size, seats_available, waitlist_size, catalog_number, catalog_suffix, credit_hours, credit_type, curriculum_id, dept_name, end_date, fixed_or_variable, honors, minimum_credit_hours, mode, mode_desc, section_number, section_type, start_date, title_code, year_term)}")
+				print(f"Got duplicate: {(curriculum_id + title_code, class_size, seats_available, waitlist_size, catalog_number, catalog_suffix, credit_hours, credit_type, curriculum_id, dept_name, end_date, fixed_or_variable, honors, minimum_credit_hours, mode, mode_desc, section_number, section_type, start_date, title_code, year_term)}")
 			except:
-				print(f"Error adding: {(class_size, seats_available, waitlist_size, catalog_number, catalog_suffix, credit_hours, credit_type, curriculum_id, dept_name, end_date, fixed_or_variable, honors, minimum_credit_hours, mode, mode_desc, section_number, section_type, start_date, title_code, year_term)}")
+				print(f"Error adding: {(curriculum_id + title_code, class_size, seats_available, waitlist_size, catalog_number, catalog_suffix, credit_hours, credit_type, curriculum_id, dept_name, end_date, fixed_or_variable, honors, minimum_credit_hours, mode, mode_desc, section_number, section_type, start_date, title_code, year_term)}")
 
 			for instructor in section["instructors"]:
 				person_id = instructor["person_id"]
@@ -283,11 +284,11 @@ def save(yso):
 
 				sql_cmd = """INSERT INTO times VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"""
 				try:
-					cursor.execute(sql_cmd, (curriculum_id, section_number, begin_time, building, end_time, fri, mon, room, sat, sequence_number, sun, thu, tue, wed))
+					cursor.execute(sql_cmd, (curriculum_id + title_code, section_number, begin_time, building, end_time, fri, mon, room, sat, sequence_number, sun, thu, tue, wed))
 				except sqlite3.IntegrityError:
-					print(f"Got duplicate: {(curriculum_id, section_number, begin_time, building, end_time, fri, mon, room, sat, sequence_number, sun, thu, tue, wed)}")
+					print(f"Got duplicate: {(curriculum_id + title_code, section_number, begin_time, building, end_time, fri, mon, room, sat, sequence_number, sun, thu, tue, wed)}")
 				except:
-					print(f"Error adding: {(curriculum_id, section_number, begin_time, building, end_time, fri, mon, room, sat, sequence_number, sun, thu, tue, wed)}")
+					print(f"Error adding: {(curriculum_id + title_code, section_number, begin_time, building, end_time, fri, mon, room, sat, sequence_number, sun, thu, tue, wed)}")
 
 		catalog = course["catalog"]
 		curriculum_id = catalog["curriculum_id"]
