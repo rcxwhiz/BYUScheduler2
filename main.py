@@ -11,7 +11,7 @@ def main():
 	while selected_semester not in BYUAPI.semester_nums.keys():
 		selected_semester = input("Enter semester: ").lower()
 
-	BYUAPI.get(selected_year, selected_semester)
+	test = BYUAPI.get(selected_year, selected_semester)
 
 
 if __name__ == "__main__":
