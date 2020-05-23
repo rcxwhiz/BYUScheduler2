@@ -29,7 +29,4 @@ def main():
 
 
 if __name__ == "__main__":
-	# Dao.MakeDatabase.make_db_entry("fall2020", "byu_classes.db")
 	main()
-	# Dao.MakeDatabase.make_db_entry("test", "byu_classes.db")
-	# print(Dao.check_exists("test"))

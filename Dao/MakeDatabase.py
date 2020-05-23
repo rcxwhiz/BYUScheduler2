@@ -124,6 +124,10 @@ def create_tables(semester_year):
 
 
 def save(yso):
+	if yso is None:
+		print("Got a no data to save")
+		return None
+
 	# (semester_year, semester_result, classes_result, [section_result])
 	semester_year, semester_result, classes_result, section_results = yso
 	if not os.path.exists(Dao.Paths.database_path_1(semester_year)):
