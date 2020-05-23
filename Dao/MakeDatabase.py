@@ -47,7 +47,7 @@ def create_tables(semester_year):
 
 	DROP TABLE IF EXISTS course_instructors;
 	CREATE TABLE course_instructors (
-	curriculum_id TEXT NOT NULL,
+	curriculum_id_title_code TEXT NOT NULL,
 	section_number TEXT NOT NULL,
 	person_id TEXT NOT NULL);
 
@@ -261,11 +261,11 @@ def save(yso):
 
 				sql_cmd = """INSERT INTO course_instructors VALUES(?, ?, ?);"""
 				try:
-					cursor.execute(sql_cmd, (curriculum_id, section_number, person_id))
+					cursor.execute(sql_cmd, (curriculum_id + title_code, section_number, person_id))
 				except sqlite3.IntegrityError:
-					print(f"Got duplicate: {(curriculum_id, section_number, person_id)}")
+					print(f"Got duplicate: {(curriculum_id + title_code, section_number, person_id)}")
 				except:
-					print(f"Error adding: {(curriculum_id, section_number, person_id)}")
+					print(f"Error adding: {(curriculum_id + title_code, section_number, person_id)}")
 
 			for time in section["times"]:
 				begin_time = time["begin_time"]
@@ -318,7 +318,15 @@ def save(yso):
 
 	print(f"\rSaved {len(section_results)} sections             ")
 	print("Commiting changes...", end="")
-	connection.commit()
+	try:
+		connection.commit()
+	except:
+		print("Error comitting changes")
+		connection.close()
+		return None
+
 	connection.close()
 	print("\rChanges committed")
-	print(f"Database entry for {yso[0]} created")
+
+	db_size = os.path.getsize(Dao.Paths.database_path_1(semester_year)) / 1e6
+	print(f"Database entry for {semester_year} created ({db_size:.1f} MB)")
