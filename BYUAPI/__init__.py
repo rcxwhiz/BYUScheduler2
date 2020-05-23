@@ -32,8 +32,9 @@ def get_section(course, session_id, year, semester, section_responses):
 
 def get(year, semester):
 	session_id = make_id()
+	print(f"\nUsing session id: {session_id}")
 
-	print(f"\nGetting departments for {semester} {year}...")
+	print(f"Getting departments for {semester} {year}...")
 	try:
 		semester_response = requests.post(url=semester_api, data={"yearterm": year + semester_nums[semester]}).json()
 		assert (len(semester_response["department_list"]) > 0)

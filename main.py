@@ -13,6 +13,8 @@ def main():
 
 	test = BYUAPI.get(selected_year, selected_semester)
 
+	print("done")
+
 
 if __name__ == "__main__":
 	main()
