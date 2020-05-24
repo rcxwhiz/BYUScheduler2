@@ -142,5 +142,5 @@ class Ui_MainWindow(object):
 	def show_popup(self):
 		popup_dialog = QtWidgets.QDialog()
 		popup_ui = UI.title_popup_dialog.Ui_Dialog()
-		popup_ui.setupUi(popup_dialog)
+		popup_ui.setupUi(popup_dialog, self.semester_picker.currentText(), self.year_picker.value())
 		popup_dialog.exec_()
