@@ -28,4 +28,5 @@ def main():
 
 
 if __name__ == "__main__":
+	print("BYU Class Getter API\n")
 	UI.run_ui()

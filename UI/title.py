@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui/title.ui'
+# Form implementation generated from reading ui file 'UI/title.ui'
 #
 # Created by: PyQt5 UI code generator 5.14.2
 #
 # WARNING! All changes made in this file will be lost!
 
 import UI.title_popup_dialog
+import Dao
+import BYUAPI
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
@@ -147,6 +149,11 @@ class Ui_MainWindow(object):
 		popup_dialog.exec_()
 
 		if load_decision[0] == "download":
-			print("going to download classes")
+			try:
+				Dao.MakeDatabase.save(BYUAPI.get(self.semester_picker.currentText().lower(), str(self.year_picker.value())))
+				load_decision[0] = "load"
+			except Exception as e:
+				print(f"Error getting {self.semester_picker.currentText()} {self.year_picker.value()}: {str(e)}")
+
 		if load_decision[0] == "load":
 			print("going to load cached classes")
