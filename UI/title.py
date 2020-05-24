@@ -6,16 +6,18 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-
+import UI.title_popup_dialog
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
 class Ui_MainWindow(object):
-	def setupUi(self, MainWindow):
-		MainWindow.setObjectName("MainWindow")
-		MainWindow.resize(800, 380)
+	def setupUi(self, MainWindowIn: QtWidgets.QMainWindow):
+		self.main_window = MainWindowIn
 
-		self.centralwidget = QtWidgets.QWidget(MainWindow)
+		self.main_window.setObjectName("MainWindow")
+		self.main_window.resize(800, 380)
+
+		self.centralwidget = QtWidgets.QWidget(self.main_window)
 		self.centralwidget.setObjectName("centralwidget")
 		self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
 		self.gridLayout.setObjectName("gridLayout")
@@ -108,14 +110,16 @@ class Ui_MainWindow(object):
 		self.horizontalLayout.addLayout(self.gridLayout_2)
 		self.verticalLayout.addLayout(self.horizontalLayout)
 		self.gridLayout.addLayout(self.verticalLayout, 0, 0, 1, 1)
-		MainWindow.setCentralWidget(self.centralwidget)
+		self.main_window.setCentralWidget(self.centralwidget)
 
-		self.retranslateUi(MainWindow)
-		QtCore.QMetaObject.connectSlotsByName(MainWindow)
+		self.retranslateUi()
+		QtCore.QMetaObject.connectSlotsByName(self.main_window)
 
-	def retranslateUi(self, MainWindow):
+		self.hook_buttons()
+
+	def retranslateUi(self):
 		_translate = QtCore.QCoreApplication.translate
-		MainWindow.setWindowTitle(_translate("MainWindow", "BYU Scheduler 2"))
+		self.main_window.setWindowTitle(_translate("MainWindow", "BYU Scheduler 2"))
 		self.big_title.setText(_translate("MainWindow", "BYU Scheduler 2"))
 		self.name_title.setText(_translate("MainWindow", "By Josh Bedwell"))
 		self.semester_label.setText(_translate("MainWindow", "Semester"))
@@ -128,3 +132,15 @@ class Ui_MainWindow(object):
 		self.browse_instructor_button.setText(_translate("MainWindow", "Browse Instructors"))
 		self.browse_section_button.setText(_translate("MainWindow", "Browse Sections"))
 		self.browse_course_button.setText(_translate("MainWindow", "Browse Courses"))
+
+	def hook_buttons(self):
+		self.browse_course_button.clicked.connect(self.show_popup)
+		self.browse_section_button.clicked.connect(self.show_popup)
+		self.browse_instructor_button.clicked.connect(self.show_popup)
+		self.make_schedule_button.clicked.connect(self.show_popup)
+
+	def show_popup(self):
+		popup_dialog = QtWidgets.QDialog()
+		popup_ui = UI.title_popup_dialog.Ui_Dialog()
+		popup_ui.setupUi(popup_dialog)
+		popup_dialog.exec_()
