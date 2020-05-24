@@ -3,7 +3,7 @@ from datetime import datetime
 
 
 def database_path(semester, year):
-	return os.path.join("cache", semester + "_" + year + ".db")
+	return database_path_1(semester + "_" + year)
 
 
 def database_path_1(semester_year):
@@ -11,7 +11,7 @@ def database_path_1(semester_year):
 
 
 def check_exists(semester, year):
-	return os.path.exists(database_path(semester, year))
+	return check_exists_1(semester + "_" + year)
 
 
 def check_exists_1(semester_year):
@@ -19,7 +19,7 @@ def check_exists_1(semester_year):
 
 
 def check_date(semester, year):
-	return datetime.fromtimestamp(os.path.getmtime(database_path(semester, year))).strftime("%B %d, %Y %H:%M:%S")
+	return check_date_1(semester + "_" + year)
 
 
 def check_date_1(semester_year):

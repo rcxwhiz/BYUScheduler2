@@ -124,10 +124,6 @@ def create_tables(semester_year):
 
 
 def save(yso):
-	if yso is None:
-		print("Got a no data to save")
-		return None
-
 	# (semester_year, semester_result, classes_result, [section_result])
 	semester_year, semester_result, classes_result, section_results = yso
 	if not os.path.exists(Dao.Paths.database_path_1(semester_year)):
@@ -144,184 +140,201 @@ def save(yso):
 
 	print("Saving department map...", end="")
 	for dept in semester_result["department_map"].keys():
-		department_map = yso[1]["department_map"]
 
 		sql_cmd = """INSERT INTO dept_map VALUES(?, ?);"""
+		values = (dept, yso[1]["department_map"][dept])
 		try:
-			cursor.execute(sql_cmd, (dept, department_map[dept]))
+			cursor.execute(sql_cmd, values)
 		except sqlite3.IntegrityError:
-			print(f"Got duplicate: {(dept, department_map[dept])}")
+			print(f"Got duplicate: {values}")
 		except:
-			print(f"Error adding: {(dept, department_map[dept])}")
+			print(f"Error adding: {values}")
 	print("\rSaved department map        ")
 
 	print("Saving department list...", end="")
 	for dept in semester_result["department_list"].keys():
-		department_list = yso[1]["department_list"]
 
 		sql_cmd = """INSERT INTO dept_list VALUES(?, ?);"""
+		values = (dept, yso[1]["department_list"][dept])
 		try:
-			cursor.execute(sql_cmd, (dept, department_list[dept]))
+			cursor.execute(sql_cmd, values)
 		except sqlite3.IntegrityError:
-			print(f"Got duplicate: {(dept, department_list[dept])}")
+			print(f"Got duplicate: {values}")
 		except:
-			print(f"Error adding: {(dept, department_list[dept])}")
+			print(f"Error adding: {values}")
 	print("\rSaved department list        ")
 
 	print("Saving section types...", end="")
 	for section_type in semester_result["section_type_list"]:
 		sql_cmd = """INSERT INTO section_types VALUES(?);"""
+		values = (section_type,)
 		try:
-			cursor.execute(sql_cmd, (section_type,))
+			cursor.execute(sql_cmd, values)
 		except sqlite3.IntegrityError:
-			print(f"Got duplicate: {(section_type,)}")
+			print(f"Got duplicate: {values}")
 		except:
-			print(f"Error adding: {(section_type,)}")
+			print(f"Error adding: {values}")
 	print("\rSaved section types       ")
 
 	print("Saving instructors...", end="")
 	for instructor in semester_result["instructor_list"]:
 		sql_cmd = """INSERT INTO instructors VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"""
+		values = [instructor["id"], instructor["first_name"], instructor["last_name"], instructor["sort_name"]] + [
+			None] * 6
 		try:
-			cursor.execute(sql_cmd, [instructor["id"], instructor["first_name"], instructor["last_name"], instructor["sort_name"]] + [None] * 6)
+			cursor.execute(sql_cmd, values)
 		except sqlite3.IntegrityError:
-			print(f'Got duplicate: {[instructor["id"], instructor["first_name"], instructor["last_name"], instructor["sort_name"]] + [None] * 6}')
+			print(f'Got duplicate: {values}')
 		except:
-			print(f'Error adding: {[instructor["id"], instructor["first_name"], instructor["last_name"], instructor["sort_name"]] + [None] * 6}')
+			print(f'Error adding: {values}')
 	print("\rSaved instructors       ")
 
 	print("Saving building list...", end="")
 	for building in semester_result["building_list"]:
 		sql_cmd = """INSERT INTO buildings VALUES(?);"""
+		values = (building["building"],)
 		try:
-			cursor.execute(sql_cmd, (building["building"],))
+			cursor.execute(sql_cmd, values)
 		except sqlite3.IntegrityError:
-			print(f'Got duplicate: {(building["building"],)}')
+			print(f'Got duplicate: {values}')
 		except:
-			print(f'Error adding: {(building["building"],)}')
+			print(f'Error adding: {values}')
 	print("\rSaved building list        ")
 
 	print("Saving course list...", end="")
 	for rand_id in classes_result.keys():
 		course = classes_result[rand_id]
-		curriculum_id = course["curriculum_id"]
-		catalog_number = course["catalog_number"]
-		catalog_suffix = course["catalog_suffix"]
-		dept_name = course["dept_name"]
-		full_title = course["full_title"]
-		title = course["title"]
-		title_code = course["title_code"]
 
 		sql_cmd = """INSERT INTO courses VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"""
+		values = [course["curriculum_id"] + course["title_code"],
+		          course["curriculum_id"],
+		          course["catalog_number"],
+		          course["catalog_suffix"],
+		          course["dept_name"],
+		          course["full_title"],
+		          course["title"],
+		          course["title_code"]] + [None] * 14
 		try:
-			cursor.execute(sql_cmd, [curriculum_id + title_code, curriculum_id, catalog_number, catalog_suffix, dept_name, full_title, title, title_code] + [None] * 14)
+			cursor.execute(sql_cmd, values)
 		except sqlite3.IntegrityError:
-			print(f"Got duplicate: {[curriculum_id + title_code, curriculum_id, catalog_number, catalog_suffix, dept_name, full_title, title, title_code] + [None] * 14}")
+			print(f"Got duplicate: {values}")
 		except:
-			print(f"Error adding: {[curriculum_id + title_code, curriculum_id, catalog_number, catalog_suffix, dept_name, full_title, title, title_code] + [None] * 14}")
+			print(f"Error adding: {values}")
 	print("\rSaved course list       ")
 
 	i = 1
 	for course in section_results:
 		for section in course["sections"]:
-			availability = section["availability"]
-			class_size = availability["class_size"]
-			seats_available = availability["seats_available"]
-			waitlist_size = availability["waitlist_size"]
-			catalog_number = section["catalog_number"]
-			catalog_suffix = section["catalog_suffix"]
-			credit_hours = section["credit_hours"]
-			credit_type = section["credit_type"]
-			curriculum_id = section["curriculum_id"]
-			dept_name = section["dept_name"]
-			end_date = section["end_date"]
-			fixed_or_variable = section["fixed_or_variable"]
-			honors = section["honors"]
-			minimum_credit_hours = section["minimum_credit_hours"]
-			mode = section["mode"]
-			mode_desc = section["mode_desc"]
+			curriculum_id_title_code = section["curriculum_id"] + section["title_code"]
 			section_number = section["section_number"]
-			section_type = section["section_type"]
-			start_date = section["start_date"]
-			title_code = section["title_code"]
-			year_term = section["year_term"]
+			availability = section["availability"]
 			sql_cmd = """INSERT INTO sections VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"""
+			values = (curriculum_id_title_code,
+			          availability["class_size"],
+			          availability["seats_available"],
+			          availability["waitlist_size"],
+			          section["catalog_number"],
+			          section["catalog_suffix"],
+			          section["credit_hours"],
+			          section["credit_type"],
+			          section["curriculum_id"],
+			          section["dept_name"],
+			          section["end_date"],
+			          section["fixed_or_variable"],
+			          section["honors"],
+			          section["minimum_credit_hours"],
+			          section["mode"],
+			          section["mode_desc"],
+			          section_number,
+			          section["section_type"],
+			          section["start_date"],
+			          section["title_code"],
+			          section["year_term"])
 			try:
-				cursor.execute(sql_cmd, (curriculum_id + title_code, class_size, seats_available, waitlist_size, catalog_number, catalog_suffix, credit_hours, credit_type, curriculum_id, dept_name, end_date, fixed_or_variable, honors, minimum_credit_hours, mode, mode_desc, section_number, section_type, start_date, title_code, year_term))
+				cursor.execute(sql_cmd, values)
 			except sqlite3.IntegrityError:
-				print(f"Got duplicate: {(curriculum_id + title_code, class_size, seats_available, waitlist_size, catalog_number, catalog_suffix, credit_hours, credit_type, curriculum_id, dept_name, end_date, fixed_or_variable, honors, minimum_credit_hours, mode, mode_desc, section_number, section_type, start_date, title_code, year_term)}")
+				print(f"Got duplicate: {values}")
 			except:
-				print(f"Error adding: {(curriculum_id + title_code, class_size, seats_available, waitlist_size, catalog_number, catalog_suffix, credit_hours, credit_type, curriculum_id, dept_name, end_date, fixed_or_variable, honors, minimum_credit_hours, mode, mode_desc, section_number, section_type, start_date, title_code, year_term)}")
+				print(f"Error adding: {values}")
 
 			for instructor in section["instructors"]:
-				person_id = instructor["person_id"]
-				byu_id = instructor["byu_id"]
-				net_id = instructor["net_id"]
-				surname = instructor["surname"]
-				rest_of_name = instructor["rest_of_name"]
-				preferred_first_name = instructor["preferred_first_name"]
-				phone_number = instructor["phone_number"]
 				sql_cmd = """UPDATE instructors SET byu_id = ?, net_id = ?, surname = ?, rest_of_name = ?, preferred_first_name = ?, phone_number = ? WHERE person_id = ?;"""
-				cursor.execute(sql_cmd, (byu_id, net_id, surname, rest_of_name, preferred_first_name, phone_number, person_id))
+				values = (instructor["byu_id"],
+				          instructor["net_id"],
+				          instructor["surname"],
+				          instructor["rest_of_name"],
+				          instructor["preferred_first_name"],
+				          instructor["phone_number"],
+				          instructor["person_id"])
+				try:
+					cursor.execute(sql_cmd, values)
+				except sqlite3.IntegrityError:
+					print(f"Got duplicate: {values}")
+				except:
+					print(f"Error adding: {values}")
 
 				sql_cmd = """INSERT INTO course_instructors VALUES(?, ?, ?);"""
+				values = (curriculum_id_title_code,
+				          section_number,
+				          instructor["person_id"])
 				try:
-					cursor.execute(sql_cmd, (curriculum_id + title_code, section_number, person_id))
+					cursor.execute(sql_cmd, values)
 				except sqlite3.IntegrityError:
-					print(f"Got duplicate: {(curriculum_id + title_code, section_number, person_id)}")
+					print(f"Got duplicate: {values}")
 				except:
-					print(f"Error adding: {(curriculum_id + title_code, section_number, person_id)}")
+					print(f"Error adding: {values}")
 
 			for time in section["times"]:
-				begin_time = time["begin_time"]
-				building = time["building"]
-				end_time = time["end_time"]
-				sun = time["sun"]
-				mon = time["mon"]
-				tue = time["tue"]
-				wed = time["wed"]
-				thu = time["thu"]
-				fri = time["fri"]
-				sat = time["sat"]
-				room = time["room"]
-				sequence_number = time["sequence_number"]
-
 				sql_cmd = """INSERT INTO times VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"""
+				values = (curriculum_id_title_code,
+				          section_number,
+				          time["begin_time"],
+				          time["building"],
+				          time["end_time"],
+				          time["fri"],
+				          time["mon"],
+				          time["room"],
+				          time["sat"],
+				          time["sequence_number"],
+				          time["sun"],
+				          time["thu"],
+				          time["tue"],
+				          time["wed"])
 				try:
-					cursor.execute(sql_cmd, (curriculum_id + title_code, section_number, begin_time, building, end_time, fri, mon, room, sat, sequence_number, sun, thu, tue, wed))
+					cursor.execute(sql_cmd, values)
 				except sqlite3.IntegrityError:
-					print(f"Got duplicate: {(curriculum_id + title_code, section_number, begin_time, building, end_time, fri, mon, room, sat, sequence_number, sun, thu, tue, wed)}")
+					print(f"Got duplicate: {values}")
 				except:
-					print(f"Error adding: {(curriculum_id + title_code, section_number, begin_time, building, end_time, fri, mon, room, sat, sequence_number, sun, thu, tue, wed)}")
+					print(f"Error adding: {values}")
 
 		catalog = course["catalog"]
-		curriculum_id = catalog["curriculum_id"]
-		credit_hours = catalog["credit_hours"]
-		description = catalog["description"]
-		effective_date = catalog["effective_date"]
-		effective_year_term = catalog["effective_year_term"]
-		expired_date = catalog["expired_date"]
-		expired_year_term = catalog["expired_year_term"]
-		honors_approved = catalog["honors_approved"]
-		lab_hours = catalog["lab_hours"]
-		lecture_hours = catalog["lecture_hours"]
-		note = catalog["note"]
-		offered = catalog["offered"]
-		prerequisite = catalog["prerequisite"]
-		recommended = catalog["recommended"]
-		when_taught = catalog["when_taught"]
 		sql_cmd = """UPDATE courses SET credit_hours = ?, description = ?, effective_date = ?, effective_year_term = ?, expired_date = ?, expired_year_term = ?, honors_approved = ?, lab_hours = ?, lecture_hours = ?, note = ?, offered = ?, prerequisite = ?, recommended = ?, when_taught = ? WHERE curriculum_id = ?;"""
+		values = (catalog["credit_hours"],
+		          catalog["description"],
+		          catalog["effective_date"],
+		          catalog["effective_year_term"],
+		          catalog["expired_date"],
+		          catalog["expired_year_term"],
+		          catalog["honors_approved"],
+		          catalog["lab_hours"],
+		          catalog["lecture_hours"],
+		          catalog["note"],
+		          catalog["offered"],
+		          catalog["prerequisite"],
+		          catalog["recommended"],
+		          catalog["when_taught"],
+		          catalog["curriculum_id"])
 		try:
-			cursor.execute(sql_cmd, (credit_hours, description, effective_date, effective_year_term, expired_date, expired_year_term, honors_approved, lab_hours, lecture_hours, note, offered, prerequisite, recommended, when_taught, curriculum_id))
+			cursor.execute(sql_cmd, values)
 		except sqlite3.IntegrityError:
-			print(f"Got duplicate: {(credit_hours, description, effective_date, effective_year_term, expired_date, expired_year_term, honors_approved, lab_hours, lecture_hours, note, offered, prerequisite, recommended, when_taught, curriculum_id)}")
+			print(f"Got duplicate: {values}")
 		except:
-			print(f"Error adding: {(credit_hours, description, effective_date, effective_year_term, expired_date, expired_year_term, honors_approved, lab_hours, lecture_hours, note, offered, prerequisite, recommended, when_taught, curriculum_id)}")
+			print(f"Error adding: {values}")
 
-		print(f"\rSaved {i}/{len(section_results)} sections...", end="              ")
+		print(f"\rSaved {i}/{len(section_results)} sections...", end=" " * 15)
 		i += 1
 
-	print(f"\rSaved {len(section_results)} sections             ")
+	print(f"\rSaved {len(section_results)} sections" + " " * 15)
 	print("Commiting changes...", end="")
 	try:
 		connection.commit()
