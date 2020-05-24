@@ -1,5 +1,6 @@
 import os
 import sqlite3
+
 import Dao.Paths
 
 
@@ -222,8 +223,7 @@ def save(yso):
 			print(f"Error adding: {values}")
 	print("\rSaved course list       ")
 
-	i = 1
-	for course in section_results:
+	for i, course in enumerate(section_results):
 		for section in course["sections"]:
 			curriculum_id_title_code = section["curriculum_id"] + section["title_code"]
 			section_number = section["section_number"]
@@ -331,17 +331,16 @@ def save(yso):
 		except:
 			print(f"Error adding: {values}")
 
-		print(f"\rSaved {i}/{len(section_results)} sections...", end=" " * 15)
-		i += 1
+		print(f"\rSaved {i + 1}/{len(section_results)} sections...", end=" " * 15)
 
 	print(f"\rSaved {len(section_results)} sections" + " " * 15)
 	print("Commiting changes...", end="")
 	try:
 		connection.commit()
-	except:
+	except BaseException as e:
 		print("Error comitting changes")
 		connection.close()
-		return None
+		raise e
 
 	connection.close()
 	print("\rChanges committed")
