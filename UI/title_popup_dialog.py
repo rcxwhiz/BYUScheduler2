@@ -7,15 +7,17 @@
 # WARNING! All changes made in this file will be lost!
 
 import Dao
+from typing import List
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
 class Ui_Dialog(object):
-	def setupUi(self, DialogIn: QtWidgets.QDialog, semester: str, year: int):
+	def setupUi(self, DialogIn: QtWidgets.QDialog, semester: str, year: int, load_decision: List[str]):
 		self.dialog = DialogIn
 		self.semester = semester
 		self.year = str(year)
 		self.semester_year = semester.lower() + "_" + str(year)
+		self.load_decision = load_decision
 
 		font = QtGui.QFont()
 		font.setFamily("Arial")
@@ -76,15 +78,28 @@ class Ui_Dialog(object):
 
 	def hook_buttons(self):
 		self.cancel_button.clicked.connect(self.cancel_action)
+		self.download_new_button.clicked.connect(self.download_action)
+		self.cached_result_button.clicked.connect(self.load_action)
 
 	def cancel_action(self):
+		self.load_decision[0] = "cancel"
+		self.dialog.close()
+
+	def load_action(self):
+		self.load_decision[0] = "load"
+		self.dialog.close()
+
+	def download_action(self):
+		self.load_decision[0] = "download"
 		self.dialog.close()
 
 	def determine_availablilty(self):
 		if Dao.Paths.check_exists_1(self.semester_year):
-			self.message.setText(f"{self.semester} {self.year} is already cached({Dao.Paths.check_date_1(self.semester_year)}). Would you like to use that data or download new data?")
+			self.message.setText(f"{self.semester} {self.year} is already cached({Dao.Paths.check_date_1(self.semester_year)}). "
+			                     f"Would you like to use that data or download new data?")
 			self.cached_result_button.setEnabled(True)
 			self.download_new_button.setEnabled(True)
 		else:
-			self.message.setText(f"{self.semester} {self.year} is not already cached. Would you like to download new data for this semester?")
+			self.message.setText(f"{self.semester} {self.year} is not already cached. Would you like to download new "
+			                     f"data for this semester?")
 			self.download_new_button.setEnabled(True)

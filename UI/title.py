@@ -140,7 +140,13 @@ class Ui_MainWindow(object):
 		self.make_schedule_button.clicked.connect(self.show_popup)
 
 	def show_popup(self):
+		load_decision = ["none"]
 		popup_dialog = QtWidgets.QDialog()
 		popup_ui = UI.title_popup_dialog.Ui_Dialog()
-		popup_ui.setupUi(popup_dialog, self.semester_picker.currentText(), self.year_picker.value())
+		popup_ui.setupUi(popup_dialog, self.semester_picker.currentText(), self.year_picker.value(), load_decision)
 		popup_dialog.exec_()
+
+		if load_decision[0] == "download":
+			print("going to download classes")
+		if load_decision[0] == "load":
+			print("going to load cached classes")
