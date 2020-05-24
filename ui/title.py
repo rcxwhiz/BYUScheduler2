@@ -57,10 +57,7 @@ class Ui_MainWindow(object):
 		self.semester_picker = QtWidgets.QComboBox(self.centralwidget)
 		self.semester_picker.setFont(other_font)
 		self.semester_picker.setObjectName("semester_picker")
-		self.semester_picker.addItem("")
-		self.semester_picker.addItem("")
-		self.semester_picker.addItem("")
-		self.semester_picker.addItem("")
+		self.semester_picker.addItems([""] * 4)
 
 		self.verticalLayout_2.addWidget(self.semester_picker)
 
