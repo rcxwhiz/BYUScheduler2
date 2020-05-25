@@ -95,8 +95,14 @@ class Ui_Dialog(object):
 		if self.download_thread is not None:
 			self.download_thread.terminate()
 			self.download_thread.join()
-		del self.message_queue
-		del self.append_message_timer
+		try:
+			del self.message_queue
+		except AttributeError:
+			pass
+		try:
+			del self.append_message_timer
+		except AttributeError:
+			pass
 		self.dialog.close()
 
 	def change_text(self, message):

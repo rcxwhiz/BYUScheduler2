@@ -9,6 +9,7 @@
 import UI.title_popup_dialog
 import UI.Dialog
 import UI.browse_instructor_window
+import Dao.Load
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
@@ -176,8 +177,14 @@ class Ui_MainWindow(object):
 				# TODO load data
 				self.goto_browse_section()
 			elif self.data["type"] == "instructor":
-				# TODO load data
-				change_to_instrcutor_view(self.main_window, self)
+				data = Dao.Load.load_instructors(self.semester_picker.currentText().lower() + "_" + str(self.year_picker.value()))
+				# change_to_instrcutor_view(self.main_window, self, data)
+				main_window = QtWidgets.QMainWindow()
+				ui = UI.browse_instructor_window.Ui_MainWindow()
+				ui.setupUi(main_window, data)
+				self.main_window.close()
+				main_window.show()
+
 			elif self.data["type"] == "schedule":
 				# TODO load data
 				self.goto_make_schedule()
@@ -192,8 +199,9 @@ class Ui_MainWindow(object):
 		print("make schedule")
 
 
-def change_to_instrcutor_view(main_window, ui):
-	print("making new window")
-	ui = UI.browse_instructor_window.Ui_MainWindow()
-	ui.setupUi(main_window)
-	main_window.show()
+# def change_to_instrcutor_view(main_window, ui, data):
+# 	del main_window
+# 	main_window = QtWidgets.QMainWindow()
+# 	ui = UI.browse_instructor_window.Ui_MainWindow()
+# 	ui.setupUi(main_window, data)
+# 	main_window.show()

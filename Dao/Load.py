@@ -139,6 +139,12 @@ def load_instructors(semester_year):
 		                   "preferred_first_name": instructor[7],
 		                   "rest_of_name": instructor[8],
 		                   "surname": instructor[9],
+		                   "found_rmp": instructor[10],
+		                   "avg_rating": instructor[11],
+		                   "avg_helpful": instructor[12],
+		                   "num_ratings": instructor[13],
+		                   "avg_easy_score": instructor[14],
+		                   "avg_clarity_score": instructor[15],
 		                   "classes_taught": []}
 		for key in instructor_data.keys():
 			if instructor_data[key] is None:
