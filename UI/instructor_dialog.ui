@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>300</height>
+    <height>402</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,70 +21,80 @@
        <item>
         <widget class="QLabel" name="first_name_label">
          <property name="text">
-          <string>First Name: ---</string>
+          <string>First Name:
+---</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QLabel" name="last_name_label">
          <property name="text">
-          <string>Last Name: ---</string>
+          <string>Last Name:
+---</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QLabel" name="sort_name_label">
          <property name="text">
-          <string>Sort Name: ---</string>
+          <string>Sort Name:
+---</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QLabel" name="person_id_label">
          <property name="text">
-          <string>Person ID: ---</string>
+          <string>Person ID:
+---</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QLabel" name="byu_id_label">
          <property name="text">
-          <string>BYU ID: ---</string>
+          <string>BYU ID:
+---</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QLabel" name="net_id_label">
          <property name="text">
-          <string>NetID: ---</string>
+          <string>NetID:
+---</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QLabel" name="phone_label">
          <property name="text">
-          <string>Phone Number: ---</string>
+          <string>Phone Number:
+---</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QLabel" name="num_ratings_label">
          <property name="text">
-          <string>Num. RMP Ratings: ---</string>
+          <string>Num. RMP Ratings:
+---</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QLabel" name="rating_label">
          <property name="text">
-          <string>RMP Rating: ---</string>
+          <string>RMP Rating:
+---</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QLabel" name="difficulty_label">
          <property name="text">
-          <string>RMP Difficulty: ---</string>
+          <string>RMP Difficulty:
+---</string>
          </property>
         </widget>
        </item>

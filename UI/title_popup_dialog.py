@@ -92,10 +92,11 @@ class Ui_Dialog(object):
 		self.cached_result_button.clicked.connect(self.load_action)
 
 	def cancel_action(self):
-		self.load_decision[0] = "cancel"
 		if self.download_thread is not None:
 			self.download_thread.terminate()
 			self.download_thread.join()
+		del self.message_queue
+		del self.append_message_timer
 		self.dialog.close()
 
 	def change_text(self, message):
@@ -133,7 +134,7 @@ class Ui_Dialog(object):
 		self.dialog.close()
 
 	def download_action(self):
-		self.load_decision[0] = "download"
+		self.load_decision[0] = "downloading..."
 		self.download_new_button.setEnabled(False)
 		self.cached_result_button.setEnabled(False)
 		self.download_thread = multiprocessing.Process(target=downloader, args=(self.semester.lower(), self.year, self.append_text, self.replace_line, self.load_decision, self.dialog))
@@ -160,4 +161,4 @@ def downloader(semester, year, append_function, replace_function, outcome, dialo
 		append_function(f"\nError getting {semester} {year} (it might not exist)")
 		append_function("Please choose another semester")
 		outcome[0] = "Error"
-	dialog.close()
+	dialog.cancel_action()

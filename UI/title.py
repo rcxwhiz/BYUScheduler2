@@ -8,6 +8,7 @@
 
 import UI.title_popup_dialog
 import UI.Dialog
+import UI.browse_instructor_window
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
@@ -162,15 +163,10 @@ class Ui_MainWindow(object):
 	def show_popup(self):
 		load_decision = ["none"]
 		popup_dialog = UI.Dialog.Dialog()
-		# TODO need a way to deal with the close button
-		# popup_dialog.setWindowFlag(QtCore.Qt.WindowCloseButtonHint, False)
 		popup_ui = UI.title_popup_dialog.Ui_Dialog()
 		popup_ui.setupUi(popup_dialog, self.semester_picker.currentText(), self.year_picker.value(), load_decision)
 		popup_dialog.exec_()
 
-		if load_decision[0] == "download":
-			print("downloaded classes")
-			load_decision[0] = "load"
 		if load_decision[0] == "load":
 			print("going to load cached classes")
 			if self.data["type"] == "course":
@@ -181,7 +177,7 @@ class Ui_MainWindow(object):
 				self.goto_browse_section()
 			elif self.data["type"] == "instructor":
 				# TODO load data
-				self.goto_browse_instructor()
+				change_to_instrcutor_view(self.main_window, self)
 			elif self.data["type"] == "schedule":
 				# TODO load data
 				self.goto_make_schedule()
@@ -192,8 +188,12 @@ class Ui_MainWindow(object):
 	def goto_browse_section(self):
 		print("browse section")
 
-	def goto_browse_instructor(self):
-		print("browse instructor")
-
 	def goto_make_schedule(self):
 		print("make schedule")
+
+
+def change_to_instrcutor_view(main_window, ui):
+	print("making new window")
+	ui = UI.browse_instructor_window.Ui_MainWindow()
+	ui.setupUi(main_window)
+	main_window.show()
