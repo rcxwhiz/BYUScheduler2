@@ -32,12 +32,11 @@ class Ui_MainWindow(object):
 		self.hook_buttons()
 		self.populate_table()
 
-		self.stackedWidget.setCurrentIndex(0)
+		self.goto_title_page()
 
 	def setup_window(self, MainWindowIn: QtWidgets.QMainWindow):
 		self.main_window = MainWindowIn
 		self.main_window.setObjectName("MainWindow")
-		self.main_window.resize(800, 380)
 
 		self.centralwidget = QtWidgets.QWidget(self.main_window)
 		self.centralwidget.setObjectName("centralwidget")
@@ -149,7 +148,7 @@ class Ui_MainWindow(object):
 		self.stackedWidget.addWidget(self.page1)
 
 	def setup_browse_instructor_page(self):
-		self.data = {}
+		self.loaded_data = {}
 		self.page2 = QtWidgets.QWidget()
 		self.page2.setObjectName("page2")
 
@@ -268,24 +267,28 @@ class Ui_MainWindow(object):
 		self.browse_instructor_button.clicked.connect(self.browse_instructor_action)
 		self.make_schedule_button.clicked.connect(self.make_schedule_action)
 
+		self.lineEdit.textChanged.connect(self.filter_table)
+		self.lineEdit_2.textChanged.connect(self.filter_table)
+		self.lineEdit_3.textChanged.connect(self.filter_table)
+
 	def populate_table(self):
 		self.table.setColumnCount(7)
-		self.table.setRowCount(len(self.data))
+		self.table.setRowCount(len(self.loaded_data))
 		self.table.setHorizontalHeaderLabels(["First Name", "Last Name", "Sort Name", "# Courses Taught", "# RMP Ratings", "RMP Rating", "RMP Difficulty", "HIDDEN"])
-		for i, key in enumerate(self.data.keys()):
-			self.table.setItem(i, 0, QtWidgets.QTableWidgetItem(self.data[key]["first_name"]))
-			self.table.setItem(i, 1, QtWidgets.QTableWidgetItem(self.data[key]["last_name"]))
-			self.table.setItem(i, 2, QtWidgets.QTableWidgetItem(self.data[key]["sort_name"]))
+		for i, key in enumerate(self.loaded_data.keys()):
+			self.table.setItem(i, 0, QtWidgets.QTableWidgetItem(self.loaded_data[key]["first_name"]))
+			self.table.setItem(i, 1, QtWidgets.QTableWidgetItem(self.loaded_data[key]["last_name"]))
+			self.table.setItem(i, 2, QtWidgets.QTableWidgetItem(self.loaded_data[key]["sort_name"]))
 
 			different_classes_taught = set()
-			for section in self.data[key]["classes_taught"]:
+			for section in self.loaded_data[key]["classes_taught"]:
 				different_classes_taught.add(section["course"])
 			self.table.setItem(i, 3, QtWidgets.QTableWidgetItem(str(len(different_classes_taught))))
 
-			if self.data[key]["found_rmp"] == 1:
-				self.table.setItem(i, 4, QtWidgets.QTableWidgetItem(str(self.data[key]["num_ratings"])))
-				self.table.setItem(i, 5, QtWidgets.QTableWidgetItem(str(self.data[key]["avg_rating"])))
-				self.table.setItem(i, 6, QtWidgets.QTableWidgetItem(str(self.data[key]["avg_easy_score"])))
+			if self.loaded_data[key]["found_rmp"] == 1:
+				self.table.setItem(i, 4, QtWidgets.QTableWidgetItem(str(self.loaded_data[key]["num_ratings"])))
+				self.table.setItem(i, 5, QtWidgets.QTableWidgetItem(str(self.loaded_data[key]["avg_rating"])))
+				self.table.setItem(i, 6, QtWidgets.QTableWidgetItem(str(self.loaded_data[key]["avg_easy_score"])))
 			else:
 				self.table.setItem(i, 4, QtWidgets.QTableWidgetItem("-"))
 				self.table.setItem(i, 5, QtWidgets.QTableWidgetItem("-"))
@@ -294,47 +297,73 @@ class Ui_MainWindow(object):
 		self.table.hideColumn(7)
 		self.table.setSortingEnabled(True)
 
+	def filter_table(self):
+		print("filtering the table")
+
+		for index in range(self.table.rowCount()):
+			show = True
+			if self.lineEdit.text() != "":
+				if self.lineEdit.text() not in self.table.itemAt(index, 0).text():
+					show = False
+			if self.lineEdit_2.text() != "" and show:
+				if self.lineEdit_2.text() not in self.table.itemAt(index, 1).text():
+					show = False
+			if self.lineEdit_3.text() != "" and show:
+				show = False
+				for course in self.loaded_data[self.table.itemAt(index, 7)]["classes_taught"]:
+					if self.lineEdit_3.text() in course["course"]:
+						show = True
+						break
+			if show:
+				self.table.showRow(index)
+				print(f"deciding to show row {index}")
+			else:
+				self.table.hideRow(index)
+				print(f"deciding to hide row {index}")
+
+		print("done filtering the table")
+
 	def browse_course_action(self):
-		self.data["type"] = "course"
 		self.show_popup()
 
 	def browse_section_action(self):
-		self.data["type"] = "section"
 		self.show_popup()
 
 	def browse_instructor_action(self):
-		self.data["type"] = "instructor"
-		self.show_popup()
+		continuing = [None]
+		self.loaded_data = {"type": "instructor"}
+		self.show_popup(continuing)
+		if continuing[0]:
+			self.goto_instructor_page()
 
 	def make_schedule_action(self):
-		self.data["data"] = "schedule"
 		self.show_popup()
 
-	def show_popup(self):
-		load_decision = ["none"]
+	def goto_title_page(self):
+		self.main_window.resize(800, 380)
+		self.stackedWidget.setCurrentIndex(0)
+
+	def goto_instructor_page(self):
+		self.main_window.resize(1100, 700)
+		self.stackedWidget.setCurrentIndex(1)
+		self.populate_table()
+
+	def show_popup(self, continuing):
 		popup_dialog = UI.Dialog.Dialog()
 		popup_ui = UI.title_popup_dialog.Ui_Dialog()
-		popup_ui.setupUi(popup_dialog, self.semester_picker.currentText(), self.year_picker.value(), load_decision)
+		popup_ui.setupUi(popup_dialog, self.semester_picker.currentText(), self.year_picker.value(), continuing)
 		popup_dialog.exec_()
 
-		if load_decision[0] == "load":
-			print("going to load cached classes")
-			if self.data["type"] == "course":
+		if continuing[0]:
+			if self.loaded_data["type"] == "course":
 				# TODO load data
 				self.goto_browse_course()
-			elif self.data["type"] == "section":
+			elif self.loaded_data["type"] == "section":
 				# TODO load data
 				self.goto_browse_section()
-			elif self.data["type"] == "instructor":
-				data = Dao.Load.load_instructors(self.semester_picker.currentText().lower() + "_" + str(self.year_picker.value()))
-				# change_to_instrcutor_view(self.main_window, self, data)
-				main_window = QtWidgets.QMainWindow()
-				ui = UI.browse_instructor_window.Ui_MainWindow()
-				ui.setupUi(main_window, data)
-				self.main_window.close()
-				main_window.show()
-
-			elif self.data["type"] == "schedule":
+			elif self.loaded_data["type"] == "instructor":
+				self.loaded_data = Dao.Load.load_instructors(self.semester_picker.currentText().lower() + "_" + str(self.year_picker.value()))
+			elif self.loaded_data["type"] == "schedule":
 				# TODO load data
 				self.goto_make_schedule()
 
