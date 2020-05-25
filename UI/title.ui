@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>804</width>
+    <height>382</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QLabel" name="big_title">
+        <property name="font">
+         <font>
+          <family>Arial</family>
+          <pointsize>36</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>BYU Scheduler 2</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignBottom|Qt::AlignHCenter</set>
+        </property>
+        <property name="textInteractionFlags">
+         <set>Qt::NoTextInteraction</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="name_title">
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="text">
+         <string>By Josh Bedwell</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignHCenter|Qt::AlignTop</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_2">
+          <item>
+           <widget class="QLabel" name="semester_label">
+            <property name="font">
+             <font>
+              <family>Arial</family>
+             </font>
+            </property>
+            <property name="text">
+             <string>Semester</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="semester_picker">
+            <property name="font">
+             <font>
+              <family>Arial</family>
+             </font>
+            </property>
+            <item>
+             <property name="text">
+              <string>Winter</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Spring</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Summer</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Fall</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="year_label">
+            <property name="font">
+             <font>
+              <family>Arial</family>
+             </font>
+            </property>
+            <property name="text">
+             <string>Year</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="year_picker">
+            <property name="font">
+             <font>
+              <family>Arial</family>
+             </font>
+            </property>
+            <property name="buttonSymbols">
+             <enum>QAbstractSpinBox::PlusMinus</enum>
+            </property>
+            <property name="minimum">
+             <number>2010</number>
+            </property>
+            <property name="maximum">
+             <number>2030</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="2" column="1">
+           <widget class="QPushButton" name="make_schedule_button">
+            <property name="font">
+             <font>
+              <family>Arial</family>
+             </font>
+            </property>
+            <property name="text">
+             <string>Make Schedule</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QPushButton" name="browse_instructor_button">
+            <property name="font">
+             <font>
+              <family>Arial</family>
+             </font>
+            </property>
+            <property name="text">
+             <string>Browse Instructors</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QPushButton" name="browse_section_button">
+            <property name="font">
+             <font>
+              <family>Arial</family>
+             </font>
+            </property>
+            <property name="text">
+             <string>Browse Sections</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QPushButton" name="browse_course_button">
+            <property name="font">
+             <font>
+              <family>Arial</family>
+             </font>
+            </property>
+            <property name="text">
+             <string>Browse Courses</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
