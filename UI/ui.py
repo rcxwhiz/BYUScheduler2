@@ -1,11 +1,3 @@
-# -*- coding: utf-8 -*-
-
-# Form implementation generated from reading ui file 'UI/title.ui'
-#
-# Created by: PyQt5 UI code generator 5.14.2
-#
-# WARNING! All changes made in this file will be lost!
-
 import UI.title_popup_dialog
 import UI.Dialog
 import UI.browse_instructor_window
@@ -14,7 +6,9 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 
 class Ui_MainWindow(object):
-	def setupUi(self, MainWindowIn: QtWidgets.QMainWindow):
+	# Setup
+	# ----------------------------------------------------------------------------------
+	def setup_ui(self, MainWindowIn: QtWidgets.QMainWindow):
 		self.setup_window(MainWindowIn)
 
 		self.setup_title_page()
@@ -22,30 +16,18 @@ class Ui_MainWindow(object):
 
 		self.finish_setup_window()
 
-	def finish_setup_window(self):
-		self.gridLayout.addWidget(self.stackedWidget, 0, 0, 1, 1)
-		self.main_window.setCentralWidget(self.centralwidget)
-
-		self.retranslateUi()
-		QtCore.QMetaObject.connectSlotsByName(self.main_window)
-
-		self.hook_buttons()
-		self.populate_table()
-
-		self.goto_title_page()
-
 	def setup_window(self, MainWindowIn: QtWidgets.QMainWindow):
 		self.main_window = MainWindowIn
 		self.main_window.setObjectName("MainWindow")
 
-		self.centralwidget = QtWidgets.QWidget(self.main_window)
-		self.centralwidget.setObjectName("centralwidget")
+		self.main_window_central_widget = QtWidgets.QWidget(self.main_window)
+		self.main_window_central_widget.setObjectName("centralwidget")
 
-		self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
-		self.gridLayout.setObjectName("gridLayout")
+		self.main_window_grid_layout = QtWidgets.QGridLayout(self.main_window_central_widget)
+		self.main_window_grid_layout.setObjectName("gridLayout")
 
-		self.stackedWidget = QtWidgets.QStackedWidget(self.centralwidget)
-		self.stackedWidget.setObjectName("stackedWidget")
+		self.main_window_stacked_widget = QtWidgets.QStackedWidget(self.main_window_central_widget)
+		self.main_window_stacked_widget.setObjectName("stackedWidget")
 
 		self.title_font = QtGui.QFont()
 		self.title_font.setFamily("Arial")
@@ -53,319 +35,248 @@ class Ui_MainWindow(object):
 		self.font = QtGui.QFont()
 		self.font.setFamily("Arial")
 
+	def finish_setup_window(self):
+		self.main_window_grid_layout.addWidget(self.main_window_stacked_widget, 0, 0, 1, 1)
+		self.main_window.setCentralWidget(self.main_window_central_widget)
+
+		self.retranslate_ui()
+		QtCore.QMetaObject.connectSlotsByName(self.main_window)
+
+		self.hook_buttons()
+		self.populate_table()
+
+		self.goto_title_page()
+
 	def setup_title_page(self):
-		self.page1 = QtWidgets.QWidget()
-		self.page1.setObjectName("page")
+		self.title_page = QtWidgets.QWidget()
+		self.title_page.setObjectName("page")
 
-		self.gridLayout1 = QtWidgets.QGridLayout(self.page1)
-		self.gridLayout1.setObjectName("gridLayout1")
+		self.title_grid_layout_1 = QtWidgets.QGridLayout(self.title_page)
+		self.title_grid_layout_1.setObjectName("gridLayout1")
 
-		self.verticalLayout = QtWidgets.QVBoxLayout()
-		self.verticalLayout.setObjectName("verticalLayout")
+		self.title_vertical_layout_1 = QtWidgets.QVBoxLayout()
+		self.title_vertical_layout_1.setObjectName("verticalLayout")
 
-		self.big_title = QtWidgets.QLabel(self.page1)
-		self.big_title.setFont(self.title_font)
-		self.big_title.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignHCenter)
-		self.big_title.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
-		self.big_title.setObjectName("big_title")
+		self.title_big_title = QtWidgets.QLabel(self.title_page)
+		self.title_big_title.setFont(self.title_font)
+		self.title_big_title.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignHCenter)
+		self.title_big_title.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
+		self.title_big_title.setObjectName("big_title")
 
-		self.verticalLayout.addWidget(self.big_title)
+		self.title_vertical_layout_1.addWidget(self.title_big_title)
 
-		self.name_title = QtWidgets.QLabel(self.page1)
-		self.name_title.setFont(self.font)
-		self.name_title.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignTop)
-		self.name_title.setObjectName("name_title")
+		self.title_name = QtWidgets.QLabel(self.title_page)
+		self.title_name.setFont(self.font)
+		self.title_name.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignTop)
+		self.title_name.setObjectName("name_title")
 
-		self.verticalLayout.addWidget(self.name_title)
-		self.horizontalLayout = QtWidgets.QHBoxLayout()
-		self.horizontalLayout.setObjectName("horizontalLayout")
-		self.verticalLayout_2 = QtWidgets.QVBoxLayout()
-		self.verticalLayout_2.setObjectName("verticalLayout_2")
+		self.title_vertical_layout_1.addWidget(self.title_name)
+		self.title_horizontal_layout = QtWidgets.QHBoxLayout()
+		self.title_horizontal_layout.setObjectName("horizontalLayout")
+		self.title_vertical_layout_2 = QtWidgets.QVBoxLayout()
+		self.title_vertical_layout_2.setObjectName("verticalLayout_2")
 
-		self.semester_label = QtWidgets.QLabel(self.page1)
-		self.semester_label.setFont(self.font)
-		self.semester_label.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft)
-		self.semester_label.setObjectName("semester_label")
+		self.title_semester_label = QtWidgets.QLabel(self.title_page)
+		self.title_semester_label.setFont(self.font)
+		self.title_semester_label.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft)
+		self.title_semester_label.setObjectName("semester_label")
 
-		self.verticalLayout_2.addWidget(self.semester_label)
+		self.title_vertical_layout_2.addWidget(self.title_semester_label)
 
-		self.semester_picker = QtWidgets.QComboBox(self.page1)
-		self.semester_picker.setFont(self.font)
-		self.semester_picker.setObjectName("semester_picker")
-		self.semester_picker.addItems([""] * 4)
+		self.title_semester_picker = QtWidgets.QComboBox(self.title_page)
+		self.title_semester_picker.setFont(self.font)
+		self.title_semester_picker.setObjectName("semester_picker")
+		self.title_semester_picker.addItems([""] * 4)
 
-		self.verticalLayout_2.addWidget(self.semester_picker)
+		self.title_vertical_layout_2.addWidget(self.title_semester_picker)
 
-		self.year_label = QtWidgets.QLabel(self.page1)
-		self.year_label.setFont(self.font)
-		self.year_label.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft)
-		self.year_label.setObjectName("year_label")
+		self.title_year_label = QtWidgets.QLabel(self.title_page)
+		self.title_year_label.setFont(self.font)
+		self.title_year_label.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft)
+		self.title_year_label.setObjectName("year_label")
 
-		self.verticalLayout_2.addWidget(self.year_label)
+		self.title_vertical_layout_2.addWidget(self.title_year_label)
 
-		self.year_picker = QtWidgets.QSpinBox(self.page1)
-		self.year_picker.setFont(self.font)
-		self.year_picker.setButtonSymbols(QtWidgets.QAbstractSpinBox.PlusMinus)
-		self.year_picker.setMinimum(2010)
-		self.year_picker.setMaximum(2030)
-		self.year_picker.setValue(2020)
-		self.year_picker.setObjectName("year_picker")
+		self.title_year_picker = QtWidgets.QSpinBox(self.title_page)
+		self.title_year_picker.setFont(self.font)
+		self.title_year_picker.setButtonSymbols(QtWidgets.QAbstractSpinBox.PlusMinus)
+		self.title_year_picker.setMinimum(2010)
+		self.title_year_picker.setMaximum(2030)
+		self.title_year_picker.setValue(2020)
+		self.title_year_picker.setObjectName("year_picker")
 
-		self.verticalLayout_2.addWidget(self.year_picker)
-		self.verticalSpacer = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-		self.verticalLayout_2.addItem(self.verticalSpacer)
-		self.horizontalLayout.addLayout(self.verticalLayout_2)
-		self.gridLayout_2 = QtWidgets.QGridLayout()
-		self.gridLayout_2.setObjectName("gridLayout_2")
+		self.title_vertical_layout_2.addWidget(self.title_year_picker)
+		self.title_vertical_spacer = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+		self.title_vertical_layout_2.addItem(self.title_vertical_spacer)
+		self.title_horizontal_layout.addLayout(self.title_vertical_layout_2)
+		self.title_grid_layout_2 = QtWidgets.QGridLayout()
+		self.title_grid_layout_2.setObjectName("gridLayout_2")
 
-		self.make_schedule_button = QtWidgets.QPushButton(self.page1)
-		self.make_schedule_button.setFont(self.font)
-		self.make_schedule_button.setObjectName("make_schedule_button")
+		self.title_schedule_button = QtWidgets.QPushButton(self.title_page)
+		self.title_schedule_button.setFont(self.font)
+		self.title_schedule_button.setObjectName("make_schedule_button")
 
-		self.gridLayout_2.addWidget(self.make_schedule_button, 2, 1, 1, 1)
+		self.title_grid_layout_2.addWidget(self.title_schedule_button, 2, 1, 1, 1)
 
-		self.browse_instructor_button = QtWidgets.QPushButton(self.page1)
-		self.browse_instructor_button.setFont(self.font)
-		self.browse_instructor_button.setObjectName("browse_instructor_button")
+		self.title_instructor_button = QtWidgets.QPushButton(self.title_page)
+		self.title_instructor_button.setFont(self.font)
+		self.title_instructor_button.setObjectName("browse_instructor_button")
 
-		self.gridLayout_2.addWidget(self.browse_instructor_button, 0, 1, 1, 1)
+		self.title_grid_layout_2.addWidget(self.title_instructor_button, 0, 1, 1, 1)
 
-		self.browse_section_button = QtWidgets.QPushButton(self.page1)
-		self.browse_section_button.setFont(self.font)
-		self.browse_section_button.setObjectName("browse_section_button")
+		self.title_section_button = QtWidgets.QPushButton(self.title_page)
+		self.title_section_button.setFont(self.font)
+		self.title_section_button.setObjectName("browse_section_button")
 
-		self.gridLayout_2.addWidget(self.browse_section_button, 2, 0, 1, 1)
+		self.title_grid_layout_2.addWidget(self.title_section_button, 2, 0, 1, 1)
 
-		self.browse_course_button = QtWidgets.QPushButton(self.page1)
-		self.browse_course_button.setFont(self.font)
-		self.browse_course_button.setObjectName("browse_course_button")
+		self.title_course_button = QtWidgets.QPushButton(self.title_page)
+		self.title_course_button.setFont(self.font)
+		self.title_course_button.setObjectName("browse_course_button")
 
-		self.gridLayout_2.addWidget(self.browse_course_button, 0, 0, 1, 1)
+		self.title_grid_layout_2.addWidget(self.title_course_button, 0, 0, 1, 1)
 
-		self.horizontalLayout.addLayout(self.gridLayout_2)
-		self.verticalLayout.addLayout(self.horizontalLayout)
-		self.gridLayout1.addLayout(self.verticalLayout, 0, 0, 1, 1)
-		self.stackedWidget.addWidget(self.page1)
+		self.title_horizontal_layout.addLayout(self.title_grid_layout_2)
+		self.title_vertical_layout_1.addLayout(self.title_horizontal_layout)
+		self.title_grid_layout_1.addLayout(self.title_vertical_layout_1, 0, 0, 1, 1)
+		self.main_window_stacked_widget.addWidget(self.title_page)
 
 	def setup_browse_instructor_page(self):
 		self.loaded_data = {}
-		self.page2 = QtWidgets.QWidget()
-		self.page2.setObjectName("page2")
 
-		self.gridLayout3 = QtWidgets.QGridLayout(self.page2)
-		self.gridLayout3.setObjectName("gridLayout3")
+		self.instructor_page = QtWidgets.QWidget()
+		self.instructor_page.setObjectName("page2")
 
-		self.horizontalLayout3 = QtWidgets.QHBoxLayout()
-		self.horizontalLayout3.setObjectName("horizontalLayout3")
+		self.instructor_grid_layout = QtWidgets.QGridLayout(self.instructor_page)
+		self.instructor_grid_layout.setObjectName("gridLayout3")
 
-		self.verticalLayout4 = QtWidgets.QVBoxLayout()
-		self.verticalLayout4.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
-		self.verticalLayout4.setObjectName("verticalLayout4")
+		self.instructor_horizontal_layout = QtWidgets.QHBoxLayout()
+		self.instructor_horizontal_layout.setObjectName("horizontalLayout3")
 
-		self.label5 = QtWidgets.QLabel(self.page2)
-		self.label5.setObjectName("label5")
-		self.label5.setFont(self.font)
+		self.instructor_vertical_layout = QtWidgets.QVBoxLayout()
+		self.instructor_vertical_layout.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
+		self.instructor_vertical_layout.setObjectName("verticalLayout4")
 
-		self.verticalLayout4.addWidget(self.label5)
+		self.instructor_first_name_label = QtWidgets.QLabel(self.instructor_page)
+		self.instructor_first_name_label.setObjectName("label5")
+		self.instructor_first_name_label.setFont(self.font)
 
-		self.lineEdit = QtWidgets.QLineEdit(self.page2)
+		self.instructor_vertical_layout.addWidget(self.instructor_first_name_label)
 
-		sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
-		sizePolicy.setHorizontalStretch(0)
-		sizePolicy.setVerticalStretch(0)
-		sizePolicy.setHeightForWidth(self.lineEdit.sizePolicy().hasHeightForWidth())
-
-		self.lineEdit.setSizePolicy(sizePolicy)
-		self.lineEdit.setObjectName("lineEdit")
-		self.lineEdit.setFont(self.font)
-
-		self.verticalLayout4.addWidget(self.lineEdit)
-
-		self.label6 = QtWidgets.QLabel(self.page2)
-		self.label6.setObjectName("label6")
-		self.label6.setFont(self.font)
-
-		self.verticalLayout4.addWidget(self.label6)
-
-		self.lineEdit_2 = QtWidgets.QLineEdit(self.page2)
+		self.instructor_first_name_input = QtWidgets.QLineEdit(self.instructor_page)
 
 		sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
 		sizePolicy.setHorizontalStretch(0)
 		sizePolicy.setVerticalStretch(0)
-		sizePolicy.setHeightForWidth(self.lineEdit_2.sizePolicy().hasHeightForWidth())
+		sizePolicy.setHeightForWidth(self.instructor_first_name_input.sizePolicy().hasHeightForWidth())
 
-		self.lineEdit_2.setSizePolicy(sizePolicy)
-		self.lineEdit_2.setObjectName("lineEdit_2")
-		self.lineEdit_2.setFont(self.font)
+		self.instructor_first_name_input.setSizePolicy(sizePolicy)
+		self.instructor_first_name_input.setObjectName("lineEdit")
+		self.instructor_first_name_input.setFont(self.font)
 
-		self.verticalLayout4.addWidget(self.lineEdit_2)
+		self.instructor_vertical_layout.addWidget(self.instructor_first_name_input)
 
-		self.label7 = QtWidgets.QLabel(self.page2)
-		self.label7.setObjectName("label7")
-		self.label7.setFont(self.font)
+		self.instructor_last_name_label = QtWidgets.QLabel(self.instructor_page)
+		self.instructor_last_name_label.setObjectName("label6")
+		self.instructor_last_name_label.setFont(self.font)
 
-		self.verticalLayout4.addWidget(self.label7)
+		self.instructor_vertical_layout.addWidget(self.instructor_last_name_label)
 
-		self.lineEdit_3 = QtWidgets.QLineEdit(self.page2)
+		self.instructor_last_name_input = QtWidgets.QLineEdit(self.instructor_page)
 
 		sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
 		sizePolicy.setHorizontalStretch(0)
 		sizePolicy.setVerticalStretch(0)
-		sizePolicy.setHeightForWidth(self.lineEdit_3.sizePolicy().hasHeightForWidth())
+		sizePolicy.setHeightForWidth(self.instructor_last_name_input.sizePolicy().hasHeightForWidth())
 
-		self.lineEdit_3.setSizePolicy(sizePolicy)
-		self.lineEdit_3.setObjectName("lineEdit_3")
-		self.lineEdit_3.setFont(self.font)
+		self.instructor_last_name_input.setSizePolicy(sizePolicy)
+		self.instructor_last_name_input.setObjectName("lineEdit_2")
+		self.instructor_last_name_input.setFont(self.font)
 
-		self.verticalLayout4.addWidget(self.lineEdit_3)
+		self.instructor_vertical_layout.addWidget(self.instructor_last_name_input)
+
+		self.instructor_course_label = QtWidgets.QLabel(self.instructor_page)
+		self.instructor_course_label.setObjectName("label7")
+		self.instructor_course_label.setFont(self.font)
+
+		self.instructor_vertical_layout.addWidget(self.instructor_course_label)
+
+		self.insctructor_course_input = QtWidgets.QLineEdit(self.instructor_page)
+
+		sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
+		sizePolicy.setHorizontalStretch(0)
+		sizePolicy.setVerticalStretch(0)
+		sizePolicy.setHeightForWidth(self.insctructor_course_input.sizePolicy().hasHeightForWidth())
+
+		self.insctructor_course_input.setSizePolicy(sizePolicy)
+		self.insctructor_course_input.setObjectName("lineEdit_3")
+		self.insctructor_course_input.setFont(self.font)
+
+		self.instructor_vertical_layout.addWidget(self.insctructor_course_input)
 
 		sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
 		sizePolicy.setHorizontalStretch(0)
 		sizePolicy.setVerticalStretch(0)
 
 		spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-		self.verticalLayout4.addItem(spacerItem)
-		self.horizontalLayout3.addLayout(self.verticalLayout4)
+		self.instructor_vertical_layout.addItem(spacerItem)
+		self.instructor_horizontal_layout.addLayout(self.instructor_vertical_layout)
 
-		self.table = QtWidgets.QTableWidget(self.page2)
+		self.instructor_table = QtWidgets.QTableWidget(self.instructor_page)
 
 		sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
 		sizePolicy.setHorizontalStretch(0)
 		sizePolicy.setVerticalStretch(0)
-		sizePolicy.setHeightForWidth(self.table.sizePolicy().hasHeightForWidth())
+		sizePolicy.setHeightForWidth(self.instructor_table.sizePolicy().hasHeightForWidth())
 
-		self.table.setSizePolicy(sizePolicy)
-		self.table.setObjectName("tableView")
-		self.table.setFont(self.font)
+		self.instructor_table.setSizePolicy(sizePolicy)
+		self.instructor_table.setObjectName("tableView")
+		self.instructor_table.setFont(self.font)
 
-		self.horizontalLayout3.addWidget(self.table)
-		self.gridLayout3.addLayout(self.horizontalLayout3, 0, 0, 1, 1)
-		self.stackedWidget.addWidget(self.page2)
+		self.instructor_horizontal_layout.addWidget(self.instructor_table)
+		self.instructor_grid_layout.addLayout(self.instructor_horizontal_layout, 0, 0, 1, 1)
+		self.main_window_stacked_widget.addWidget(self.instructor_page)
 
-	def retranslateUi(self):
+	def retranslate_ui(self):
 		_translate = QtCore.QCoreApplication.translate
 		self.main_window.setWindowTitle(_translate("MainWindow", "BYU Scheduler 2"))
-		self.big_title.setText(_translate("MainWindow", "BYU Scheduler 2"))
-		self.name_title.setText(_translate("MainWindow", "By Josh Bedwell"))
-		self.semester_label.setText(_translate("MainWindow", "Semester"))
-		self.semester_picker.setItemText(0, _translate("MainWindow", "Winter"))
-		self.semester_picker.setItemText(1, _translate("MainWindow", "Spring"))
-		self.semester_picker.setItemText(2, _translate("MainWindow", "Summer"))
-		self.semester_picker.setItemText(3, _translate("MainWindow", "Fall"))
-		self.year_label.setText(_translate("MainWindow", "Year"))
-		self.make_schedule_button.setText(_translate("MainWindow", "Make Schedule"))
-		self.browse_instructor_button.setText(_translate("MainWindow", "Browse Instructors"))
-		self.browse_section_button.setText(_translate("MainWindow", "Browse Sections"))
-		self.browse_course_button.setText(_translate("MainWindow", "Browse Courses"))
-		self.label5.setText(_translate("MainWindow", "First Name"))
-		self.label6.setText(_translate("MainWindow", "Last Name"))
-		self.label7.setText(_translate("MainWindow", "Course Taught"))
+		self.title_big_title.setText(_translate("MainWindow", "BYU Scheduler 2"))
+		self.title_name.setText(_translate("MainWindow", "By Josh Bedwell"))
+		self.title_semester_label.setText(_translate("MainWindow", "Semester"))
+		self.title_semester_picker.setItemText(0, _translate("MainWindow", "Winter"))
+		self.title_semester_picker.setItemText(1, _translate("MainWindow", "Spring"))
+		self.title_semester_picker.setItemText(2, _translate("MainWindow", "Summer"))
+		self.title_semester_picker.setItemText(3, _translate("MainWindow", "Fall"))
+		self.title_year_label.setText(_translate("MainWindow", "Year"))
+		self.title_schedule_button.setText(_translate("MainWindow", "Make Schedule"))
+		self.title_instructor_button.setText(_translate("MainWindow", "Browse Instructors"))
+		self.title_section_button.setText(_translate("MainWindow", "Browse Sections"))
+		self.title_course_button.setText(_translate("MainWindow", "Browse Courses"))
+		self.instructor_first_name_label.setText(_translate("MainWindow", "First Name"))
+		self.instructor_last_name_label.setText(_translate("MainWindow", "Last Name"))
+		self.instructor_course_label.setText(_translate("MainWindow", "Course Taught"))
 
 	def hook_buttons(self):
-		self.browse_course_button.clicked.connect(self.browse_course_action)
-		self.browse_section_button.clicked.connect(self.browse_section_action)
-		self.browse_instructor_button.clicked.connect(self.browse_instructor_action)
-		self.make_schedule_button.clicked.connect(self.make_schedule_action)
+		self.title_course_button.clicked.connect(self.browse_course_action)
+		self.title_section_button.clicked.connect(self.browse_section_action)
+		self.title_instructor_button.clicked.connect(self.browse_instructor_action)
+		self.title_schedule_button.clicked.connect(self.make_schedule_action)
 
-		self.lineEdit.textChanged.connect(self.filter_table)
-		self.lineEdit_2.textChanged.connect(self.filter_table)
-		self.lineEdit_3.textChanged.connect(self.filter_table)
+		self.instructor_first_name_input.textChanged.connect(self.filter_table)
+		self.instructor_last_name_input.textChanged.connect(self.filter_table)
+		self.insctructor_course_input.textChanged.connect(self.filter_table)
 
-	def populate_table(self):
-		self.table.setColumnCount(7)
-		self.table.setRowCount(len(self.loaded_data))
-		self.table.setHorizontalHeaderLabels(["First Name", "Last Name", "Sort Name", "# Courses Taught", "# RMP Ratings", "RMP Rating", "RMP Difficulty", "HIDDEN"])
-		for i, key in enumerate(self.loaded_data.keys()):
-			self.table.setItem(i, 0, QtWidgets.QTableWidgetItem(self.loaded_data[key]["first_name"]))
-			self.table.setItem(i, 1, QtWidgets.QTableWidgetItem(self.loaded_data[key]["last_name"]))
-			self.table.setItem(i, 2, QtWidgets.QTableWidgetItem(self.loaded_data[key]["sort_name"]))
-
-			different_classes_taught = set()
-			for section in self.loaded_data[key]["classes_taught"]:
-				different_classes_taught.add(section["course"])
-			self.table.setItem(i, 3, QtWidgets.QTableWidgetItem(str(len(different_classes_taught))))
-
-			if self.loaded_data[key]["found_rmp"] == 1:
-				self.table.setItem(i, 4, QtWidgets.QTableWidgetItem(str(self.loaded_data[key]["num_ratings"])))
-				self.table.setItem(i, 5, QtWidgets.QTableWidgetItem(str(self.loaded_data[key]["avg_rating"])))
-				self.table.setItem(i, 6, QtWidgets.QTableWidgetItem(str(self.loaded_data[key]["avg_easy_score"])))
-			else:
-				self.table.setItem(i, 4, QtWidgets.QTableWidgetItem("-"))
-				self.table.setItem(i, 5, QtWidgets.QTableWidgetItem("-"))
-				self.table.setItem(i, 6, QtWidgets.QTableWidgetItem("-"))
-			self.table.setItem(i, 7, QtWidgets.QTableWidgetItem(key))
-		self.table.hideColumn(7)
-		self.table.setSortingEnabled(True)
-
-	def filter_table(self):
-		print("filtering the table")
-
-		for index in range(self.table.rowCount()):
-			show = True
-			if self.lineEdit.text() != "":
-				if self.lineEdit.text() not in self.table.itemAt(index, 0).text():
-					show = False
-			if self.lineEdit_2.text() != "" and show:
-				if self.lineEdit_2.text() not in self.table.itemAt(index, 1).text():
-					show = False
-			if self.lineEdit_3.text() != "" and show:
-				show = False
-				for course in self.loaded_data[self.table.itemAt(index, 7)]["classes_taught"]:
-					if self.lineEdit_3.text() in course["course"]:
-						show = True
-						break
-			if show:
-				self.table.showRow(index)
-				print(f"deciding to show row {index}")
-			else:
-				self.table.hideRow(index)
-				print(f"deciding to hide row {index}")
-
-		print("done filtering the table")
-
-	def browse_course_action(self):
-		self.show_popup()
-
-	def browse_section_action(self):
-		self.show_popup()
-
-	def browse_instructor_action(self):
-		continuing = [None]
-		self.loaded_data = {"type": "instructor"}
-		self.show_popup(continuing)
-		if continuing[0]:
-			self.goto_instructor_page()
-
-	def make_schedule_action(self):
-		self.show_popup()
+	# Common Functions
+	# ----------------------------------------------------------------------------------
 
 	def goto_title_page(self):
 		self.main_window.resize(800, 380)
-		self.stackedWidget.setCurrentIndex(0)
+		self.main_window_stacked_widget.setCurrentIndex(0)
 
 	def goto_instructor_page(self):
 		self.main_window.resize(1100, 700)
-		self.stackedWidget.setCurrentIndex(1)
+		self.main_window_stacked_widget.setCurrentIndex(1)
 		self.populate_table()
-
-	def show_popup(self, continuing):
-		popup_dialog = UI.Dialog.Dialog()
-		popup_ui = UI.title_popup_dialog.Ui_Dialog()
-		popup_ui.setupUi(popup_dialog, self.semester_picker.currentText(), self.year_picker.value(), continuing)
-		popup_dialog.exec_()
-
-		if continuing[0]:
-			if self.loaded_data["type"] == "course":
-				# TODO load data
-				self.goto_browse_course()
-			elif self.loaded_data["type"] == "section":
-				# TODO load data
-				self.goto_browse_section()
-			elif self.loaded_data["type"] == "instructor":
-				self.loaded_data = Dao.Load.load_instructors(self.semester_picker.currentText().lower() + "_" + str(self.year_picker.value()))
-			elif self.loaded_data["type"] == "schedule":
-				# TODO load data
-				self.goto_make_schedule()
 
 	def goto_browse_course(self):
 		print("browse course")
@@ -376,10 +287,95 @@ class Ui_MainWindow(object):
 	def goto_make_schedule(self):
 		print("make schedule")
 
+	# Title Functions
+	# ----------------------------------------------------------------------------------
 
-# def change_to_instrcutor_view(main_window, ui, data):
-# 	del main_window
-# 	main_window = QtWidgets.QMainWindow()
-# 	ui = UI.browse_instructor_window.Ui_MainWindow()
-# 	ui.setupUi(main_window, data)
-# 	main_window.show()
+	def browse_instructor_action(self):
+		continuing = [None]
+		self.loaded_data = {"type": "instructor"}
+		self.show_popup(continuing)
+		if continuing[0]:
+			self.goto_instructor_page()
+
+	def browse_course_action(self):
+		self.show_popup()
+
+	def browse_section_action(self):
+		self.show_popup()
+
+	def make_schedule_action(self):
+		self.show_popup()
+
+	def show_popup(self, continuing):
+		popup_dialog = UI.Dialog.Dialog()
+		popup_ui = UI.title_popup_dialog.Ui_Dialog()
+		popup_ui.setupUi(popup_dialog, self.title_semester_picker.currentText(), self.title_year_picker.value(), continuing)
+		popup_dialog.exec_()
+
+		if continuing[0]:
+			if self.loaded_data["type"] == "course":
+				# TODO load data
+				self.goto_browse_course()
+			elif self.loaded_data["type"] == "section":
+				# TODO load data
+				self.goto_browse_section()
+			elif self.loaded_data["type"] == "instructor":
+				self.loaded_data = Dao.Load.load_instructors(self.title_semester_picker.currentText().lower() + "_" + str(self.title_year_picker.value()))
+			elif self.loaded_data["type"] == "schedule":
+				# TODO load data
+				self.goto_make_schedule()
+
+	# Instructor Functions
+	# ----------------------------------------------------------------------------------
+
+	def populate_table(self):
+		self.instructor_table.setColumnCount(7)
+		self.instructor_table.setRowCount(len(self.loaded_data))
+		self.instructor_table.setHorizontalHeaderLabels(["First Name", "Last Name", "Sort Name", "# Courses Taught", "# RMP Ratings", "RMP Rating", "RMP Difficulty", "HIDDEN"])
+		for i, key in enumerate(self.loaded_data.keys()):
+			self.instructor_table.setItem(i, 0, QtWidgets.QTableWidgetItem(self.loaded_data[key]["first_name"]))
+			self.instructor_table.setItem(i, 1, QtWidgets.QTableWidgetItem(self.loaded_data[key]["last_name"]))
+			self.instructor_table.setItem(i, 2, QtWidgets.QTableWidgetItem(self.loaded_data[key]["sort_name"]))
+
+			different_classes_taught = set()
+			for section in self.loaded_data[key]["classes_taught"]:
+				different_classes_taught.add(section["course"])
+			self.instructor_table.setItem(i, 3, QtWidgets.QTableWidgetItem(str(len(different_classes_taught))))
+
+			if self.loaded_data[key]["found_rmp"] == 1:
+				self.instructor_table.setItem(i, 4, QtWidgets.QTableWidgetItem(str(self.loaded_data[key]["num_ratings"])))
+				self.instructor_table.setItem(i, 5, QtWidgets.QTableWidgetItem(str(self.loaded_data[key]["avg_rating"])))
+				self.instructor_table.setItem(i, 6, QtWidgets.QTableWidgetItem(str(self.loaded_data[key]["avg_easy_score"])))
+			else:
+				self.instructor_table.setItem(i, 4, QtWidgets.QTableWidgetItem("-"))
+				self.instructor_table.setItem(i, 5, QtWidgets.QTableWidgetItem("-"))
+				self.instructor_table.setItem(i, 6, QtWidgets.QTableWidgetItem("-"))
+			self.instructor_table.setItem(i, 7, QtWidgets.QTableWidgetItem(key))
+		self.instructor_table.hideColumn(7)
+		self.instructor_table.setSortingEnabled(True)
+
+	def filter_table(self):
+		print("filtering the table")
+
+		for index in range(self.instructor_table.rowCount()):
+			show = True
+			if self.instructor_first_name_input.text() != "":
+				if self.instructor_first_name_input.text() not in self.instructor_table.itemAt(index, 0).text():
+					show = False
+			if self.instructor_last_name_input.text() != "" and show:
+				if self.instructor_last_name_input.text() not in self.instructor_table.itemAt(index, 1).text():
+					show = False
+			if self.insctructor_course_input.text() != "" and show:
+				show = False
+				for course in self.loaded_data[self.instructor_table.itemAt(index, 7)]["classes_taught"]:
+					if self.insctructor_course_input.text() in course["course"]:
+						show = True
+						break
+			if show:
+				self.instructor_table.showRow(index)
+				print(f"deciding to show row {index}")
+			else:
+				self.instructor_table.hideRow(index)
+				print(f"deciding to hide row {index}")
+
+		print("done filtering the table")

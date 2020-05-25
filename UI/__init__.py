@@ -8,7 +8,7 @@ def run_ui():
 	main_window = QtWidgets.QMainWindow()
 
 	ui = UI.ui.Ui_MainWindow()
-	ui.setupUi(main_window)
+	ui.setup_ui(main_window)
 	main_window.show()
 
 	sys.exit(app.exec_())
