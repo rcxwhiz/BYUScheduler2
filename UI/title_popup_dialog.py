@@ -103,7 +103,7 @@ class Ui_Dialog(object):
 
 	def determine_availablilty(self):
 		if Dao.Paths.check_exists_1(self.semester_year):
-			self.message.setText(f"{self.semester} {self.year} is already cached({Dao.Paths.check_date_1(self.semester_year)}). "
+			self.message.setText(f"{self.semester} {self.year} is already cached ({Dao.Paths.check_date_1(self.semester_year)}). "
 			                     f"Would you like to use that data or download new data?")
 			self.cached_result_button.setEnabled(True)
 			self.download_new_button.setEnabled(True)

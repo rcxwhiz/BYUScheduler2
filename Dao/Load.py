@@ -157,7 +157,6 @@ def load_instructors(semester_year):
 
 				instructor_data["classes_taught"].append(class_data)
 		data[instructor[0]] = instructor_data
-	print("test")
 	return data
 
 

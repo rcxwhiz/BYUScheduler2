@@ -2,6 +2,7 @@ import os
 import sqlite3
 
 import Dao.Paths
+import RateMyProfessorAPI
 
 
 def create_tables(semester_year):
@@ -43,7 +44,13 @@ def create_tables(semester_year):
 	phone_number TEXT,
 	preferred_first_name TEXT,
 	rest_of_name TEXT,
-	surname TEXT
+	surname TEXT,
+	found_rmp INTEGER,
+	avg_rating REAL,
+	avg_helpful REAL,
+	num_ratings INTEGER,
+	avg_easy_score REAL,
+	avg_clarity_score REAL
 	);
 
 	DROP TABLE IF EXISTS course_instructors;
@@ -179,9 +186,8 @@ def save(yso):
 
 	print("Saving instructors...", end="")
 	for instructor in semester_result["instructor_list"]:
-		sql_cmd = """INSERT INTO instructors VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"""
-		values = [instructor["id"], instructor["first_name"], instructor["last_name"], instructor["sort_name"]] + [
-			None] * 6
+		sql_cmd = """INSERT INTO instructors VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"""
+		values = [instructor["id"], instructor["first_name"], instructor["last_name"], instructor["sort_name"]] + [None] * 12
 		try:
 			cursor.execute(sql_cmd, values)
 		except sqlite3.IntegrityError:
@@ -334,6 +340,12 @@ def save(yso):
 		print(f"\rSaved {i + 1}/{len(section_results)} sections...", end=" " * 15)
 
 	print(f"\rSaved {len(section_results)} sections" + " " * 15)
+
+	sql_cmd = """SELECT * FROM instructors;"""
+	cursor.execute(sql_cmd)
+	profs = cursor.fetchall()
+	RateMyProfessorAPI.append_rmp_info(profs, cursor)
+
 	print("Commiting changes...", end="")
 	try:
 		connection.commit()
