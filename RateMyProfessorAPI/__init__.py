@@ -5,7 +5,11 @@ import threading
 url1 = "https://search-production.ratemyprofessors.com/solr/rmp/select/?solrformat=true&rows=2&wt=json&q="
 url2 = "+AND+schoolid_s%3A135"
 
+# number of threads to use when downloading section info - speeds up downloads
+# default: 10
 max_threads = 10
+# seconds to wait between trying to use another thread to download - reduces CPU usage
+# default: 0.5
 rest_time = 0.5
 
 sql_cmd = """UPDATE instructors SET found_rmp = ?, avg_rating = ?, avg_helpful = ?, num_ratings = ?, avg_easy_score = ?, avg_clarity_score = ? WHERE person_id = ?;"""
@@ -34,13 +38,14 @@ def get_rating(person_id, first_name, last_name, rest_of_name, surname, data_str
 	data_stream.append(values)
 
 
-def append_rmp_info(profs, cursor):
+def append_rmp_info(profs, cursor, append_function=print, replace_function=print):
 	start_time = time.time()
 	prof_iter = iter(profs)
 	threads = []
 	base_threads = threading.active_count()
 	data_stream = []
 
+	append_function("")
 	while True:
 		if threading.active_count() - base_threads < max_threads:
 			try:
@@ -54,17 +59,16 @@ def append_rmp_info(profs, cursor):
 			if (len(threads) + 1) % 10 == 0:
 				elapsed = time.time() - start_time
 				seconds_left = elapsed * len(profs) / (len(threads) + 1) - elapsed
-				print(f"\rGot Rate My Professor data for {len(threads) + 1}/{len(profs)} instructors... "
-				      f"ETA ~{int(seconds_left / 60):02}:{int(seconds_left % 60):02}", end=" " * 15)
+				replace_function(f"Got Rate My Professor data for {len(threads) + 1}/{len(profs)} instructors... ETA ~{int(seconds_left / 60):02}:{int(seconds_left % 60):02}")
 		else:
 			time.sleep(rest_time)
 
 	for thread in threads:
 		thread.join()
 
-	print(f"\rGot Rate My Professor data for {len(profs)} instructors" + " " * 15)
+	replace_function(f"Got Rate My Professor data for {len(profs)} instructors")
 
-	print("Comitting Rate My Professor data...", end="")
+	append_function("Comitting Rate My Professor data...")
 	for data_bit in data_stream:
 		cursor.execute(sql_cmd, data_bit)
-	print("\rComitted Rate My Professor data       ")
+	replace_function("Comitted Rate My Professor data")

@@ -7,8 +7,7 @@
 # WARNING! All changes made in this file will be lost!
 
 import UI.title_popup_dialog
-import Dao
-import BYUAPI
+import UI.Dialog
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
@@ -162,9 +161,9 @@ class Ui_MainWindow(object):
 
 	def show_popup(self):
 		load_decision = ["none"]
-		popup_dialog = QtWidgets.QDialog()
+		popup_dialog = UI.Dialog.Dialog()
 		# TODO need a way to deal with the close button
-		popup_dialog.setWindowFlag(QtCore.Qt.WindowCloseButtonHint, False)
+		# popup_dialog.setWindowFlag(QtCore.Qt.WindowCloseButtonHint, False)
 		popup_ui = UI.title_popup_dialog.Ui_Dialog()
 		popup_ui.setupUi(popup_dialog, self.semester_picker.currentText(), self.year_picker.value(), load_decision)
 		popup_dialog.exec_()

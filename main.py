@@ -3,9 +3,7 @@ import Dao
 import UI
 
 
-def main():
-	print("BYU Class Getter API\n")
-
+def get_db_terminal():
 	year = ""
 	semester = ""
 	while not year.isdigit():
@@ -28,5 +26,5 @@ def main():
 
 
 if __name__ == "__main__":
-	print("BYU Class Getter API\n")
+	print("Start BYU Class Getter API\n")
 	UI.run_ui()

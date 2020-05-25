@@ -131,22 +131,22 @@ def create_tables(semester_year, output_function):
 	connection.close()
 
 
-def save(yso, output_function=print):
+def save(yso, append_function=print, replace_function=print):
 	# (semester_year, semester_result, classes_result, [section_result])
 	semester_year, semester_result, classes_result, section_results = yso
 	if not os.path.exists(Dao.Paths.database_path_1(semester_year)):
-		output_function(f"Could not find {Dao.Paths.database_path_1(semester_year)}. Making new database...")
+		append_function(f"Could not find {Dao.Paths.database_path_1(semester_year)}. Making new database...")
 		if not os.path.exists(os.path.dirname(Dao.Paths.database_path_1(semester_year))):
 			os.makedirs(os.path.dirname(Dao.Paths.database_path_1(semester_year)))
 		with open(Dao.Paths.database_path_1(semester_year), "w") as _:
 			pass
 
-	create_tables(semester_year, output_function)
+	create_tables(semester_year, append_function)
 
 	connection = sqlite3.connect(Dao.Paths.database_path_1(semester_year))
 	cursor = connection.cursor()
 
-	output_function("Saving department map...")
+	append_function("Saving department map...")
 	for dept in semester_result["department_map"].keys():
 
 		sql_cmd = """INSERT INTO dept_map VALUES(?, ?);"""
@@ -154,12 +154,12 @@ def save(yso, output_function=print):
 		try:
 			cursor.execute(sql_cmd, values)
 		except sqlite3.IntegrityError:
-			output_function(f"Got duplicate: {values}")
+			append_function(f"Got duplicate: {values}\n")
 		except:
-			output_function(f"Error adding: {values}")
-	output_function("Saved department map        ")
+			append_function(f"Error adding: {values}\n")
+	replace_function("Saved department map")
 
-	output_function("Saving department list...")
+	append_function("Saving department list...")
 	for dept in semester_result["department_list"].keys():
 
 		sql_cmd = """INSERT INTO dept_list VALUES(?, ?);"""
@@ -167,48 +167,48 @@ def save(yso, output_function=print):
 		try:
 			cursor.execute(sql_cmd, values)
 		except sqlite3.IntegrityError:
-			output_function(f"Got duplicate: {values}")
+			append_function(f"Got duplicate: {values}\n")
 		except:
-			output_function(f"Error adding: {values}")
-	output_function("Saved department list        ")
+			append_function(f"Error adding: {values}\n")
+	replace_function("Saved department list")
 
-	output_function("Saving section types...")
+	append_function("Saving section types...")
 	for section_type in semester_result["section_type_list"]:
 		sql_cmd = """INSERT INTO section_types VALUES(?);"""
 		values = (section_type,)
 		try:
 			cursor.execute(sql_cmd, values)
 		except sqlite3.IntegrityError:
-			output_function(f"Got duplicate: {values}")
+			append_function(f"Got duplicate: {values}\n")
 		except:
-			output_function(f"Error adding: {values}")
-	output_function("Saved section types       ")
+			append_function(f"Error adding: {values}\n")
+	replace_function("Saved section types")
 
-	output_function("Saving instructors...")
+	append_function("Saving instructors...")
 	for instructor in semester_result["instructor_list"]:
 		sql_cmd = """INSERT INTO instructors VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"""
 		values = [instructor["id"], instructor["first_name"], instructor["last_name"], instructor["sort_name"]] + [None] * 12
 		try:
 			cursor.execute(sql_cmd, values)
 		except sqlite3.IntegrityError:
-			output_function(f'Got duplicate: {values}')
+			append_function(f'Got duplicate: {values}\n')
 		except:
-			output_function(f'Error adding: {values}')
-	output_function("Saved instructors       ")
+			append_function(f'Error adding: {values}\n')
+	replace_function("Saved instructors")
 
-	output_function("Saving building list...")
+	append_function("Saving building list...")
 	for building in semester_result["building_list"]:
 		sql_cmd = """INSERT INTO buildings VALUES(?);"""
 		values = (building["building"],)
 		try:
 			cursor.execute(sql_cmd, values)
 		except sqlite3.IntegrityError:
-			output_function(f'Got duplicate: {values}')
+			append_function(f"Got duplicate: {values}\n")
 		except:
-			output_function(f'Error adding: {values}')
-	output_function("Saved building list        ")
+			append_function(f"Error adding: {values}\n")
+	replace_function("Saved building list")
 
-	output_function("Saving course list...")
+	append_function("Saving course list...")
 	for rand_id in classes_result.keys():
 		course = classes_result[rand_id]
 
@@ -224,10 +224,10 @@ def save(yso, output_function=print):
 		try:
 			cursor.execute(sql_cmd, values)
 		except sqlite3.IntegrityError:
-			output_function(f"Got duplicate: {values}")
+			append_function(f"Got duplicate: {values}\n")
 		except:
-			output_function(f"Error adding: {values}")
-	output_function("Saved course list       ")
+			append_function(f"Error adding: {values}\n")
+	replace_function("Saved course list")
 
 	for i, course in enumerate(section_results):
 		for section in course["sections"]:
@@ -259,9 +259,9 @@ def save(yso, output_function=print):
 			try:
 				cursor.execute(sql_cmd, values)
 			except sqlite3.IntegrityError:
-				output_function(f"Got duplicate: {values}")
+				append_function(f"Got duplicate: {values}\n")
 			except:
-				output_function(f"Error adding: {values}")
+				append_function(f"Error adding: {values}\n")
 
 			for instructor in section["instructors"]:
 				sql_cmd = """UPDATE instructors SET byu_id = ?, net_id = ?, surname = ?, rest_of_name = ?, preferred_first_name = ?, phone_number = ? WHERE person_id = ?;"""
@@ -275,9 +275,9 @@ def save(yso, output_function=print):
 				try:
 					cursor.execute(sql_cmd, values)
 				except sqlite3.IntegrityError:
-					output_function(f"Got duplicate: {values}")
+					append_function(f"Got duplicate: {values}\n")
 				except:
-					output_function(f"Error adding: {values}")
+					append_function(f"Error adding: {values}\n")
 
 				sql_cmd = """INSERT INTO course_instructors VALUES(?, ?, ?);"""
 				values = (curriculum_id_title_code,
@@ -286,9 +286,9 @@ def save(yso, output_function=print):
 				try:
 					cursor.execute(sql_cmd, values)
 				except sqlite3.IntegrityError:
-					output_function(f"Got duplicate: {values}")
+					append_function(f"Got duplicate: {values}\n")
 				except:
-					output_function(f"Error adding: {values}")
+					append_function(f"Error adding: {values}\n")
 
 			for time in section["times"]:
 				sql_cmd = """INSERT INTO times VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"""
@@ -309,9 +309,9 @@ def save(yso, output_function=print):
 				try:
 					cursor.execute(sql_cmd, values)
 				except sqlite3.IntegrityError:
-					output_function(f"Got duplicate: {values}")
+					append_function(f"Got duplicate: {values}\n")
 				except:
-					output_function(f"Error adding: {values}")
+					append_function(f"Error adding: {values}\n")
 
 		catalog = course["catalog"]
 		sql_cmd = """UPDATE courses SET credit_hours = ?, description = ?, effective_date = ?, effective_year_term = ?, expired_date = ?, expired_year_term = ?, honors_approved = ?, lab_hours = ?, lecture_hours = ?, note = ?, offered = ?, prerequisite = ?, recommended = ?, when_taught = ? WHERE curriculum_id = ?;"""
@@ -333,29 +333,29 @@ def save(yso, output_function=print):
 		try:
 			cursor.execute(sql_cmd, values)
 		except sqlite3.IntegrityError:
-			output_function(f"Got duplicate: {values}")
+			append_function(f"Got duplicate: {values}\n")
 		except:
-			output_function(f"Error adding: {values}")
+			append_function(f"Error adding: {values}\n")
 
-		output_function(f"Saved {i + 1}/{len(section_results)} sections...")
+		replace_function(f"Saved {i + 1}/{len(section_results)} sections...")
 
-	output_function(f"Saved {len(section_results)} sections" + " " * 15)
+	replace_function(f"Saved {len(section_results)} sections")
 
 	sql_cmd = """SELECT * FROM instructors;"""
 	cursor.execute(sql_cmd)
 	profs = cursor.fetchall()
-	RateMyProfessorAPI.append_rmp_info(profs, cursor)
+	RateMyProfessorAPI.append_rmp_info(profs, cursor, append_function, replace_function)
 
-	output_function("Commiting changes...")
+	append_function("Commiting changes...")
 	try:
 		connection.commit()
 	except BaseException as e:
-		output_function("Error comitting changes")
+		append_function("Error comitting changes\n")
 		connection.close()
 		raise e
 
 	connection.close()
-	output_function("Changes committed")
+	replace_function("Changes committed")
 
 	db_size = os.path.getsize(Dao.Paths.database_path_1(semester_year)) / 1e6
-	output_function(f"Database entry for {semester_year} created ({db_size:.1f} MB)")
+	append_function(f"Database entry for {semester_year} created ({db_size:.1f} MB)")
