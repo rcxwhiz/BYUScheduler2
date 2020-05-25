@@ -5,9 +5,9 @@ import Dao.Paths
 import RateMyProfessorAPI
 
 
-def create_tables(semester_year):
+def create_tables(semester_year, output_function):
 	if not os.path.exists(Dao.Paths.database_path_1(semester_year)):
-		print(f"Could not find {Dao.Paths.database_path_1(semester_year)}. Making new database...")
+		output_function(f"Could not find {Dao.Paths.database_path_1(semester_year)}. Making new database...")
 		with open(Dao.Paths.database_path_1(semester_year), "w") as _:
 			pass
 	connection = sqlite3.connect(Dao.Paths.database_path_1(semester_year))
@@ -131,22 +131,22 @@ def create_tables(semester_year):
 	connection.close()
 
 
-def save(yso):
+def save(yso, output_function=print):
 	# (semester_year, semester_result, classes_result, [section_result])
 	semester_year, semester_result, classes_result, section_results = yso
 	if not os.path.exists(Dao.Paths.database_path_1(semester_year)):
-		print(f"Could not find {Dao.Paths.database_path_1(semester_year)}. Making new database...")
+		output_function(f"Could not find {Dao.Paths.database_path_1(semester_year)}. Making new database...")
 		if not os.path.exists(os.path.dirname(Dao.Paths.database_path_1(semester_year))):
 			os.makedirs(os.path.dirname(Dao.Paths.database_path_1(semester_year)))
 		with open(Dao.Paths.database_path_1(semester_year), "w") as _:
 			pass
 
-	create_tables(semester_year)
+	create_tables(semester_year, output_function)
 
 	connection = sqlite3.connect(Dao.Paths.database_path_1(semester_year))
 	cursor = connection.cursor()
 
-	print("Saving department map...", end="")
+	output_function("Saving department map...")
 	for dept in semester_result["department_map"].keys():
 
 		sql_cmd = """INSERT INTO dept_map VALUES(?, ?);"""
@@ -154,12 +154,12 @@ def save(yso):
 		try:
 			cursor.execute(sql_cmd, values)
 		except sqlite3.IntegrityError:
-			print(f"Got duplicate: {values}")
+			output_function(f"Got duplicate: {values}")
 		except:
-			print(f"Error adding: {values}")
-	print("\rSaved department map        ")
+			output_function(f"Error adding: {values}")
+	output_function("Saved department map        ")
 
-	print("Saving department list...", end="")
+	output_function("Saving department list...")
 	for dept in semester_result["department_list"].keys():
 
 		sql_cmd = """INSERT INTO dept_list VALUES(?, ?);"""
@@ -167,48 +167,48 @@ def save(yso):
 		try:
 			cursor.execute(sql_cmd, values)
 		except sqlite3.IntegrityError:
-			print(f"Got duplicate: {values}")
+			output_function(f"Got duplicate: {values}")
 		except:
-			print(f"Error adding: {values}")
-	print("\rSaved department list        ")
+			output_function(f"Error adding: {values}")
+	output_function("Saved department list        ")
 
-	print("Saving section types...", end="")
+	output_function("Saving section types...")
 	for section_type in semester_result["section_type_list"]:
 		sql_cmd = """INSERT INTO section_types VALUES(?);"""
 		values = (section_type,)
 		try:
 			cursor.execute(sql_cmd, values)
 		except sqlite3.IntegrityError:
-			print(f"Got duplicate: {values}")
+			output_function(f"Got duplicate: {values}")
 		except:
-			print(f"Error adding: {values}")
-	print("\rSaved section types       ")
+			output_function(f"Error adding: {values}")
+	output_function("Saved section types       ")
 
-	print("Saving instructors...", end="")
+	output_function("Saving instructors...")
 	for instructor in semester_result["instructor_list"]:
 		sql_cmd = """INSERT INTO instructors VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"""
 		values = [instructor["id"], instructor["first_name"], instructor["last_name"], instructor["sort_name"]] + [None] * 12
 		try:
 			cursor.execute(sql_cmd, values)
 		except sqlite3.IntegrityError:
-			print(f'Got duplicate: {values}')
+			output_function(f'Got duplicate: {values}')
 		except:
-			print(f'Error adding: {values}')
-	print("\rSaved instructors       ")
+			output_function(f'Error adding: {values}')
+	output_function("Saved instructors       ")
 
-	print("Saving building list...", end="")
+	output_function("Saving building list...")
 	for building in semester_result["building_list"]:
 		sql_cmd = """INSERT INTO buildings VALUES(?);"""
 		values = (building["building"],)
 		try:
 			cursor.execute(sql_cmd, values)
 		except sqlite3.IntegrityError:
-			print(f'Got duplicate: {values}')
+			output_function(f'Got duplicate: {values}')
 		except:
-			print(f'Error adding: {values}')
-	print("\rSaved building list        ")
+			output_function(f'Error adding: {values}')
+	output_function("Saved building list        ")
 
-	print("Saving course list...", end="")
+	output_function("Saving course list...")
 	for rand_id in classes_result.keys():
 		course = classes_result[rand_id]
 
@@ -224,10 +224,10 @@ def save(yso):
 		try:
 			cursor.execute(sql_cmd, values)
 		except sqlite3.IntegrityError:
-			print(f"Got duplicate: {values}")
+			output_function(f"Got duplicate: {values}")
 		except:
-			print(f"Error adding: {values}")
-	print("\rSaved course list       ")
+			output_function(f"Error adding: {values}")
+	output_function("Saved course list       ")
 
 	for i, course in enumerate(section_results):
 		for section in course["sections"]:
@@ -259,9 +259,9 @@ def save(yso):
 			try:
 				cursor.execute(sql_cmd, values)
 			except sqlite3.IntegrityError:
-				print(f"Got duplicate: {values}")
+				output_function(f"Got duplicate: {values}")
 			except:
-				print(f"Error adding: {values}")
+				output_function(f"Error adding: {values}")
 
 			for instructor in section["instructors"]:
 				sql_cmd = """UPDATE instructors SET byu_id = ?, net_id = ?, surname = ?, rest_of_name = ?, preferred_first_name = ?, phone_number = ? WHERE person_id = ?;"""
@@ -275,9 +275,9 @@ def save(yso):
 				try:
 					cursor.execute(sql_cmd, values)
 				except sqlite3.IntegrityError:
-					print(f"Got duplicate: {values}")
+					output_function(f"Got duplicate: {values}")
 				except:
-					print(f"Error adding: {values}")
+					output_function(f"Error adding: {values}")
 
 				sql_cmd = """INSERT INTO course_instructors VALUES(?, ?, ?);"""
 				values = (curriculum_id_title_code,
@@ -286,9 +286,9 @@ def save(yso):
 				try:
 					cursor.execute(sql_cmd, values)
 				except sqlite3.IntegrityError:
-					print(f"Got duplicate: {values}")
+					output_function(f"Got duplicate: {values}")
 				except:
-					print(f"Error adding: {values}")
+					output_function(f"Error adding: {values}")
 
 			for time in section["times"]:
 				sql_cmd = """INSERT INTO times VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"""
@@ -309,9 +309,9 @@ def save(yso):
 				try:
 					cursor.execute(sql_cmd, values)
 				except sqlite3.IntegrityError:
-					print(f"Got duplicate: {values}")
+					output_function(f"Got duplicate: {values}")
 				except:
-					print(f"Error adding: {values}")
+					output_function(f"Error adding: {values}")
 
 		catalog = course["catalog"]
 		sql_cmd = """UPDATE courses SET credit_hours = ?, description = ?, effective_date = ?, effective_year_term = ?, expired_date = ?, expired_year_term = ?, honors_approved = ?, lab_hours = ?, lecture_hours = ?, note = ?, offered = ?, prerequisite = ?, recommended = ?, when_taught = ? WHERE curriculum_id = ?;"""
@@ -333,29 +333,29 @@ def save(yso):
 		try:
 			cursor.execute(sql_cmd, values)
 		except sqlite3.IntegrityError:
-			print(f"Got duplicate: {values}")
+			output_function(f"Got duplicate: {values}")
 		except:
-			print(f"Error adding: {values}")
+			output_function(f"Error adding: {values}")
 
-		print(f"\rSaved {i + 1}/{len(section_results)} sections...", end=" " * 15)
+		output_function(f"Saved {i + 1}/{len(section_results)} sections...")
 
-	print(f"\rSaved {len(section_results)} sections" + " " * 15)
+	output_function(f"Saved {len(section_results)} sections" + " " * 15)
 
 	sql_cmd = """SELECT * FROM instructors;"""
 	cursor.execute(sql_cmd)
 	profs = cursor.fetchall()
 	RateMyProfessorAPI.append_rmp_info(profs, cursor)
 
-	print("Commiting changes...", end="")
+	output_function("Commiting changes...")
 	try:
 		connection.commit()
 	except BaseException as e:
-		print("Error comitting changes")
+		output_function("Error comitting changes")
 		connection.close()
 		raise e
 
 	connection.close()
-	print("\rChanges committed")
+	output_function("Changes committed")
 
 	db_size = os.path.getsize(Dao.Paths.database_path_1(semester_year)) / 1e6
-	print(f"Database entry for {semester_year} created ({db_size:.1f} MB)")
+	output_function(f"Database entry for {semester_year} created ({db_size:.1f} MB)")

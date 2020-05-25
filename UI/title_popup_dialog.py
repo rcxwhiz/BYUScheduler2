@@ -9,6 +9,8 @@
 import Dao
 import BYUAPI
 from typing import List
+import multiprocessing
+import time
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
@@ -19,6 +21,9 @@ class Ui_Dialog(object):
 		self.year = str(year)
 		self.semester_year = semester.lower() + "_" + str(year)
 		self.load_decision = load_decision
+		self.download_thread = None
+		self.manager = multiprocessing.Manager()
+		self.message_in = self.manager.list()
 
 		font = QtGui.QFont()
 		font.setFamily("Arial")
@@ -30,9 +35,8 @@ class Ui_Dialog(object):
 		self.verticalLayout = QtWidgets.QVBoxLayout()
 		self.verticalLayout.setObjectName("verticalLayout")
 
-		self.message = QtWidgets.QLabel(self.dialog)
-		self.message.setAlignment(QtCore.Qt.AlignCenter)
-		self.message.setWordWrap(True)
+		self.message = QtWidgets.QPlainTextEdit()
+		self.message.setReadOnly(True)
 		self.message.setObjectName("message")
 		self.message.setFont(font)
 
@@ -69,10 +73,14 @@ class Ui_Dialog(object):
 
 		self.hook_buttons()
 
+		self.update_timer = QtCore.QTimer()
+		self.update_timer.timeout.connect(self.apply_append)
+		self.update_timer.start(200)
+
 	def retranslateUi(self):
 		_translate = QtCore.QCoreApplication.translate
 		self.dialog.setWindowTitle(_translate("Dialog", "Load Semester Data"))
-		self.message.setText(_translate("Dialog", "Loading data..."))
+		self.message.setPlainText(_translate("Dialog", "Loading data..."))
 		self.cached_result_button.setText(_translate("Dialog", "Use Cached Result"))
 		self.download_new_button.setText(_translate("Dialog", "Download New Result"))
 		self.cancel_button.setText(_translate("Dialog", "Cancel"))
@@ -84,7 +92,23 @@ class Ui_Dialog(object):
 
 	def cancel_action(self):
 		self.load_decision[0] = "cancel"
+		if self.download_thread is not None:
+			print("attempting to terminate download thread")
+			self.download_thread.terminate()
+			self.download_thread.join()
 		self.dialog.close()
+
+	def change_text(self, message):
+		self.message.setPlainText(message)
+
+	def append_text(self, message):
+		self.message_in.append(message)
+
+	def apply_append(self):
+		if len(self.message_in) == 0:
+			return None
+		self.message.appendPlainText("\n".join(self.message_in))
+		self.message_in[:] = []
 
 	def load_action(self):
 		self.load_decision[0] = "load"
@@ -92,22 +116,26 @@ class Ui_Dialog(object):
 
 	def download_action(self):
 		self.load_decision[0] = "download"
-
-		try:
-			Dao.MakeDatabase.save(BYUAPI.get(self.semester.lower(), str(self.year)))
-			self.load_decision[0] = "load"
-		except Exception as e:
-			print(f"Error getting {self.semester} {self.year}: {str(e)}")
-
-		self.dialog.close()
+		self.download_new_button.setEnabled(False)
+		self.cached_result_button.setEnabled(False)
+		self.download_thread = multiprocessing.Process(target=downloader, args=(self.semester.lower(), self.year, self.append_text, self.load_decision))
+		self.download_thread.start()
 
 	def determine_availablilty(self):
 		if Dao.Paths.check_exists_1(self.semester_year):
-			self.message.setText(f"{self.semester} {self.year} is already cached ({Dao.Paths.check_date_1(self.semester_year)}). "
-			                     f"Would you like to use that data or download new data?")
+			self.message.setPlainText(f"{self.semester} {self.year} is already cached ({Dao.Paths.check_date_1(self.semester_year)}). Would you like to use that data or download new data?")
 			self.cached_result_button.setEnabled(True)
 			self.download_new_button.setEnabled(True)
 		else:
-			self.message.setText(f"{self.semester} {self.year} is not already cached. Would you like to download new "
-			                     f"data for this semester?")
+			self.message.setPlainText(f"{self.semester} {self.year} is not already cached. Would you like to download new data for this semester?")
 			self.download_new_button.setEnabled(True)
+
+
+def downloader(semester, year, text_function, outcome):
+	text_function("\n")
+	try:
+		Dao.MakeDatabase.save(BYUAPI.get(semester, str(year), output_function=text_function), output_function=text_function)
+		outcome[0] = "load"
+	except Exception as e:
+		print(f"Error getting {semester} {year}: {str(e)}")
+		outcome[0] = "Error"

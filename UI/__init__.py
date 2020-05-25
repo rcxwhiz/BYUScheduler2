@@ -4,7 +4,7 @@ from PyQt5 import QtWidgets, QtCore
 
 
 def run_ui():
-	app = QtWidgets.QApplication(sys.argv)
+	app = QtWidgets.QApplication([])
 	main_window = QtWidgets.QMainWindow()
 
 	ui = UI.title.Ui_MainWindow()
