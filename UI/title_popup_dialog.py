@@ -151,10 +151,12 @@ class Ui_Dialog(object):
 
 def downloader(semester, year, append_function, replace_function, outcome):
 	append_function("")
-	append_function(f"Downloading {semester} {year}...\n")
+	append_function(f"Downloading {semester} {year}...")
+	append_function("This will take a few minutes\n")
 	try:
 		Dao.MakeDatabase.save(BYUAPI.get(semester, str(year), append_function=append_function, replace_function=replace_function), append_function=append_function, replace_function=replace_function)
 		outcome[0] = "load"
 	except Exception as e:
-		print(f"Error getting {semester} {year}: {str(e)}")
+		append_function(f"\nError getting {semester} {year} (it might not exist)")
+		append_function("Please choose another semester")
 		outcome[0] = "Error"
