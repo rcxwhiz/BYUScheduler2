@@ -357,18 +357,23 @@ class Ui_MainWindow(object):
 	def filter_table(self):
 		print("filtering the table")
 
+		first_filter = self.instructor_first_name_input.text().lower()
+		last_filter = self.instructor_last_name_input.text().lower()
+		num_filter = self.insctructor_course_input.text()
+
+		# TODO something is wrong with getting the elements from the table
 		for index in range(self.instructor_table.rowCount()):
 			show = True
-			if self.instructor_first_name_input.text() != "":
-				if self.instructor_first_name_input.text() not in self.instructor_table.itemAt(index, 0).text():
+			if first_filter != "":
+				if first_filter not in self.instructor_table.itemAt(index, 0).text().lower():
 					show = False
-			if self.instructor_last_name_input.text() != "" and show:
-				if self.instructor_last_name_input.text() not in self.instructor_table.itemAt(index, 1).text():
+			if last_filter != "" and show:
+				if last_filter not in self.instructor_table.itemAt(index, 1).text().lower():
 					show = False
-			if self.insctructor_course_input.text() != "" and show:
+			if num_filter != "" and show:
 				show = False
 				for course in self.loaded_data[self.instructor_table.itemAt(index, 7)]["classes_taught"]:
-					if self.insctructor_course_input.text() in course["course"]:
+					if num_filter in course["course"]:
 						show = True
 						break
 			if show:
