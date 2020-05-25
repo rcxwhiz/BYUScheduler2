@@ -82,6 +82,8 @@ class Ui_MainWindow(object):
 		self.year_picker.setObjectName("year_picker")
 
 		self.verticalLayout_2.addWidget(self.year_picker)
+		self.verticalSpacer = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+		self.verticalLayout_2.addItem(self.verticalSpacer)
 		self.horizontalLayout.addLayout(self.verticalLayout_2)
 		self.gridLayout_2 = QtWidgets.QGridLayout()
 		self.gridLayout_2.setObjectName("gridLayout_2")
