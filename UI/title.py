@@ -15,6 +15,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
 	def setupUi(self, MainWindowIn: QtWidgets.QMainWindow):
 		self.main_window = MainWindowIn
+		self.data = {"type": "None"}
 
 		self.main_window.setObjectName("MainWindow")
 		self.main_window.resize(800, 380)
@@ -136,10 +137,26 @@ class Ui_MainWindow(object):
 		self.browse_course_button.setText(_translate("MainWindow", "Browse Courses"))
 
 	def hook_buttons(self):
-		self.browse_course_button.clicked.connect(self.show_popup)
-		self.browse_section_button.clicked.connect(self.show_popup)
-		self.browse_instructor_button.clicked.connect(self.show_popup)
-		self.make_schedule_button.clicked.connect(self.show_popup)
+		self.browse_course_button.clicked.connect(self.browse_course_action)
+		self.browse_section_button.clicked.connect(self.browse_section_action)
+		self.browse_instructor_button.clicked.connect(self.browse_instructor_action)
+		self.make_schedule_button.clicked.connect(self.make_schedule_action)
+
+	def browse_course_action(self):
+		self.data["type"] = "course"
+		self.show_popup()
+
+	def browse_section_action(self):
+		self.data["type"] = "section"
+		self.show_popup()
+
+	def browse_instructor_action(self):
+		self.data["type"] = "instructor"
+		self.show_popup()
+
+	def make_schedule_action(self):
+		self.data["data"] = "schedule"
+		self.show_popup()
 
 	def show_popup(self):
 		load_decision = ["none"]
@@ -149,11 +166,31 @@ class Ui_MainWindow(object):
 		popup_dialog.exec_()
 
 		if load_decision[0] == "download":
-			try:
-				Dao.MakeDatabase.save(BYUAPI.get(self.semester_picker.currentText().lower(), str(self.year_picker.value())))
-				load_decision[0] = "load"
-			except Exception as e:
-				print(f"Error getting {self.semester_picker.currentText()} {self.year_picker.value()}: {str(e)}")
-
+			print("downloaded classes")
+			load_decision[0] = "load"
 		if load_decision[0] == "load":
 			print("going to load cached classes")
+			if self.data["type"] == "course":
+				# TODO load data
+				self.goto_browse_course()
+			elif self.data["type"] == "section":
+				# TODO load data
+				self.goto_browse_section()
+			elif self.data["type"] == "instructor":
+				# TODO load data
+				self.goto_browse_instructor()
+			elif self.data["type"] == "schedule":
+				# TODO load data
+				self.goto_make_schedule()
+
+	def goto_browse_course(self):
+		print("browse course")
+
+	def goto_browse_section(self):
+		print("browse section")
+
+	def goto_browse_instructor(self):
+		print("browse instructor")
+
+	def goto_make_schedule(self):
+		print("make schedule")

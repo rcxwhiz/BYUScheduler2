@@ -88,7 +88,7 @@ def create_tables(semester_year):
 	catalog_suffix TEXT,
 	credit_hours TEXT,
 	credit_type TEXT,
-	cirriculum_id TEXT NOT NULL,
+	curriculum_id TEXT NOT NULL,
 	dept_name TEXT NOT NULL,
 	end_date TEXT,
 	fixed_or_variable TEXT,

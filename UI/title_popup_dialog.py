@@ -7,6 +7,7 @@
 # WARNING! All changes made in this file will be lost!
 
 import Dao
+import BYUAPI
 from typing import List
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -91,6 +92,13 @@ class Ui_Dialog(object):
 
 	def download_action(self):
 		self.load_decision[0] = "download"
+
+		try:
+			Dao.MakeDatabase.save(BYUAPI.get(self.semester.lower(), str(self.year)))
+			self.load_decision[0] = "load"
+		except Exception as e:
+			print(f"Error getting {self.semester} {self.year}: {str(e)}")
+
 		self.dialog.close()
 
 	def determine_availablilty(self):
