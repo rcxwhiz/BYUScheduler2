@@ -136,7 +136,7 @@ class Ui_Dialog(object):
 		self.load_decision[0] = "download"
 		self.download_new_button.setEnabled(False)
 		self.cached_result_button.setEnabled(False)
-		self.download_thread = multiprocessing.Process(target=downloader, args=(self.semester.lower(), self.year, self.append_text, self.replace_line, self.load_decision))
+		self.download_thread = multiprocessing.Process(target=downloader, args=(self.semester.lower(), self.year, self.append_text, self.replace_line, self.load_decision, self.dialog))
 		self.download_thread.start()
 
 	def determine_availablilty(self):
@@ -149,7 +149,7 @@ class Ui_Dialog(object):
 			self.download_new_button.setEnabled(True)
 
 
-def downloader(semester, year, append_function, replace_function, outcome):
+def downloader(semester, year, append_function, replace_function, outcome, dialog):
 	append_function("")
 	append_function(f"Downloading {semester} {year}...")
 	append_function("This will take a few minutes\n")
@@ -160,3 +160,4 @@ def downloader(semester, year, append_function, replace_function, outcome):
 		append_function(f"\nError getting {semester} {year} (it might not exist)")
 		append_function("Please choose another semester")
 		outcome[0] = "Error"
+	dialog.close()
