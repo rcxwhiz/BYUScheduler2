@@ -92,10 +92,17 @@ class Ui_Dialog(object):
 		self.cached_result_button.clicked.connect(self.load_action)
 
 	def cancel_action(self):
-		self.load_decision[0] = "cancel"
 		if self.download_thread is not None:
 			self.download_thread.terminate()
 			self.download_thread.join()
+		try:
+			del self.message_queue
+		except AttributeError:
+			pass
+		try:
+			del self.append_message_timer
+		except AttributeError:
+			pass
 		self.dialog.close()
 
 	def change_text(self, message):
@@ -133,10 +140,10 @@ class Ui_Dialog(object):
 		self.dialog.close()
 
 	def download_action(self):
-		self.load_decision[0] = "download"
+		self.load_decision[0] = "downloading..."
 		self.download_new_button.setEnabled(False)
 		self.cached_result_button.setEnabled(False)
-		self.download_thread = multiprocessing.Process(target=downloader, args=(self.semester.lower(), self.year, self.append_text, self.replace_line, self.load_decision))
+		self.download_thread = multiprocessing.Process(target=downloader, args=(self.semester.lower(), self.year, self.append_text, self.replace_line, self.load_decision, self.dialog))
 		self.download_thread.start()
 
 	def determine_availablilty(self):
@@ -149,12 +156,15 @@ class Ui_Dialog(object):
 			self.download_new_button.setEnabled(True)
 
 
-def downloader(semester, year, append_function, replace_function, outcome):
+def downloader(semester, year, append_function, replace_function, outcome, dialog):
 	append_function("")
-	append_function(f"Downloading {semester} {year}...\n")
+	append_function(f"Downloading {semester} {year}...")
+	append_function("This will take a few minutes\n")
 	try:
 		Dao.MakeDatabase.save(BYUAPI.get(semester, str(year), append_function=append_function, replace_function=replace_function), append_function=append_function, replace_function=replace_function)
 		outcome[0] = "load"
 	except Exception as e:
-		print(f"Error getting {semester} {year}: {str(e)}")
+		append_function(f"\nError getting {semester} {year} (it might not exist)")
+		append_function("Please choose another semester")
 		outcome[0] = "Error"
+	dialog.cancel_action()
