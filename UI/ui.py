@@ -1,6 +1,7 @@
 import UI.title_popup_dialog
 import UI.Dialog
 import UI.browse_instructor_window
+import UI.instructor_dialog
 import Dao.Load
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -13,6 +14,7 @@ class Ui_MainWindow(object):
 
 		self.setup_title_page()
 		self.setup_browse_instructor_page()
+		self.setup_loading_screen()
 
 		self.finish_setup_window()
 
@@ -43,7 +45,6 @@ class Ui_MainWindow(object):
 		QtCore.QMetaObject.connectSlotsByName(self.main_window)
 
 		self.hook_buttons()
-		self.populate_table()
 
 		self.goto_title_page()
 
@@ -232,14 +233,33 @@ class Ui_MainWindow(object):
 		self.instructor_table.setSizePolicy(sizePolicy)
 		self.instructor_table.setObjectName("tableView")
 		self.instructor_table.setFont(self.font)
+		self.instructor_table.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
+		self.instructor_table.setAlternatingRowColors(True)
+		self.instructor_table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
 
 		self.instructor_horizontal_layout.addWidget(self.instructor_table)
 		self.instructor_grid_layout.addLayout(self.instructor_horizontal_layout, 0, 0, 1, 1)
 		self.main_window_stacked_widget.addWidget(self.instructor_page)
 
+	def setup_loading_screen(self):
+		self.loading_page = QtWidgets.QWidget()
+		self.loading_page.setObjectName("loading_page")
+
+		self.loading_page_grid_layout = QtWidgets.QGridLayout(self.loading_page)
+		self.loading_page_grid_layout.setObjectName("loading_page_grid_layout")
+
+		self.loading_message = QtWidgets.QLabel(self.loading_page)
+		self.loading_message.setObjectName("loading_message")
+		self.loading_message.setFont(self.title_font)
+		self.loading_message.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignHCenter)
+		self.loading_message.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
+
+		self.loading_page_grid_layout.addWidget(self.loading_message)
+
+		self.main_window_stacked_widget.addWidget(self.loading_page)
+
 	def retranslate_ui(self):
 		_translate = QtCore.QCoreApplication.translate
-		self.main_window.setWindowTitle(_translate("MainWindow", "BYU Scheduler 2"))
 		self.title_big_title.setText(_translate("MainWindow", "BYU Scheduler 2"))
 		self.title_name.setText(_translate("MainWindow", "By Josh Bedwell"))
 		self.title_semester_label.setText(_translate("MainWindow", "Semester"))
@@ -255,6 +275,7 @@ class Ui_MainWindow(object):
 		self.instructor_first_name_label.setText(_translate("MainWindow", "First Name"))
 		self.instructor_last_name_label.setText(_translate("MainWindow", "Last Name"))
 		self.instructor_course_label.setText(_translate("MainWindow", "Course Taught"))
+		self.loading_message.setText(_translate("MainWindow", "Loading..."))
 
 	def hook_buttons(self):
 		self.title_course_button.clicked.connect(self.browse_course_action)
@@ -265,6 +286,7 @@ class Ui_MainWindow(object):
 		self.instructor_first_name_input.textChanged.connect(self.filter_table)
 		self.instructor_last_name_input.textChanged.connect(self.filter_table)
 		self.insctructor_course_input.textChanged.connect(self.filter_table)
+		self.instructor_table.cellClicked.connect(self.show_instructor)
 
 	# Common Functions
 	# ----------------------------------------------------------------------------------
@@ -272,10 +294,13 @@ class Ui_MainWindow(object):
 	def goto_title_page(self):
 		self.main_window.resize(800, 380)
 		self.main_window_stacked_widget.setCurrentIndex(0)
+		self.main_window.setWindowTitle("BYU Scheduler 2")
 
 	def goto_instructor_page(self):
 		self.main_window.resize(1100, 700)
+		# QtCore.QTimer.singleShot(1, lambda: self.main_window_stacked_widget.setCurrentIndex(1))
 		self.main_window_stacked_widget.setCurrentIndex(1)
+		self.main_window.setWindowTitle("Browse Instructors")
 		self.populate_table()
 
 	def goto_browse_course(self):
@@ -320,7 +345,8 @@ class Ui_MainWindow(object):
 				# TODO load data
 				self.goto_browse_section()
 			elif self.loaded_data["type"] == "instructor":
-				self.loaded_data = Dao.Load.load_instructors(self.title_semester_picker.currentText().lower() + "_" + str(self.title_year_picker.value()))
+				self.loaded_data = Dao.Load.load_instructors(
+					self.title_semester_picker.currentText().lower() + "_" + str(self.title_year_picker.value()))
 			elif self.loaded_data["type"] == "schedule":
 				# TODO load data
 				self.goto_make_schedule()
@@ -329,7 +355,7 @@ class Ui_MainWindow(object):
 	# ----------------------------------------------------------------------------------
 
 	def populate_table(self):
-		self.instructor_table.setColumnCount(7)
+		self.instructor_table.setColumnCount(8)
 		self.instructor_table.setRowCount(len(self.loaded_data))
 		self.instructor_table.setHorizontalHeaderLabels(["First Name", "Last Name", "Sort Name", "# Courses Taught", "# RMP Ratings", "RMP Rating", "RMP Difficulty", "HIDDEN"])
 		for i, key in enumerate(self.loaded_data.keys()):
@@ -352,35 +378,37 @@ class Ui_MainWindow(object):
 				self.instructor_table.setItem(i, 6, QtWidgets.QTableWidgetItem("-"))
 			self.instructor_table.setItem(i, 7, QtWidgets.QTableWidgetItem(key))
 		self.instructor_table.hideColumn(7)
+
 		self.instructor_table.setSortingEnabled(True)
+		self.instructor_table.resizeColumnsToContents()
 
 	def filter_table(self):
-		print("filtering the table")
-
 		first_filter = self.instructor_first_name_input.text().lower()
 		last_filter = self.instructor_last_name_input.text().lower()
-		num_filter = self.insctructor_course_input.text()
+		num_filter = self.insctructor_course_input.text().lower()
 
-		# TODO something is wrong with getting the elements from the table
 		for index in range(self.instructor_table.rowCount()):
+
 			show = True
 			if first_filter != "":
-				if first_filter not in self.instructor_table.itemAt(index, 0).text().lower():
+				if first_filter not in self.instructor_table.item(index, 0).text().lower():
 					show = False
 			if last_filter != "" and show:
-				if last_filter not in self.instructor_table.itemAt(index, 1).text().lower():
+				if last_filter not in self.instructor_table.item(index, 1).text().lower():
 					show = False
 			if num_filter != "" and show:
 				show = False
-				for course in self.loaded_data[self.instructor_table.itemAt(index, 7)]["classes_taught"]:
-					if num_filter in course["course"]:
+				for course in self.loaded_data[self.instructor_table.item(index, 7).text()]["classes_taught"]:
+					if num_filter in course["course"].lower():
 						show = True
 						break
 			if show:
 				self.instructor_table.showRow(index)
-				print(f"deciding to show row {index}")
 			else:
 				self.instructor_table.hideRow(index)
-				print(f"deciding to hide row {index}")
 
-		print("done filtering the table")
+	def show_instructor(self, row, column):
+		instructor_dialog = QtWidgets.QDialog()
+		instructor_ui = UI.instructor_dialog.Ui_Dialog()
+		instructor_ui.setupUi(instructor_dialog, self.loaded_data[self.instructor_table.item(row, 7).text()])
+		instructor_dialog.exec_()
