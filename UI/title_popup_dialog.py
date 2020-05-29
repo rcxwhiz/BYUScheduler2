@@ -7,7 +7,7 @@
 # WARNING! All changes made in this file will be lost!
 
 import Dao
-import Dao.Load
+import Dao.MakeDatabase
 import BYUAPI
 from typing import Dict
 import multiprocessing
@@ -16,18 +16,19 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_Dialog(object):
 	def setupUi(self, DialogIn: QtWidgets.QDialog, semester: str, year: int, data: Dict):
+		print(f"threads before popup: {len(multiprocessing.active_children())}")
 		self.dialog = DialogIn
 		self.semester = semester
 		self.year = str(year)
 		self.semester_year = semester.lower() + "_" + str(year)
 		self.return_data = data
 		self.return_data.clear()
-		manager = multiprocessing.Manager()
-		self.thread_data = manager.dict()
+		self.manager = multiprocessing.Manager()
+		self.thread_data = self.manager.dict()
 		self.download_thread = None
 		self.load_thread = None
-		self.message_queue = manager.Queue()
-		self.kill_queue = manager.Queue()
+		self.message_queue = self.manager.Queue()
+		self.kill_queue = self.manager.Queue()
 
 		font = QtGui.QFont()
 		font.setFamily("Arial")
@@ -104,24 +105,41 @@ class Ui_Dialog(object):
 
 	def check_to_close(self):
 		if not self.kill_queue.empty():
-			if self.kill_queue.get() == "exit":
+			if self.kill_queue.get() == "exit" and self.load_thread is None or not self.load_thread.is_alive():
 				self.dialog.close()
 
 	def exit(self):
 		self.dialog.close()
 
 	def cancel_action(self):
-		self.return_data.clear()
+		if self.load_thread is not None and self.load_thread.is_alive():
+			return False
 
+		print("cleaning up")
+
+		self.check_close_timer.disconnect()
+		self.append_message_timer.disconnect()
+
+		self.return_data.clear()
 		for key in self.thread_data.keys():
 			self.return_data[key] = self.thread_data[key]
 
 		if self.download_thread is not None:
 			self.download_thread.terminate()
 			self.download_thread.join()
+			print("terminated download thread")
+		else:
+			print("download thread was None")
 		if self.load_thread is not None:
 			self.load_thread.terminate()
 			self.load_thread.join()
+			print("terminated load thread")
+		else:
+			print("load thread was None")
+
+		self.manager.shutdown()
+		print(f"threads after popup: {len(multiprocessing.active_children())}")
+		return True
 
 	def change_text(self, message):
 		self.message_queue.put({"operation": "change", "message": message})
@@ -157,6 +175,7 @@ class Ui_Dialog(object):
 		self.thread_data.clear()
 		self.download_new_button.setEnabled(False)
 		self.cached_result_button.setEnabled(False)
+		self.cancel_button.setEnabled(False)
 		self.load_thread = multiprocessing.Process(target=loader, args=(self.semester_year, self.thread_data, self.append_text, self.replace_line, self.kill_queue, self.semester, self.year))
 		self.load_thread.start()
 
@@ -177,6 +196,7 @@ class Ui_Dialog(object):
 
 
 def downloader(semester_year, semester, year, append_function, replace_function, data, kill_queue):
+	import Dao.Load
 	append_function("")
 	append_function(f"Downloading {semester} {year}...")
 	append_function("This will take a few minutes\n")
@@ -187,6 +207,7 @@ def downloader(semester_year, semester, year, append_function, replace_function,
 		append_function(str(e))
 		append_function("Please choose another semester")
 
+	append_function("\n*** If you interrupt this operation the program must be restarted ***")
 	append_function(f"\nLoading {semester} {year}...")
 	temp = Dao.Load.load_instructors(semester_year)
 	for key in temp.keys():
@@ -197,10 +218,11 @@ def downloader(semester_year, semester, year, append_function, replace_function,
 
 
 def loader(semester_year, data, append_function, replace_function, kill_queue, semester, year):
+	append_function(f"\n*** If you interrupt this operation the program must be restarted ***")
 	append_function(f"\nLoading {semester} {year}...")
+	import Dao.Load
 	temp = Dao.Load.load_instructors(semester_year)
 	for key in temp.keys():
 		data[key] = temp[key]
 	replace_function(f"Loaded {semester} {year}")
-
 	kill_queue.put("exit")

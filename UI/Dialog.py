@@ -6,8 +6,11 @@ class Dialog(QtWidgets.QDialog):
 		QtWidgets.QDialog.__init__(self)
 
 	def closeEvent(self, event):
-		self.cancel_action()
-		event.accept()
+		result = self.cancel_action()
+		if result:
+			event.accept()
+		else:
+			event.ignore()
 
 	def cancel_action(self):
 		print("closing time")

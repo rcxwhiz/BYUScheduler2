@@ -2,7 +2,6 @@ import UI.title_popup_dialog
 import UI.Dialog
 import UI.browse_instructor_window
 import UI.instructor_dialog
-import threading
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
@@ -280,7 +279,6 @@ class Ui_MainWindow(object):
 
 	def goto_instructor_page(self):
 		self.main_window.resize(1100, 700)
-		# QtCore.QTimer.singleShot(1, lambda: self.main_window_stacked_widget.setCurrentIndex(1))
 		self.main_window_stacked_widget.setCurrentIndex(1)
 		self.main_window.setWindowTitle("Browse Instructors")
 		self.populate_table()
@@ -298,7 +296,7 @@ class Ui_MainWindow(object):
 	# ----------------------------------------------------------------------------------
 
 	def browse_instructor_action(self):
-		self.loaded_data = {"type": "instructor"}
+		self.loaded_data = {}
 		self.show_popup()
 		if len(self.loaded_data) > 0:
 			self.goto_instructor_page()
@@ -313,12 +311,10 @@ class Ui_MainWindow(object):
 		self.show_popup()
 
 	def show_popup(self):
-		print(f"Before popup threads: {threading.active_count()}")
 		popup_dialog = UI.Dialog.Dialog()
 		popup_ui = UI.title_popup_dialog.Ui_Dialog()
 		popup_ui.setupUi(popup_dialog, self.title_semester_picker.currentText(), self.title_year_picker.value(), self.loaded_data)
 		popup_dialog.exec_()
-		print(f"After popup threads: {threading.active_count()}")
 
 	# Instructor Functions
 	# ----------------------------------------------------------------------------------
