@@ -121,50 +121,53 @@ def sort_times(val):
 
 
 def load_instructors(semester_year):
+	print("going to load instructors")
 	data = {}
-	connection = sqlite3.connect(Dao.Paths.database_path_1(semester_year))
-	cursor = connection.cursor()
 
-	sql_cmd = """SELECT * FROM instructors;"""
-	cursor.execute(sql_cmd)
+	with sqlite3.connect(Dao.Paths.database_path_1(semester_year)) as connection:
+		print(f"got past connection for {Dao.Paths.database_path_1(semester_year)}")
+		cursor = connection.cursor()
+		print("got past cursor")
 
-	for instructor in cursor.fetchall():
-		instructor_data = {"person_id": instructor[0],
-		                   "first_name": instructor[1],
-		                   "last_name": instructor[2],
-		                   "sort_name": instructor[3],
-		                   "byu_id": instructor[4],
-		                   "net_id": instructor[5],
-		                   "phone_number": instructor[6],
-		                   "preferred_first_name": instructor[7],
-		                   "rest_of_name": instructor[8],
-		                   "surname": instructor[9],
-		                   "found_rmp": instructor[10],
-		                   "avg_rating": instructor[11],
-		                   "avg_helpful": instructor[12],
-		                   "num_ratings": instructor[13],
-		                   "avg_easy_score": instructor[14],
-		                   "avg_clarity_score": instructor[15],
-		                   "classes_taught": []}
-		for key in instructor_data.keys():
-			if instructor_data[key] is None:
-				instructor_data[key] = ""
-		sql_cmd = """SELECT curriculum_id_title_code, section_number FROM course_instructors WHERE person_id = ?;"""
-		cursor.execute(sql_cmd, (instructor[0],))
-		for course in cursor.fetchall():
-			sql_cmd = """SELECT catalog_number, catalog_suffix, dept_name FROM sections WHERE curriculum_id_title_code = ? AND section_number = ?;"""
-			cursor.execute(sql_cmd, course)
-			for section in cursor.fetchall():
-				suffix = section[1]
-				if suffix is None:
-					suffix = ""
-				class_data = {"course": section[2] + " " + section[0] + suffix,
-				              "section": course[1]}
+		sql_cmd = """SELECT * FROM instructors;"""
+		cursor.execute(sql_cmd)
+		print("got past execute")
 
-				instructor_data["classes_taught"].append(class_data)
-		data[instructor[0]] = instructor_data
-	return data
+		for instructor in cursor.fetchall():
+			print("went into a result")
+			instructor_data = {"person_id": instructor[0],
+			                   "first_name": instructor[1],
+			                   "last_name": instructor[2],
+			                   "sort_name": instructor[3],
+			                   "byu_id": instructor[4],
+			                   "net_id": instructor[5],
+			                   "phone_number": instructor[6],
+			                   "preferred_first_name": instructor[7],
+			                   "rest_of_name": instructor[8],
+			                   "surname": instructor[9],
+			                   "found_rmp": instructor[10],
+			                   "avg_rating": instructor[11],
+			                   "avg_helpful": instructor[12],
+			                   "num_ratings": instructor[13],
+			                   "avg_easy_score": instructor[14],
+			                   "avg_clarity_score": instructor[15],
+			                   "classes_taught": []}
+			for key in instructor_data.keys():
+				if instructor_data[key] is None:
+					instructor_data[key] = ""
+			sql_cmd = """SELECT curriculum_id_title_code, section_number FROM course_instructors WHERE person_id = ?;"""
+			cursor.execute(sql_cmd, (instructor[0],))
+			for course in cursor.fetchall():
+				sql_cmd = """SELECT catalog_number, catalog_suffix, dept_name FROM sections WHERE curriculum_id_title_code = ? AND section_number = ?;"""
+				cursor.execute(sql_cmd, course)
+				for section in cursor.fetchall():
+					suffix = section[1]
+					if suffix is None:
+						suffix = ""
+					class_data = {"course": section[2] + " " + section[0] + suffix,
+					              "section": course[1]}
 
-
-if __name__ == '__main__':
-	load_instructors("fall_2020")
+					instructor_data["classes_taught"].append(class_data)
+			data[instructor[0]] = instructor_data
+		print("returning")
+		return data

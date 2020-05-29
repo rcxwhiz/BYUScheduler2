@@ -339,12 +339,20 @@ class Ui_MainWindow(object):
 			different_classes_taught = set()
 			for section in self.loaded_data[key]["classes_taught"]:
 				different_classes_taught.add(section["course"])
-			self.instructor_table.setItem(i, 3, QtWidgets.QTableWidgetItem(str(len(different_classes_taught))))
+			item = QtWidgets.QTableWidgetItem()
+			item.setData(QtCore.Qt.DisplayRole, len(different_classes_taught))
+			self.instructor_table.setItem(i, 3, item)
 
 			if self.loaded_data[key]["found_rmp"] == 1:
-				self.instructor_table.setItem(i, 4, QtWidgets.QTableWidgetItem(str(self.loaded_data[key]["num_ratings"])))
-				self.instructor_table.setItem(i, 5, QtWidgets.QTableWidgetItem(str(self.loaded_data[key]["avg_rating"])))
-				self.instructor_table.setItem(i, 6, QtWidgets.QTableWidgetItem(str(self.loaded_data[key]["avg_easy_score"])))
+				item = QtWidgets.QTableWidgetItem()
+				item.setData(QtCore.Qt.DisplayRole, self.loaded_data[key]["num_ratings"])
+				self.instructor_table.setItem(i, 4, item)
+				item = QtWidgets.QTableWidgetItem()
+				item.setData(QtCore.Qt.DisplayRole, self.loaded_data[key]["avg_rating"])
+				self.instructor_table.setItem(i, 5, item)
+				item = QtWidgets.QTableWidgetItem()
+				item.setData(QtCore.Qt.DisplayRole, self.loaded_data[key]["avg_easy_score"])
+				self.instructor_table.setItem(i, 6, item)
 			else:
 				self.instructor_table.setItem(i, 4, QtWidgets.QTableWidgetItem("-"))
 				self.instructor_table.setItem(i, 5, QtWidgets.QTableWidgetItem("-"))

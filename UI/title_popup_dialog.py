@@ -117,6 +117,7 @@ class Ui_Dialog(object):
 			if message == "hide cancel":
 				self.cancel_button.setEnabled(False)
 
+			# TODO when downloading a new semester getting a none value error here
 			if message == "exit" and self.load_thread is None or not self.load_thread.is_alive():
 				self.dialog.close()
 
