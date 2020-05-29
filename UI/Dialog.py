@@ -6,8 +6,7 @@ class Dialog(QtWidgets.QDialog):
 		QtWidgets.QDialog.__init__(self)
 
 	def closeEvent(self, event):
-		result = self.cancel_action()
-		if result:
+		if self.cancel_action():
 			event.accept()
 		else:
 			event.ignore()

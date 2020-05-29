@@ -16,7 +16,6 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_Dialog(object):
 	def setupUi(self, DialogIn: QtWidgets.QDialog, semester: str, year: int, data: Dict):
-		print(f"threads before popup: {len(multiprocessing.active_children())}")
 		self.dialog = DialogIn
 		self.semester = semester
 		self.year = str(year)
@@ -104,18 +103,29 @@ class Ui_Dialog(object):
 		self.cached_result_button.clicked.connect(self.load_action)
 
 	def check_to_close(self):
-		if not self.kill_queue.empty():
-			if self.kill_queue.get() == "exit" and self.load_thread is None or not self.load_thread.is_alive():
+		while True:
+			try:
+				empty = self.kill_queue.empty()
+			except BrokenPipeError:
+				break
+			if empty:
+				break
+			message = self.kill_queue.get()
+			if message == "show cancel":
+				self.cancel_button.setEnabled(True)
+
+			if message == "hide cancel":
+				self.cancel_button.setEnabled(False)
+
+			if message == "exit" and self.load_thread is None or not self.load_thread.is_alive():
 				self.dialog.close()
 
 	def exit(self):
 		self.dialog.close()
 
 	def cancel_action(self):
-		if self.load_thread is not None and self.load_thread.is_alive():
+		if not self.cancel_button.isEnabled():
 			return False
-
-		print("cleaning up")
 
 		self.check_close_timer.disconnect()
 		self.append_message_timer.disconnect()
@@ -127,18 +137,11 @@ class Ui_Dialog(object):
 		if self.download_thread is not None:
 			self.download_thread.terminate()
 			self.download_thread.join()
-			print("terminated download thread")
-		else:
-			print("download thread was None")
 		if self.load_thread is not None:
 			self.load_thread.terminate()
 			self.load_thread.join()
-			print("terminated load thread")
-		else:
-			print("load thread was None")
 
 		self.manager.shutdown()
-		print(f"threads after popup: {len(multiprocessing.active_children())}")
 		return True
 
 	def change_text(self, message):
@@ -207,22 +210,24 @@ def downloader(semester_year, semester, year, append_function, replace_function,
 		append_function(str(e))
 		append_function("Please choose another semester")
 
-	append_function("\n*** If you interrupt this operation the program must be restarted ***")
+	kill_queue.put("hide cancel")
 	append_function(f"\nLoading {semester} {year}...")
 	temp = Dao.Load.load_instructors(semester_year)
 	for key in temp.keys():
 		data[key] = temp[key]
 	replace_function(f"Loaded {semester} {year}")
 
+	kill_queue.put("show cancel")
 	kill_queue.put("exit")
 
 
 def loader(semester_year, data, append_function, replace_function, kill_queue, semester, year):
-	append_function(f"\n*** If you interrupt this operation the program must be restarted ***")
 	append_function(f"\nLoading {semester} {year}...")
 	import Dao.Load
 	temp = Dao.Load.load_instructors(semester_year)
 	for key in temp.keys():
 		data[key] = temp[key]
 	replace_function(f"Loaded {semester} {year}")
+
+	kill_queue.put("show cancel")
 	kill_queue.put("exit")
