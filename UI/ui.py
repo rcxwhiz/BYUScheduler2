@@ -221,6 +221,12 @@ class Ui_MainWindow(object):
 		self.instructor_vertical_layout.addItem(spacerItem)
 		self.instructor_horizontal_layout.addLayout(self.instructor_vertical_layout)
 
+		self.instructor_return_button = QtWidgets.QPushButton(self.instructor_page)
+		self.instructor_return_button.setFont(self.font)
+		self.instructor_return_button.setObjectName("instructor_return_button")
+
+		self.instructor_vertical_layout.addWidget(self.instructor_return_button)
+
 		self.instructor_table = QtWidgets.QTableWidget(self.instructor_page)
 
 		sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
@@ -256,6 +262,7 @@ class Ui_MainWindow(object):
 		self.instructor_first_name_label.setText(_translate("MainWindow", "First Name"))
 		self.instructor_last_name_label.setText(_translate("MainWindow", "Last Name"))
 		self.instructor_course_label.setText(_translate("MainWindow", "Course Taught"))
+		self.instructor_return_button.setText(_translate("MainWindow", "Return to Menu"))
 
 	def hook_buttons(self):
 		self.title_course_button.clicked.connect(self.browse_course_action)
@@ -267,6 +274,7 @@ class Ui_MainWindow(object):
 		self.instructor_last_name_input.textChanged.connect(self.filter_table)
 		self.insctructor_course_input.textChanged.connect(self.filter_table)
 		self.instructor_table.cellClicked.connect(self.show_instructor)
+		self.instructor_return_button.clicked.connect(self.goto_title_page)
 
 	# Common Functions
 	# ----------------------------------------------------------------------------------
