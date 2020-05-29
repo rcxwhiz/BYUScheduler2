@@ -12,6 +12,8 @@ import BYUAPI
 from typing import Dict
 import multiprocessing
 from PyQt5 import QtCore, QtGui, QtWidgets
+import Dao.Load
+import sys
 
 
 class Ui_Dialog(object):
@@ -143,6 +145,9 @@ class Ui_Dialog(object):
 			self.load_thread.join()
 
 		self.manager.shutdown()
+
+		print(f"number of threads exiting dialog is: {len(multiprocessing.active_children())}")
+
 		return True
 
 	def change_text(self, message):
@@ -176,6 +181,7 @@ class Ui_Dialog(object):
 		self.message.setPlainText("\n".join(current_text))
 
 	def load_action(self):
+		print(f"Number of threads going into load is {len(multiprocessing.active_children())}")
 		self.thread_data.clear()
 		self.download_new_button.setEnabled(False)
 		self.cached_result_button.setEnabled(False)
@@ -200,7 +206,6 @@ class Ui_Dialog(object):
 
 
 def downloader(semester_year, semester, year, append_function, replace_function, data, kill_queue):
-	import Dao.Load
 	append_function("")
 	append_function(f"Downloading {semester} {year}...")
 	append_function("This will take a few minutes\n")
@@ -212,19 +217,11 @@ def downloader(semester_year, semester, year, append_function, replace_function,
 		append_function("Please choose another semester")
 
 	kill_queue.put("hide cancel")
-	append_function(f"\nLoading {semester} {year}...")
-	temp = Dao.Load.load_instructors(semester_year)
-	for key in temp.keys():
-		data[key] = temp[key]
-	replace_function(f"Loaded {semester} {year}")
-
-	kill_queue.put("show cancel")
-	kill_queue.put("exit")
+	loader(semester_year, data, append_function, replace_function, kill_queue, semester, year)
 
 
 def loader(semester_year, data, append_function, replace_function, kill_queue, semester, year):
 	append_function(f"\nLoading {semester} {year}...")
-	import Dao.Load
 	temp = Dao.Load.load_instructors(semester_year)
 	for key in temp.keys():
 		data[key] = temp[key]
