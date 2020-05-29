@@ -7,21 +7,27 @@
 # WARNING! All changes made in this file will be lost!
 
 import Dao
+import Dao.Load
 import BYUAPI
-from typing import List
+from typing import Dict
 import multiprocessing
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
 class Ui_Dialog(object):
-	def setupUi(self, DialogIn: QtWidgets.QDialog, semester: str, year: int, load_decision: List[str]):
+	def setupUi(self, DialogIn: QtWidgets.QDialog, semester: str, year: int, data: Dict):
 		self.dialog = DialogIn
 		self.semester = semester
 		self.year = str(year)
 		self.semester_year = semester.lower() + "_" + str(year)
-		self.load_decision = load_decision
+		self.return_data = data
+		self.return_data.clear()
+		manager = multiprocessing.Manager()
+		self.thread_data = manager.dict()
 		self.download_thread = None
-		self.message_queue = multiprocessing.Manager().list()
+		self.load_thread = None
+		self.message_queue = manager.Queue()
+		self.kill_queue = manager.Queue()
 
 		font = QtGui.QFont()
 		font.setFamily("Arial")
@@ -76,6 +82,11 @@ class Ui_Dialog(object):
 		log_update_interval = 200
 		self.append_message_timer.start(log_update_interval)
 
+		self.check_close_timer = QtCore.QTimer()
+		self.check_close_timer.timeout.connect(self.check_to_close)
+		close_check_interval = 100
+		self.check_close_timer.start(close_check_interval)
+
 		self.dialog.cancel_action = self.cancel_action
 
 	def retranslateUi(self):
@@ -87,42 +98,49 @@ class Ui_Dialog(object):
 		self.cancel_button.setText(_translate("Dialog", "Cancel"))
 
 	def hook_buttons(self):
-		self.cancel_button.clicked.connect(self.cancel_action)
+		self.cancel_button.clicked.connect(self.exit)
 		self.download_new_button.clicked.connect(self.download_action)
 		self.cached_result_button.clicked.connect(self.load_action)
 
+	def check_to_close(self):
+		if not self.kill_queue.empty():
+			if self.kill_queue.get() == "exit":
+				self.dialog.close()
+
+	def exit(self):
+		self.dialog.close()
+
 	def cancel_action(self):
+		self.return_data.clear()
+
+		for key in self.thread_data.keys():
+			self.return_data[key] = self.thread_data[key]
+
 		if self.download_thread is not None:
 			self.download_thread.terminate()
 			self.download_thread.join()
-		try:
-			del self.message_queue
-		except AttributeError:
-			pass
-		try:
-			del self.append_message_timer
-		except AttributeError:
-			pass
-		self.dialog.close()
+		if self.load_thread is not None:
+			self.load_thread.terminate()
+			self.load_thread.join()
 
 	def change_text(self, message):
-		self.message_queue.append({"operation": "change", "message": message})
+		self.message_queue.put({"operation": "change", "message": message})
 
 	def append_text(self, message):
-		self.message_queue.append({"operation": "append", "message": message})
+		self.message_queue.put({"operation": "append", "message": message})
 
 	def replace_line(self, message):
-		self.message_queue.append({"operation": "replace", "message": message})
+		self.message_queue.put({"operation": "replace", "message": message})
 
 	def handle_queue(self):
-		for message in self.message_queue:
+		while not self.message_queue.empty():
+			message = self.message_queue.get()
 			if message["operation"] == "change":
 				self.apply_change(message["message"])
 			elif message["operation"] == "append":
 				self.apply_append(message["message"])
 			elif message["operation"] == "replace":
 				self.apply_replace(message["message"])
-		self.message_queue[:] = []
 
 	def apply_append(self, message_in):
 		self.message.appendPlainText(message_in)
@@ -136,14 +154,16 @@ class Ui_Dialog(object):
 		self.message.setPlainText("\n".join(current_text))
 
 	def load_action(self):
-		self.load_decision[0] = "load"
-		self.dialog.close()
-
-	def download_action(self):
-		self.load_decision[0] = "downloading..."
+		self.thread_data.clear()
 		self.download_new_button.setEnabled(False)
 		self.cached_result_button.setEnabled(False)
-		self.download_thread = multiprocessing.Process(target=downloader, args=(self.semester.lower(), self.year, self.append_text, self.replace_line, self.load_decision, self.dialog))
+		self.load_thread = multiprocessing.Process(target=loader, args=(self.semester_year, self.thread_data, self.append_text, self.replace_line, self.kill_queue, self.semester, self.year))
+		self.load_thread.start()
+
+	def download_action(self):
+		self.download_new_button.setEnabled(False)
+		self.cached_result_button.setEnabled(False)
+		self.download_thread = multiprocessing.Process(target=downloader, args=(self.semester_year, self.semester.lower(), self.year, self.append_text, self.replace_line, self.thread_data, self.kill_queue))
 		self.download_thread.start()
 
 	def determine_availablilty(self):
@@ -156,15 +176,31 @@ class Ui_Dialog(object):
 			self.download_new_button.setEnabled(True)
 
 
-def downloader(semester, year, append_function, replace_function, outcome, dialog):
+def downloader(semester_year, semester, year, append_function, replace_function, data, kill_queue):
 	append_function("")
 	append_function(f"Downloading {semester} {year}...")
 	append_function("This will take a few minutes\n")
 	try:
 		Dao.MakeDatabase.save(BYUAPI.get(semester, str(year), append_function=append_function, replace_function=replace_function), append_function=append_function, replace_function=replace_function)
-		outcome[0] = "load"
 	except Exception as e:
 		append_function(f"\nError getting {semester} {year} (it might not exist)")
+		append_function(str(e))
 		append_function("Please choose another semester")
-		outcome[0] = "Error"
-	dialog.cancel_action()
+
+	append_function(f"\nLoading {semester} {year}...")
+	temp = Dao.Load.load_instructors(semester_year)
+	for key in temp.keys():
+		data[key] = temp[key]
+	replace_function(f"Loaded {semester} {year}")
+
+	kill_queue.put("exit")
+
+
+def loader(semester_year, data, append_function, replace_function, kill_queue, semester, year):
+	append_function(f"\nLoading {semester} {year}...")
+	temp = Dao.Load.load_instructors(semester_year)
+	for key in temp.keys():
+		data[key] = temp[key]
+	replace_function(f"Loaded {semester} {year}")
+
+	kill_queue.put("exit")

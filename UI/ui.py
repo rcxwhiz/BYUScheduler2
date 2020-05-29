@@ -2,7 +2,7 @@ import UI.title_popup_dialog
 import UI.Dialog
 import UI.browse_instructor_window
 import UI.instructor_dialog
-import Dao.Load
+import threading
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
@@ -14,7 +14,6 @@ class Ui_MainWindow(object):
 
 		self.setup_title_page()
 		self.setup_browse_instructor_page()
-		self.setup_loading_screen()
 
 		self.finish_setup_window()
 
@@ -241,23 +240,6 @@ class Ui_MainWindow(object):
 		self.instructor_grid_layout.addLayout(self.instructor_horizontal_layout, 0, 0, 1, 1)
 		self.main_window_stacked_widget.addWidget(self.instructor_page)
 
-	def setup_loading_screen(self):
-		self.loading_page = QtWidgets.QWidget()
-		self.loading_page.setObjectName("loading_page")
-
-		self.loading_page_grid_layout = QtWidgets.QGridLayout(self.loading_page)
-		self.loading_page_grid_layout.setObjectName("loading_page_grid_layout")
-
-		self.loading_message = QtWidgets.QLabel(self.loading_page)
-		self.loading_message.setObjectName("loading_message")
-		self.loading_message.setFont(self.title_font)
-		self.loading_message.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignHCenter)
-		self.loading_message.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
-
-		self.loading_page_grid_layout.addWidget(self.loading_message)
-
-		self.main_window_stacked_widget.addWidget(self.loading_page)
-
 	def retranslate_ui(self):
 		_translate = QtCore.QCoreApplication.translate
 		self.title_big_title.setText(_translate("MainWindow", "BYU Scheduler 2"))
@@ -275,7 +257,6 @@ class Ui_MainWindow(object):
 		self.instructor_first_name_label.setText(_translate("MainWindow", "First Name"))
 		self.instructor_last_name_label.setText(_translate("MainWindow", "Last Name"))
 		self.instructor_course_label.setText(_translate("MainWindow", "Course Taught"))
-		self.loading_message.setText(_translate("MainWindow", "Loading..."))
 
 	def hook_buttons(self):
 		self.title_course_button.clicked.connect(self.browse_course_action)
@@ -295,6 +276,7 @@ class Ui_MainWindow(object):
 		self.main_window.resize(800, 380)
 		self.main_window_stacked_widget.setCurrentIndex(0)
 		self.main_window.setWindowTitle("BYU Scheduler 2")
+		self.loaded_data = {}
 
 	def goto_instructor_page(self):
 		self.main_window.resize(1100, 700)
@@ -316,10 +298,9 @@ class Ui_MainWindow(object):
 	# ----------------------------------------------------------------------------------
 
 	def browse_instructor_action(self):
-		continuing = [None]
 		self.loaded_data = {"type": "instructor"}
-		self.show_popup(continuing)
-		if continuing[0]:
+		self.show_popup()
+		if len(self.loaded_data) > 0:
 			self.goto_instructor_page()
 
 	def browse_course_action(self):
@@ -331,25 +312,13 @@ class Ui_MainWindow(object):
 	def make_schedule_action(self):
 		self.show_popup()
 
-	def show_popup(self, continuing):
+	def show_popup(self):
+		print(f"Before popup threads: {threading.active_count()}")
 		popup_dialog = UI.Dialog.Dialog()
 		popup_ui = UI.title_popup_dialog.Ui_Dialog()
-		popup_ui.setupUi(popup_dialog, self.title_semester_picker.currentText(), self.title_year_picker.value(), continuing)
+		popup_ui.setupUi(popup_dialog, self.title_semester_picker.currentText(), self.title_year_picker.value(), self.loaded_data)
 		popup_dialog.exec_()
-
-		if continuing[0]:
-			if self.loaded_data["type"] == "course":
-				# TODO load data
-				self.goto_browse_course()
-			elif self.loaded_data["type"] == "section":
-				# TODO load data
-				self.goto_browse_section()
-			elif self.loaded_data["type"] == "instructor":
-				self.loaded_data = Dao.Load.load_instructors(
-					self.title_semester_picker.currentText().lower() + "_" + str(self.title_year_picker.value()))
-			elif self.loaded_data["type"] == "schedule":
-				# TODO load data
-				self.goto_make_schedule()
+		print(f"After popup threads: {threading.active_count()}")
 
 	# Instructor Functions
 	# ----------------------------------------------------------------------------------
