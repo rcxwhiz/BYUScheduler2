@@ -118,6 +118,7 @@ class Ui_MainWindow(object):
 		self.title_schedule_button = QtWidgets.QPushButton(self.title_page)
 		self.title_schedule_button.setFont(self.font)
 		self.title_schedule_button.setObjectName("make_schedule_button")
+		self.title_schedule_button.setEnabled(False)
 
 		self.title_grid_layout_2.addWidget(self.title_schedule_button, 2, 1, 1, 1)
 
@@ -130,12 +131,14 @@ class Ui_MainWindow(object):
 		self.title_section_button = QtWidgets.QPushButton(self.title_page)
 		self.title_section_button.setFont(self.font)
 		self.title_section_button.setObjectName("browse_section_button")
+		self.title_section_button.setEnabled(False)
 
 		self.title_grid_layout_2.addWidget(self.title_section_button, 2, 0, 1, 1)
 
 		self.title_course_button = QtWidgets.QPushButton(self.title_page)
 		self.title_course_button.setFont(self.font)
 		self.title_course_button.setObjectName("browse_course_button")
+		self.title_course_button.setEnabled(False)
 
 		self.title_grid_layout_2.addWidget(self.title_course_button, 0, 0, 1, 1)
 
