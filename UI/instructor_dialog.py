@@ -7,11 +7,13 @@
 # WARNING! All changes made in this file will be lost!
 
 
+from typing import Dict
+
 from PyQt5 import QtCore, QtWidgets
 
 
 class Ui_Dialog(object):
-	def setupUi(self, Dialog, instructor):
+	def setupUi(self, Dialog: QtWidgets.QDialog, instructor: Dict) -> None:
 		Dialog.setObjectName("Dialog")
 		Dialog.resize(400, 402)
 		self.gridLayout = QtWidgets.QGridLayout(Dialog)
@@ -69,7 +71,7 @@ class Ui_Dialog(object):
 		self.retranslateUi(Dialog, instructor)
 		QtCore.QMetaObject.connectSlotsByName(Dialog)
 
-	def retranslateUi(self, Dialog, instructor):
+	def retranslateUi(self, Dialog: QtWidgets.QDialog, instructor: Dict) -> None:
 		num_ratings = instructor['num_ratings']
 		avg_rating = instructor['avg_rating']
 		avg_easy_score = instructor['avg_easy_score']

@@ -1,8 +1,10 @@
-import requests
 import random
 import string
-import time
 import threading
+import time
+from typing import Dict, List, Callable, Tuple
+
+import requests
 
 semester_api = "http://saasta.byu.edu/noauth/classSchedule/ajax/getYeartermData.php"
 classes_api = "http://saasta.byu.edu/noauth/classSchedule/ajax/getClasses.php"
@@ -17,30 +19,30 @@ max_threads = 10
 rest_time = 0.5
 
 
-def make_id():
+def make_id() -> str:
 	# makes a random session id
 	# ex. V0TRBMAJJW497M5Q4AWI
 	letters = string.ascii_uppercase + string.digits
 	return "".join((random.choice(letters) for _ in range(20)))
 
 
-def get_section(course, session_id, year, semester, section_responses):
+def get_section(course: Dict, session_id: str, year: str, semester: str, section_responses: List) -> None:
 	section_data = {
 		"courseId": f"{course['curriculum_id']}-{course['title_code']}",
 		"sessionId": session_id, "yearterm": year + semester_ids[semester], "no_outcomes": True}
 
 	section_response = requests.post(url=sections_api, data=section_data).json()
-	assert(len(section_response["sections"]) > 0, "Encountered an error getting a section")
+	assert len(section_response["sections"]) > 0, "Encountered an error getting a section"
 	section_responses.append(section_response)
 
 
-def get(semester, year, append_function=print, replace_function=print):
+def get(semester: str, year: str, append_function: Callable = print, replace_function: Callable = print) -> Tuple:
 	session_id = make_id()
 	append_function(f"Using session id: {session_id}")
 
 	append_function("Getting departments...")
 	semester_response = requests.post(url=semester_api, data={"yearterm": year + semester_ids[semester]}).json()
-	assert (len(semester_response["department_list"]) > 0, "There was an error getting that semester")
+	assert len(semester_response["department_list"]) > 0, "There was an error getting that semester"
 	replace_function("Got departments")
 
 	classes_data = {"searchObject[teaching_areas][]": semester_response["department_list"],
@@ -49,7 +51,7 @@ def get(semester, year, append_function=print, replace_function=print):
 
 	append_function(f"Getting class data...")
 	classes_response = requests.post(url=classes_api, data=classes_data).json()
-	assert (len(classes_response) > 0, "There was an error getting that semester")
+	assert len(classes_response) > 0, "There was an error getting that semester"
 	replace_function("Got classes")
 
 	start_time = time.time()
