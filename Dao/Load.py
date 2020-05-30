@@ -131,23 +131,12 @@ def load_instructors(semester_year):
 	data = {}
 
 	with closing(sqlite3.connect(Dao.Paths.database_path_1(semester_year))) as connection:
-		print(f"got past connection for {Dao.Paths.database_path_1(semester_year)}")
 		cursor = connection.cursor()
-		print("got past cursor")
 
 		sql_cmd = """SELECT * FROM instructors;"""
 		cursor.execute(sql_cmd)
-		print("got past execute")
-
-		# TODO can't get past this (except in profiling mode everything works fine)
-		# try:
-		# 	cursor.fetchall()
-		# except Exception as e:
-		# 	print("CURSOR EXCEPTION", str(e))
-		# print("got past exception check")
 
 		for i, instructor in enumerate(cursor.fetchall()):
-			# print(f"instructor {i + 1}")
 			instructor_data = {"person_id": instructor[0],
 			                   "first_name": instructor[1],
 			                   "last_name": instructor[2],
@@ -184,22 +173,4 @@ def load_instructors(semester_year):
 			data[instructor[0]] = instructor_data
 		# cursor.close()
 		# connection.close()
-		# print(f"returning {len(data)} pieces of data")
 		return data
-
-
-def test_driver(semester_year):
-	temp = load_instructors(semester_year)
-
-
-if __name__ == '__main__':
-	print("loading test")
-	winter = "winter_2020"
-	spring = "spring_2020"
-	summer = "summer_2020"
-	fall = "fall_2020"
-
-	print("begin test")
-	test_driver(spring)
-
-	print("end test")

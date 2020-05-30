@@ -115,19 +115,13 @@ class Ui_Dialog(object):
 				self.dialog.close()
 
 	def exit(self):
-		print("exit action called")
 		self.dialog.close()
 
 	def cancel_action(self):
-		print("discconecting timers")
 		self.append_message_timer.disconnect()
-
-		print("shutting down manager")
 		self.manager.shutdown()
 
-		print("asserting no live threads")
 		assert len(multiprocessing.active_children()) == 0
-		print(f"threading lib threads: {threading.active_count()}")
 		assert threading.active_count() < 3
 
 		self.exit()
@@ -163,13 +157,12 @@ class Ui_Dialog(object):
 		self.message.setPlainText("\n".join(current_text))
 
 	def load_action(self):
-		print(f"Number of threads going into load is {len(multiprocessing.active_children())}")
 		self.download_new_button.setEnabled(False)
 		self.cached_result_button.setEnabled(False)
 		self.cancel_button.setEnabled(False)
 
 		self.append_text(f"\nLoading {self.semester} {self.year}...")
-		self.append_text("Blame the sqlite3 library's incompatability with threading for this being un-cancelable")
+		self.append_text("This event cannot be cancelled beacuse sqlite3 is incompatible with multithreading\n")
 		threading.Thread(target=self.load_work).start()
 
 	def load_work(self):
@@ -185,20 +178,22 @@ class Ui_Dialog(object):
 		self.cancel_button.setEnabled(False)
 
 		self.append_text(f"\nDownloading {self.semester} {self.year}...")
-		self.append_text("This will take a few minutes\n")
-		self.append_text("Blame the sqlite3 library's incompatability with threading for this being un-cancelable")
+		self.append_text("This will take a few minutes")
+		self.append_text("This event cannot be cancelled beacuse sqlite3 is incompatible with multithreading\n")
 		threading.Thread(target=self.download_work).start()
 
 	def download_work(self):
 		try:
-			Dao.MakeDatabase.save(BYUAPI.get(self.semester, str(self.year), append_function=self.append_text,
+			Dao.MakeDatabase.save(BYUAPI.get(self.semester.lower(), str(self.year), append_function=self.append_text,
 			                                 replace_function=self.replace_line), append_function=self.append_text,
 			                      replace_function=self.replace_line)
 		except Exception as e:
+			print("got a downlading error")
 			self.append_text(f"\nError getting {self.semester} {self.year} (it might not exist)")
 			self.append_text(str(e))
 			self.append_text("Please choose another semester")
 			self.cancel_button.setEnabled(True)
+			return None
 		self.load_action()
 
 	def determine_availablilty(self):
