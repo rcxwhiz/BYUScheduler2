@@ -21,7 +21,7 @@ def get_db_terminal():
 
 	if download_semester:
 		try:
-			Dao.MakeDatabase.save(BYUAPI.get(semester, year))
+			Dao.MakeDatabase.save(True, BYUAPI.get(semester, year))
 		except BaseException as e:
 			print(f"Error getting {semester} {year}: {str(e)}")
 

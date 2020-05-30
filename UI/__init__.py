@@ -1,6 +1,8 @@
-import UI.ui
 import sys
-from PyQt5 import QtWidgets, QtCore
+
+from PyQt5 import QtWidgets
+
+import UI.ui
 
 
 def run_ui():
