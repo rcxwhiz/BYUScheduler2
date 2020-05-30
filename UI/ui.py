@@ -1,9 +1,8 @@
-import UI.title_popup_dialog
-import UI.Dialog
+from PyQt5 import QtCore, QtGui, QtWidgets
+
 import UI.browse_instructor_window
 import UI.instructor_dialog
-import Dao.Load
-from PyQt5 import QtCore, QtGui, QtWidgets
+import UI.title_popup_dialog
 
 
 class Ui_MainWindow(object):
@@ -14,7 +13,6 @@ class Ui_MainWindow(object):
 
 		self.setup_title_page()
 		self.setup_browse_instructor_page()
-		self.setup_loading_screen()
 
 		self.finish_setup_window()
 
@@ -107,8 +105,12 @@ class Ui_MainWindow(object):
 		self.title_year_picker.setObjectName("year_picker")
 
 		self.title_vertical_layout_2.addWidget(self.title_year_picker)
-		self.title_vertical_spacer = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-		self.title_vertical_layout_2.addItem(self.title_vertical_spacer)
+
+		self.title_rmp_check = QtWidgets.QCheckBox(self.title_page)
+		self.title_rmp_check.setChecked(True)
+
+		self.title_vertical_layout_2.addWidget(self.title_rmp_check)
+
 		self.title_horizontal_layout.addLayout(self.title_vertical_layout_2)
 		self.title_grid_layout_2 = QtWidgets.QGridLayout()
 		self.title_grid_layout_2.setObjectName("gridLayout_2")
@@ -116,6 +118,7 @@ class Ui_MainWindow(object):
 		self.title_schedule_button = QtWidgets.QPushButton(self.title_page)
 		self.title_schedule_button.setFont(self.font)
 		self.title_schedule_button.setObjectName("make_schedule_button")
+		self.title_schedule_button.setEnabled(False)
 
 		self.title_grid_layout_2.addWidget(self.title_schedule_button, 2, 1, 1, 1)
 
@@ -128,12 +131,14 @@ class Ui_MainWindow(object):
 		self.title_section_button = QtWidgets.QPushButton(self.title_page)
 		self.title_section_button.setFont(self.font)
 		self.title_section_button.setObjectName("browse_section_button")
+		self.title_section_button.setEnabled(False)
 
 		self.title_grid_layout_2.addWidget(self.title_section_button, 2, 0, 1, 1)
 
 		self.title_course_button = QtWidgets.QPushButton(self.title_page)
 		self.title_course_button.setFont(self.font)
 		self.title_course_button.setObjectName("browse_course_button")
+		self.title_course_button.setEnabled(False)
 
 		self.title_grid_layout_2.addWidget(self.title_course_button, 0, 0, 1, 1)
 
@@ -223,6 +228,12 @@ class Ui_MainWindow(object):
 		self.instructor_vertical_layout.addItem(spacerItem)
 		self.instructor_horizontal_layout.addLayout(self.instructor_vertical_layout)
 
+		self.instructor_return_button = QtWidgets.QPushButton(self.instructor_page)
+		self.instructor_return_button.setFont(self.font)
+		self.instructor_return_button.setObjectName("instructor_return_button")
+
+		self.instructor_vertical_layout.addWidget(self.instructor_return_button)
+
 		self.instructor_table = QtWidgets.QTableWidget(self.instructor_page)
 
 		sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
@@ -241,23 +252,6 @@ class Ui_MainWindow(object):
 		self.instructor_grid_layout.addLayout(self.instructor_horizontal_layout, 0, 0, 1, 1)
 		self.main_window_stacked_widget.addWidget(self.instructor_page)
 
-	def setup_loading_screen(self):
-		self.loading_page = QtWidgets.QWidget()
-		self.loading_page.setObjectName("loading_page")
-
-		self.loading_page_grid_layout = QtWidgets.QGridLayout(self.loading_page)
-		self.loading_page_grid_layout.setObjectName("loading_page_grid_layout")
-
-		self.loading_message = QtWidgets.QLabel(self.loading_page)
-		self.loading_message.setObjectName("loading_message")
-		self.loading_message.setFont(self.title_font)
-		self.loading_message.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignHCenter)
-		self.loading_message.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
-
-		self.loading_page_grid_layout.addWidget(self.loading_message)
-
-		self.main_window_stacked_widget.addWidget(self.loading_page)
-
 	def retranslate_ui(self):
 		_translate = QtCore.QCoreApplication.translate
 		self.title_big_title.setText(_translate("MainWindow", "BYU Scheduler 2"))
@@ -268,6 +262,7 @@ class Ui_MainWindow(object):
 		self.title_semester_picker.setItemText(2, _translate("MainWindow", "Summer"))
 		self.title_semester_picker.setItemText(3, _translate("MainWindow", "Fall"))
 		self.title_year_label.setText(_translate("MainWindow", "Year"))
+		self.title_rmp_check.setText(_translate("MainWindow", "Include RateMyProfessor Data"))
 		self.title_schedule_button.setText(_translate("MainWindow", "Make Schedule"))
 		self.title_instructor_button.setText(_translate("MainWindow", "Browse Instructors"))
 		self.title_section_button.setText(_translate("MainWindow", "Browse Sections"))
@@ -275,7 +270,7 @@ class Ui_MainWindow(object):
 		self.instructor_first_name_label.setText(_translate("MainWindow", "First Name"))
 		self.instructor_last_name_label.setText(_translate("MainWindow", "Last Name"))
 		self.instructor_course_label.setText(_translate("MainWindow", "Course Taught"))
-		self.loading_message.setText(_translate("MainWindow", "Loading..."))
+		self.instructor_return_button.setText(_translate("MainWindow", "Return to Menu"))
 
 	def hook_buttons(self):
 		self.title_course_button.clicked.connect(self.browse_course_action)
@@ -287,6 +282,7 @@ class Ui_MainWindow(object):
 		self.instructor_last_name_input.textChanged.connect(self.filter_table)
 		self.insctructor_course_input.textChanged.connect(self.filter_table)
 		self.instructor_table.cellClicked.connect(self.show_instructor)
+		self.instructor_return_button.clicked.connect(self.goto_title_page)
 
 	# Common Functions
 	# ----------------------------------------------------------------------------------
@@ -295,10 +291,10 @@ class Ui_MainWindow(object):
 		self.main_window.resize(800, 380)
 		self.main_window_stacked_widget.setCurrentIndex(0)
 		self.main_window.setWindowTitle("BYU Scheduler 2")
+		self.loaded_data.clear()
 
 	def goto_instructor_page(self):
 		self.main_window.resize(1100, 700)
-		# QtCore.QTimer.singleShot(1, lambda: self.main_window_stacked_widget.setCurrentIndex(1))
 		self.main_window_stacked_widget.setCurrentIndex(1)
 		self.main_window.setWindowTitle("Browse Instructors")
 		self.populate_table()
@@ -316,10 +312,9 @@ class Ui_MainWindow(object):
 	# ----------------------------------------------------------------------------------
 
 	def browse_instructor_action(self):
-		continuing = [None]
-		self.loaded_data = {"type": "instructor"}
-		self.show_popup(continuing)
-		if continuing[0]:
+		self.loaded_data.clear()
+		self.show_popup()
+		if len(self.loaded_data) > 0:
 			self.goto_instructor_page()
 
 	def browse_course_action(self):
@@ -331,25 +326,15 @@ class Ui_MainWindow(object):
 	def make_schedule_action(self):
 		self.show_popup()
 
-	def show_popup(self, continuing):
-		popup_dialog = UI.Dialog.Dialog()
+	def show_popup(self):
+		popup_dialog = QtWidgets.QDialog()
 		popup_ui = UI.title_popup_dialog.Ui_Dialog()
-		popup_ui.setupUi(popup_dialog, self.title_semester_picker.currentText(), self.title_year_picker.value(), continuing)
+		popup_ui.setupUi(popup_dialog,
+		                 self.title_semester_picker.currentText(),
+		                 self.title_year_picker.value(),
+		                 self.loaded_data,
+		                 self.title_rmp_check.isChecked())
 		popup_dialog.exec_()
-
-		if continuing[0]:
-			if self.loaded_data["type"] == "course":
-				# TODO load data
-				self.goto_browse_course()
-			elif self.loaded_data["type"] == "section":
-				# TODO load data
-				self.goto_browse_section()
-			elif self.loaded_data["type"] == "instructor":
-				self.loaded_data = Dao.Load.load_instructors(
-					self.title_semester_picker.currentText().lower() + "_" + str(self.title_year_picker.value()))
-			elif self.loaded_data["type"] == "schedule":
-				# TODO load data
-				self.goto_make_schedule()
 
 	# Instructor Functions
 	# ----------------------------------------------------------------------------------
@@ -366,18 +351,31 @@ class Ui_MainWindow(object):
 			different_classes_taught = set()
 			for section in self.loaded_data[key]["classes_taught"]:
 				different_classes_taught.add(section["course"])
-			self.instructor_table.setItem(i, 3, QtWidgets.QTableWidgetItem(str(len(different_classes_taught))))
+			item = QtWidgets.QTableWidgetItem()
+			item.setData(QtCore.Qt.DisplayRole, len(different_classes_taught))
+			self.instructor_table.setItem(i, 3, item)
 
 			if self.loaded_data[key]["found_rmp"] == 1:
-				self.instructor_table.setItem(i, 4, QtWidgets.QTableWidgetItem(str(self.loaded_data[key]["num_ratings"])))
-				self.instructor_table.setItem(i, 5, QtWidgets.QTableWidgetItem(str(self.loaded_data[key]["avg_rating"])))
-				self.instructor_table.setItem(i, 6, QtWidgets.QTableWidgetItem(str(self.loaded_data[key]["avg_easy_score"])))
+				item = QtWidgets.QTableWidgetItem()
+				item.setData(QtCore.Qt.DisplayRole, self.loaded_data[key]["num_ratings"])
+				self.instructor_table.setItem(i, 4, item)
+				item = QtWidgets.QTableWidgetItem()
+				item.setData(QtCore.Qt.DisplayRole, self.loaded_data[key]["avg_rating"])
+				self.instructor_table.setItem(i, 5, item)
+				item = QtWidgets.QTableWidgetItem()
+				item.setData(QtCore.Qt.DisplayRole, self.loaded_data[key]["avg_easy_score"])
+				self.instructor_table.setItem(i, 6, item)
 			else:
 				self.instructor_table.setItem(i, 4, QtWidgets.QTableWidgetItem("-"))
 				self.instructor_table.setItem(i, 5, QtWidgets.QTableWidgetItem("-"))
 				self.instructor_table.setItem(i, 6, QtWidgets.QTableWidgetItem("-"))
 			self.instructor_table.setItem(i, 7, QtWidgets.QTableWidgetItem(key))
 		self.instructor_table.hideColumn(7)
+
+		if not self.title_rmp_check.isChecked():
+			self.instructor_table.hideColumn(4)
+			self.instructor_table.hideColumn(5)
+			self.instructor_table.hideColumn(6)
 
 		self.instructor_table.setSortingEnabled(True)
 		self.instructor_table.resizeColumnsToContents()

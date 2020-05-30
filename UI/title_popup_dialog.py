@@ -6,22 +6,30 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-import Dao
-import BYUAPI
-from typing import List
 import multiprocessing
+import threading
+from typing import Dict
+
 from PyQt5 import QtCore, QtGui, QtWidgets
+
+import BYUAPI
+import Dao.Load
+import Dao.MakeDatabase
+import Dao.Paths
 
 
 class Ui_Dialog(object):
-	def setupUi(self, DialogIn: QtWidgets.QDialog, semester: str, year: int, load_decision: List[str]):
+	def setupUi(self, DialogIn: QtWidgets.QDialog, semester: str, year: int, data: Dict, useRMP: bool):
 		self.dialog = DialogIn
 		self.semester = semester
 		self.year = str(year)
 		self.semester_year = semester.lower() + "_" + str(year)
-		self.load_decision = load_decision
-		self.download_thread = None
-		self.message_queue = multiprocessing.Manager().list()
+		self.return_data = data
+		self.use_rmp = useRMP
+		self.return_data.clear()
+		self.manager = multiprocessing.Manager()
+		self.message_queue = self.manager.Queue()
+		self.kill_queue = self.manager.Queue()
 
 		font = QtGui.QFont()
 		font.setFamily("Arial")
@@ -91,38 +99,52 @@ class Ui_Dialog(object):
 		self.download_new_button.clicked.connect(self.download_action)
 		self.cached_result_button.clicked.connect(self.load_action)
 
-	def cancel_action(self):
-		if self.download_thread is not None:
-			self.download_thread.terminate()
-			self.download_thread.join()
-		try:
-			del self.message_queue
-		except AttributeError:
-			pass
-		try:
-			del self.append_message_timer
-		except AttributeError:
-			pass
+	def check_to_close(self):
+		while True:
+			try:
+				empty = self.kill_queue.empty()
+			except BrokenPipeError:
+				break
+			if empty:
+				break
+			message = self.kill_queue.get()
+			if message == "show cancel":
+				self.cancel_button.setEnabled(True)
+			if message == "hide cancel":
+				self.cancel_button.setEnabled(False)
+			if message == "exit":
+				self.dialog.close()
+
+	def exit(self):
 		self.dialog.close()
 
+	def cancel_action(self):
+		self.append_message_timer.disconnect()
+		self.manager.shutdown()
+
+		assert len(multiprocessing.active_children()) == 0
+		assert threading.active_count() < 3
+
+		self.exit()
+
 	def change_text(self, message):
-		self.message_queue.append({"operation": "change", "message": message})
+		self.message_queue.put({"operation": "change", "message": message})
 
 	def append_text(self, message):
-		self.message_queue.append({"operation": "append", "message": message})
+		self.message_queue.put({"operation": "append", "message": message})
 
 	def replace_line(self, message):
-		self.message_queue.append({"operation": "replace", "message": message})
+		self.message_queue.put({"operation": "replace", "message": message})
 
 	def handle_queue(self):
-		for message in self.message_queue:
+		while not self.message_queue.empty():
+			message = self.message_queue.get()
 			if message["operation"] == "change":
 				self.apply_change(message["message"])
 			elif message["operation"] == "append":
 				self.apply_append(message["message"])
 			elif message["operation"] == "replace":
 				self.apply_replace(message["message"])
-		self.message_queue[:] = []
 
 	def apply_append(self, message_in):
 		self.message.appendPlainText(message_in)
@@ -136,15 +158,48 @@ class Ui_Dialog(object):
 		self.message.setPlainText("\n".join(current_text))
 
 	def load_action(self):
-		self.load_decision[0] = "load"
-		self.dialog.close()
-
-	def download_action(self):
-		self.load_decision[0] = "downloading..."
 		self.download_new_button.setEnabled(False)
 		self.cached_result_button.setEnabled(False)
-		self.download_thread = multiprocessing.Process(target=downloader, args=(self.semester.lower(), self.year, self.append_text, self.replace_line, self.load_decision, self.dialog))
-		self.download_thread.start()
+		self.cancel_button.setEnabled(False)
+
+		self.append_text(f"\nLoading {self.semester} {self.year}...")
+		self.append_text("This event cannot be cancelled beacuse sqlite3 is incompatible with multi-threading\n")
+		threading.Thread(target=self.load_work).start()
+
+	def load_work(self):
+		temp = Dao.Load.load_instructors(self.semester_year)
+		for key in temp.keys():
+			self.return_data[key] = temp[key]
+		self.replace_line(f"Loaded {self.semester} {self.year}")
+		self.cancel_action()
+
+	def download_action(self):
+		self.download_new_button.setEnabled(False)
+		self.cached_result_button.setEnabled(False)
+		self.cancel_button.setEnabled(False)
+
+		self.append_text(f"\nDownloading {self.semester} {self.year}...")
+		self.append_text("This will take a few minutes")
+		self.append_text("This event cannot be cancelled beacuse sqlite3 is incompatible with multi-threading\n")
+		threading.Thread(target=self.download_work).start()
+
+	def download_work(self):
+		try:
+			Dao.MakeDatabase.save(BYUAPI.get(self.semester.lower(),
+			                                 str(self.year),
+			                                 append_function=self.append_text,
+			                                 replace_function=self.replace_line),
+			                      self.use_rmp,
+			                      append_function=self.append_text,
+			                      replace_function=self.replace_line)
+		except Exception as e:
+			print("got a downlading error")
+			self.append_text(f"\nError getting {self.semester} {self.year} (it might not exist)")
+			self.append_text(str(e))
+			self.append_text("Please choose another semester")
+			self.cancel_button.setEnabled(True)
+			return None
+		self.load_action()
 
 	def determine_availablilty(self):
 		if Dao.Paths.check_exists_1(self.semester_year):
@@ -154,17 +209,3 @@ class Ui_Dialog(object):
 		else:
 			self.message.setPlainText(f"{self.semester} {self.year} is not already cached. Would you like to download new data for this semester?")
 			self.download_new_button.setEnabled(True)
-
-
-def downloader(semester, year, append_function, replace_function, outcome, dialog):
-	append_function("")
-	append_function(f"Downloading {semester} {year}...")
-	append_function("This will take a few minutes\n")
-	try:
-		Dao.MakeDatabase.save(BYUAPI.get(semester, str(year), append_function=append_function, replace_function=replace_function), append_function=append_function, replace_function=replace_function)
-		outcome[0] = "load"
-	except Exception as e:
-		append_function(f"\nError getting {semester} {year} (it might not exist)")
-		append_function("Please choose another semester")
-		outcome[0] = "Error"
-	dialog.cancel_action()

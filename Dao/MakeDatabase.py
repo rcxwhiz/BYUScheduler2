@@ -127,11 +127,12 @@ def create_tables(semester_year, output_function):
 	wed TEXT);"""
 
 	cursor.executescript(sql_cmd)
+	cursor.close()
 	connection.commit()
 	connection.close()
 
 
-def save(yso, append_function=print, replace_function=print):
+def save(yso, use_rmp, append_function=print, replace_function=print):
 	# (semester_year, semester_result, classes_result, [section_result])
 	semester_year, semester_result, classes_result, section_results = yso
 	if not os.path.exists(Dao.Paths.database_path_1(semester_year)):
@@ -341,12 +342,14 @@ def save(yso, append_function=print, replace_function=print):
 
 	replace_function(f"Saved {len(section_results)} sections")
 
-	sql_cmd = """SELECT * FROM instructors;"""
-	cursor.execute(sql_cmd)
-	profs = cursor.fetchall()
-	RateMyProfessorAPI.append_rmp_info(profs, cursor, append_function, replace_function)
+	if use_rmp:
+		sql_cmd = """SELECT * FROM instructors;"""
+		cursor.execute(sql_cmd)
+		profs = cursor.fetchall()
+		RateMyProfessorAPI.append_rmp_info(profs, cursor, append_function, replace_function)
 
 	append_function("Commiting changes...")
+	cursor.close()
 	try:
 		connection.commit()
 	except BaseException as e:
