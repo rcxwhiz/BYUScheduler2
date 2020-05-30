@@ -127,6 +127,7 @@ def create_tables(semester_year, output_function):
 	wed TEXT);"""
 
 	cursor.executescript(sql_cmd)
+	cursor.close()
 	connection.commit()
 	connection.close()
 
@@ -354,6 +355,7 @@ def save(yso, append_function=print, replace_function=print):
 		connection.close()
 		raise e
 
+	cursor.close()
 	connection.close()
 	replace_function("Changes committed")
 

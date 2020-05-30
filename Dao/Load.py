@@ -1,6 +1,7 @@
-import sqlite3
-import Dao.Paths
 import multiprocessing
+import sqlite3
+
+import Dao.Paths
 
 
 def load_classes(semester_year):
@@ -114,6 +115,9 @@ def load_classes(semester_year):
 		data[time[0]]["sections"][time[1]]["times"].append(time_data)
 		data[time[0]]["sections"][time[1]]["times"].sort(key=sort_times)
 
+	cursor.close()
+	connection.close()
+
 	return data
 
 
@@ -130,23 +134,19 @@ def load_instructors(semester_year):
 	cursor = connection.cursor()
 	print("got past cursor")
 
-	# print("this might kill the program")
-	# for i in range(10):
-	# 	print(f"{i}) getting all instructors")
-	# 	sql_cmd = """SELECT * FROM instructors;"""
-	# 	cursor.execute(sql_cmd)
-	# 	for instructor in cursor.fetchall():
-	# 		sql_cmd = """SELECT curriculum_id_title_code, section_number FROM course_instructors WHERE person_id = ?;"""
-	# 		cursor.execute(sql_cmd, (instructor[0],))
-	# 		for course in cursor.fetchall():
-	# 			sql_cmd = """SELECT catalog_number, catalog_suffix, dept_name FROM sections WHERE curriculum_id_title_code = ? AND section_number = ?;"""
-	# 			cursor.execute(sql_cmd, course)
-
 	sql_cmd = """SELECT * FROM instructors;"""
 	cursor.execute(sql_cmd)
 	print("got past execute")
 
-	for instructor in cursor.fetchall():
+	# TODO can't get past this (except in profiling mode everything works fine)
+	try:
+		cursor.fetchall()
+	except Exception as e:
+		print("CURSOR EXCEPTION", str(e))
+	print("got past exception check")
+
+	for i, instructor in enumerate(cursor.fetchall()):
+		print(f"instructor {i + 1}")
 		instructor_data = {"person_id": instructor[0],
 		                   "first_name": instructor[1],
 		                   "last_name": instructor[2],

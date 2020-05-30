@@ -6,14 +6,15 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-import Dao
-import Dao.MakeDatabase
-import BYUAPI
-from typing import Dict
 import multiprocessing
+from typing import Dict
+
 from PyQt5 import QtCore, QtGui, QtWidgets
+
+import BYUAPI
 import Dao.Load
-import sys
+import Dao.MakeDatabase
+import Dao.Paths
 
 
 class Ui_Dialog(object):
@@ -119,24 +120,27 @@ class Ui_Dialog(object):
 			if message == "hide cancel":
 				self.cancel_button.setEnabled(False)
 
-			# TODO when downloading a new semester getting a none value error here
-			if message == "exit" and self.load_thread is None or not self.load_thread.is_alive():
+			if message == "exit" and (self.load_thread is None or not self.load_thread.is_alive()):
 				self.dialog.close()
 
 	def exit(self):
+		print("exit action called")
 		self.dialog.close()
 
 	def cancel_action(self):
+		print("testing if cancel button is enabled")
 		if not self.cancel_button.isEnabled():
 			return False
 
+		print("discconecting timers")
 		self.check_close_timer.disconnect()
 		self.append_message_timer.disconnect()
 
-		self.return_data.clear()
+		print("copying data")
 		for key in self.thread_data.keys():
 			self.return_data[key] = self.thread_data[key]
 
+		print("stopping threads")
 		if self.download_thread is not None:
 			self.download_thread.terminate()
 			self.download_thread.join()
@@ -144,10 +148,13 @@ class Ui_Dialog(object):
 			self.load_thread.terminate()
 			self.load_thread.join()
 
+		print("shutting down manager")
 		self.manager.shutdown()
 
-		print(f"number of threads exiting dialog is: {len(multiprocessing.active_children())}")
+		print("asserting no live threads")
+		assert len(multiprocessing.active_children()) == 0
 
+		print("returning true")
 		return True
 
 	def change_text(self, message):

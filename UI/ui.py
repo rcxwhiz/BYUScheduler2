@@ -1,8 +1,9 @@
-import UI.title_popup_dialog
+from PyQt5 import QtCore, QtGui, QtWidgets
+
 import UI.Dialog
 import UI.browse_instructor_window
 import UI.instructor_dialog
-from PyQt5 import QtCore, QtGui, QtWidgets
+import UI.title_popup_dialog
 
 
 class Ui_MainWindow(object):
@@ -283,7 +284,7 @@ class Ui_MainWindow(object):
 		self.main_window.resize(800, 380)
 		self.main_window_stacked_widget.setCurrentIndex(0)
 		self.main_window.setWindowTitle("BYU Scheduler 2")
-		self.loaded_data = {}
+		self.loaded_data.clear()
 
 	def goto_instructor_page(self):
 		self.main_window.resize(1100, 700)
@@ -304,7 +305,7 @@ class Ui_MainWindow(object):
 	# ----------------------------------------------------------------------------------
 
 	def browse_instructor_action(self):
-		self.loaded_data = {}
+		self.loaded_data.clear()
 		self.show_popup()
 		if len(self.loaded_data) > 0:
 			self.goto_instructor_page()
@@ -321,8 +322,11 @@ class Ui_MainWindow(object):
 	def show_popup(self):
 		popup_dialog = UI.Dialog.Dialog()
 		popup_ui = UI.title_popup_dialog.Ui_Dialog()
-		popup_ui.setupUi(popup_dialog, self.title_semester_picker.currentText(), self.title_year_picker.value(), self.loaded_data)
+		popup_ui.setupUi(popup_dialog, self.title_semester_picker.currentText(), self.title_year_picker.value(),
+		                 self.loaded_data)
+		print("popup starting")
 		popup_dialog.exec_()
+		print("popup finished")
 
 	# Instructor Functions
 	# ----------------------------------------------------------------------------------
