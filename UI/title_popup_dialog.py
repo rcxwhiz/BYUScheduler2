@@ -19,12 +19,13 @@ import Dao.Paths
 
 
 class Ui_Dialog(object):
-	def setupUi(self, DialogIn: QtWidgets.QDialog, semester: str, year: int, data: Dict):
+	def setupUi(self, DialogIn: QtWidgets.QDialog, semester: str, year: int, data: Dict, useRMP: bool):
 		self.dialog = DialogIn
 		self.semester = semester
 		self.year = str(year)
 		self.semester_year = semester.lower() + "_" + str(year)
 		self.return_data = data
+		self.use_rmp = useRMP
 		self.return_data.clear()
 		self.manager = multiprocessing.Manager()
 		self.message_queue = self.manager.Queue()
@@ -162,7 +163,7 @@ class Ui_Dialog(object):
 		self.cancel_button.setEnabled(False)
 
 		self.append_text(f"\nLoading {self.semester} {self.year}...")
-		self.append_text("This event cannot be cancelled beacuse sqlite3 is incompatible with multithreading\n")
+		self.append_text("This event cannot be cancelled beacuse sqlite3 is incompatible with multi-threading\n")
 		threading.Thread(target=self.load_work).start()
 
 	def load_work(self):
@@ -179,13 +180,17 @@ class Ui_Dialog(object):
 
 		self.append_text(f"\nDownloading {self.semester} {self.year}...")
 		self.append_text("This will take a few minutes")
-		self.append_text("This event cannot be cancelled beacuse sqlite3 is incompatible with multithreading\n")
+		self.append_text("This event cannot be cancelled beacuse sqlite3 is incompatible with multi-threading\n")
 		threading.Thread(target=self.download_work).start()
 
 	def download_work(self):
 		try:
-			Dao.MakeDatabase.save(BYUAPI.get(self.semester.lower(), str(self.year), append_function=self.append_text,
-			                                 replace_function=self.replace_line), append_function=self.append_text,
+			Dao.MakeDatabase.save(BYUAPI.get(self.semester.lower(),
+			                                 str(self.year),
+			                                 append_function=self.append_text,
+			                                 replace_function=self.replace_line),
+			                      self.use_rmp,
+			                      append_function=self.append_text,
 			                      replace_function=self.replace_line)
 		except Exception as e:
 			print("got a downlading error")

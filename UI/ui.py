@@ -1,6 +1,5 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-import UI.Dialog
 import UI.browse_instructor_window
 import UI.instructor_dialog
 import UI.title_popup_dialog
@@ -106,8 +105,12 @@ class Ui_MainWindow(object):
 		self.title_year_picker.setObjectName("year_picker")
 
 		self.title_vertical_layout_2.addWidget(self.title_year_picker)
-		self.title_vertical_spacer = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-		self.title_vertical_layout_2.addItem(self.title_vertical_spacer)
+
+		self.title_rmp_check = QtWidgets.QCheckBox(self.title_page)
+		self.title_rmp_check.setChecked(True)
+
+		self.title_vertical_layout_2.addWidget(self.title_rmp_check)
+
 		self.title_horizontal_layout.addLayout(self.title_vertical_layout_2)
 		self.title_grid_layout_2 = QtWidgets.QGridLayout()
 		self.title_grid_layout_2.setObjectName("gridLayout_2")
@@ -256,6 +259,7 @@ class Ui_MainWindow(object):
 		self.title_semester_picker.setItemText(2, _translate("MainWindow", "Summer"))
 		self.title_semester_picker.setItemText(3, _translate("MainWindow", "Fall"))
 		self.title_year_label.setText(_translate("MainWindow", "Year"))
+		self.title_rmp_check.setText(_translate("MainWindow", "Include RateMyProfessor Data"))
 		self.title_schedule_button.setText(_translate("MainWindow", "Make Schedule"))
 		self.title_instructor_button.setText(_translate("MainWindow", "Browse Instructors"))
 		self.title_section_button.setText(_translate("MainWindow", "Browse Sections"))
@@ -322,8 +326,11 @@ class Ui_MainWindow(object):
 	def show_popup(self):
 		popup_dialog = QtWidgets.QDialog()
 		popup_ui = UI.title_popup_dialog.Ui_Dialog()
-		popup_ui.setupUi(popup_dialog, self.title_semester_picker.currentText(), self.title_year_picker.value(),
-		                 self.loaded_data)
+		popup_ui.setupUi(popup_dialog,
+		                 self.title_semester_picker.currentText(),
+		                 self.title_year_picker.value(),
+		                 self.loaded_data,
+		                 self.title_rmp_check.isChecked())
 		popup_dialog.exec_()
 
 	# Instructor Functions
@@ -361,6 +368,11 @@ class Ui_MainWindow(object):
 				self.instructor_table.setItem(i, 6, QtWidgets.QTableWidgetItem("-"))
 			self.instructor_table.setItem(i, 7, QtWidgets.QTableWidgetItem(key))
 		self.instructor_table.hideColumn(7)
+
+		if not self.title_rmp_check.isChecked():
+			self.instructor_table.hideColumn(4)
+			self.instructor_table.hideColumn(5)
+			self.instructor_table.hideColumn(6)
 
 		self.instructor_table.setSortingEnabled(True)
 		self.instructor_table.resizeColumnsToContents()

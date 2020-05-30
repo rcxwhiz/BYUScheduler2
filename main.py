@@ -1,5 +1,6 @@
 import BYUAPI
-import Dao
+import Dao.MakeDatabase
+import Dao.Paths
 import UI
 
 

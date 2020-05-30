@@ -127,7 +127,6 @@ def sort_times(val):
 
 
 def load_instructors(semester_year):
-	print("going to load instructors")
 	data = {}
 
 	with closing(sqlite3.connect(Dao.Paths.database_path_1(semester_year))) as connection:
