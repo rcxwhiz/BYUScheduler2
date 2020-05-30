@@ -348,6 +348,7 @@ def save(yso, append_function=print, replace_function=print):
 	RateMyProfessorAPI.append_rmp_info(profs, cursor, append_function, replace_function)
 
 	append_function("Commiting changes...")
+	cursor.close()
 	try:
 		connection.commit()
 	except BaseException as e:
@@ -355,7 +356,6 @@ def save(yso, append_function=print, replace_function=print):
 		connection.close()
 		raise e
 
-	cursor.close()
 	connection.close()
 	replace_function("Changes committed")
 

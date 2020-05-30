@@ -26,9 +26,6 @@ class Ui_Dialog(object):
 		self.return_data = data
 		self.return_data.clear()
 		self.manager = multiprocessing.Manager()
-		self.thread_data = self.manager.dict()
-		self.download_thread = None
-		self.load_thread = None
 		self.message_queue = self.manager.Queue()
 		self.kill_queue = self.manager.Queue()
 
@@ -85,10 +82,10 @@ class Ui_Dialog(object):
 		log_update_interval = 200
 		self.append_message_timer.start(log_update_interval)
 
-		self.check_close_timer = QtCore.QTimer()
-		self.check_close_timer.timeout.connect(self.check_to_close)
-		close_check_interval = 100
-		self.check_close_timer.start(close_check_interval)
+		# self.check_close_timer = QtCore.QTimer()
+		# self.check_close_timer.timeout.connect(self.check_to_close)
+		# close_check_interval = 100
+		# self.check_close_timer.start(close_check_interval)
 
 		self.dialog.cancel_action = self.cancel_action
 
@@ -133,20 +130,7 @@ class Ui_Dialog(object):
 			return False
 
 		print("discconecting timers")
-		self.check_close_timer.disconnect()
 		self.append_message_timer.disconnect()
-
-		print("copying data")
-		for key in self.thread_data.keys():
-			self.return_data[key] = self.thread_data[key]
-
-		print("stopping threads")
-		if self.download_thread is not None:
-			self.download_thread.terminate()
-			self.download_thread.join()
-		if self.load_thread is not None:
-			self.load_thread.terminate()
-			self.load_thread.join()
 
 		print("shutting down manager")
 		self.manager.shutdown()
@@ -189,18 +173,34 @@ class Ui_Dialog(object):
 
 	def load_action(self):
 		print(f"Number of threads going into load is {len(multiprocessing.active_children())}")
-		self.thread_data.clear()
 		self.download_new_button.setEnabled(False)
 		self.cached_result_button.setEnabled(False)
 		self.cancel_button.setEnabled(False)
-		self.load_thread = multiprocessing.Process(target=loader, args=(self.semester_year, self.thread_data, self.append_text, self.replace_line, self.kill_queue, self.semester, self.year))
-		self.load_thread.start()
+
+		self.append_text(f"\nLoading {self.semester} {self.year}...")
+		temp = Dao.Load.load_instructors(self.semester_year)
+		for key in temp.keys():
+			self.return_data[key] = temp[key]
+		self.replace_line(f"Loaded {self.semester} {self.year}")
+		self.cancel_action()
 
 	def download_action(self):
 		self.download_new_button.setEnabled(False)
 		self.cached_result_button.setEnabled(False)
-		self.download_thread = multiprocessing.Process(target=downloader, args=(self.semester_year, self.semester.lower(), self.year, self.append_text, self.replace_line, self.thread_data, self.kill_queue))
-		self.download_thread.start()
+		self.cancel_button.setEnabled(False)
+
+		self.append_text(f"\nDownloading {self.semester} {self.year}...")
+		self.append_text("This will take a few minutes\n")
+		try:
+			Dao.MakeDatabase.save(BYUAPI.get(self.semester, str(self.year), append_function=self.append_text,
+			                                 replace_function=self.replace_line), append_function=self.append_text,
+			                      replace_function=self.replace_line)
+		except Exception as e:
+			self.append_text(f"\nError getting {self.semester} {self.year} (it might not exist)")
+			self.append_text(str(e))
+			self.append_text("Please choose another semester")
+			self.cancel_button.setEnabled(True)
+		self.load_action()
 
 	def determine_availablilty(self):
 		if Dao.Paths.check_exists_1(self.semester_year):
@@ -210,29 +210,3 @@ class Ui_Dialog(object):
 		else:
 			self.message.setPlainText(f"{self.semester} {self.year} is not already cached. Would you like to download new data for this semester?")
 			self.download_new_button.setEnabled(True)
-
-
-def downloader(semester_year, semester, year, append_function, replace_function, data, kill_queue):
-	append_function("")
-	append_function(f"Downloading {semester} {year}...")
-	append_function("This will take a few minutes\n")
-	try:
-		Dao.MakeDatabase.save(BYUAPI.get(semester, str(year), append_function=append_function, replace_function=replace_function), append_function=append_function, replace_function=replace_function)
-	except Exception as e:
-		append_function(f"\nError getting {semester} {year} (it might not exist)")
-		append_function(str(e))
-		append_function("Please choose another semester")
-
-	kill_queue.put("hide cancel")
-	loader(semester_year, data, append_function, replace_function, kill_queue, semester, year)
-
-
-def loader(semester_year, data, append_function, replace_function, kill_queue, semester, year):
-	append_function(f"\nLoading {semester} {year}...")
-	temp = Dao.Load.load_instructors(semester_year)
-	for key in temp.keys():
-		data[key] = temp[key]
-	replace_function(f"Loaded {semester} {year}")
-
-	kill_queue.put("show cancel")
-	kill_queue.put("exit")
