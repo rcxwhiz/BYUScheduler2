@@ -167,9 +167,7 @@ class Ui_Dialog(object):
 		threading.Thread(target=self.load_work).start()
 
 	def load_work(self):
-		temp = Dao.Load.load_instructors(self.semester_year)
-		for key in temp.keys():
-			self.return_data[key] = temp[key]
+		temp = Dao.Load.load_instructors(self.semester_year, self.return_data)
 		self.replace_line(f"Loaded {self.semester} {self.year}")
 		self.cancel_action()
 

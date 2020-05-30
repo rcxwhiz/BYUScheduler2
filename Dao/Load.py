@@ -4,8 +4,7 @@ from contextlib import closing
 import Dao.Paths
 
 
-def load_classes(semester_year):
-	data = {}
+def load_classes(semester_year, data):
 	sql_cmd = """SELECT * FROM courses;"""
 
 	with closing(sqlite3.connect(Dao.Paths.database_path_1(semester_year))) as connection:
@@ -116,19 +115,12 @@ def load_classes(semester_year):
 			data[time[0]]["sections"][time[1]]["times"].append(time_data)
 			data[time[0]]["sections"][time[1]]["times"].sort(key=sort_times)
 
-		# cursor.close()
-		# connection.close()
-
-		return data
-
 
 def sort_times(val):
 	return val["sequence_number"]
 
 
-def load_instructors(semester_year):
-	data = {}
-
+def load_instructors(semester_year, data):
 	with closing(sqlite3.connect(Dao.Paths.database_path_1(semester_year))) as connection:
 		cursor = connection.cursor()
 
@@ -170,6 +162,3 @@ def load_instructors(semester_year):
 
 					instructor_data["classes_taught"].append(class_data)
 			data[instructor[0]] = instructor_data
-		# cursor.close()
-		# connection.close()
-		return data
