@@ -147,7 +147,7 @@ def load_instructors(semester_year):
 		# print("got past exception check")
 
 		for i, instructor in enumerate(cursor.fetchall()):
-			print(f"instructor {i + 1}")
+			# print(f"instructor {i + 1}")
 			instructor_data = {"person_id": instructor[0],
 			                   "first_name": instructor[1],
 			                   "last_name": instructor[2],
@@ -184,7 +184,7 @@ def load_instructors(semester_year):
 			data[instructor[0]] = instructor_data
 		# cursor.close()
 		# connection.close()
-		print(f"returning {len(data)} pieces of data")
+		# print(f"returning {len(data)} pieces of data")
 		return data
 
 

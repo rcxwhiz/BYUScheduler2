@@ -7,6 +7,7 @@
 # WARNING! All changes made in this file will be lost!
 
 import multiprocessing
+import threading
 from typing import Dict
 
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -82,11 +83,6 @@ class Ui_Dialog(object):
 		log_update_interval = 200
 		self.append_message_timer.start(log_update_interval)
 
-		# self.check_close_timer = QtCore.QTimer()
-		# self.check_close_timer.timeout.connect(self.check_to_close)
-		# close_check_interval = 100
-		# self.check_close_timer.start(close_check_interval)
-
 		self.dialog.cancel_action = self.cancel_action
 
 	def retranslateUi(self):
@@ -98,7 +94,7 @@ class Ui_Dialog(object):
 		self.cancel_button.setText(_translate("Dialog", "Cancel"))
 
 	def hook_buttons(self):
-		self.cancel_button.clicked.connect(self.exit)
+		self.cancel_button.clicked.connect(self.cancel_action)
 		self.download_new_button.clicked.connect(self.download_action)
 		self.cached_result_button.clicked.connect(self.load_action)
 
@@ -113,11 +109,9 @@ class Ui_Dialog(object):
 			message = self.kill_queue.get()
 			if message == "show cancel":
 				self.cancel_button.setEnabled(True)
-
 			if message == "hide cancel":
 				self.cancel_button.setEnabled(False)
-
-			if message == "exit" and (self.load_thread is None or not self.load_thread.is_alive()):
+			if message == "exit":
 				self.dialog.close()
 
 	def exit(self):
@@ -125,10 +119,6 @@ class Ui_Dialog(object):
 		self.dialog.close()
 
 	def cancel_action(self):
-		print("testing if cancel button is enabled")
-		if not self.cancel_button.isEnabled():
-			return False
-
 		print("discconecting timers")
 		self.append_message_timer.disconnect()
 
@@ -137,9 +127,10 @@ class Ui_Dialog(object):
 
 		print("asserting no live threads")
 		assert len(multiprocessing.active_children()) == 0
+		print(f"threading lib threads: {threading.active_count()}")
+		assert threading.active_count() < 3
 
-		print("returning true")
-		return True
+		self.exit()
 
 	def change_text(self, message):
 		self.message_queue.put({"operation": "change", "message": message})
@@ -178,6 +169,10 @@ class Ui_Dialog(object):
 		self.cancel_button.setEnabled(False)
 
 		self.append_text(f"\nLoading {self.semester} {self.year}...")
+		self.append_text("Blame the sqlite3 library's incompatability with threading for this being un-cancelable")
+		threading.Thread(target=self.load_work).start()
+
+	def load_work(self):
 		temp = Dao.Load.load_instructors(self.semester_year)
 		for key in temp.keys():
 			self.return_data[key] = temp[key]
@@ -191,6 +186,10 @@ class Ui_Dialog(object):
 
 		self.append_text(f"\nDownloading {self.semester} {self.year}...")
 		self.append_text("This will take a few minutes\n")
+		self.append_text("Blame the sqlite3 library's incompatability with threading for this being un-cancelable")
+		threading.Thread(target=self.download_work).start()
+
+	def download_work(self):
 		try:
 			Dao.MakeDatabase.save(BYUAPI.get(self.semester, str(self.year), append_function=self.append_text,
 			                                 replace_function=self.replace_line), append_function=self.append_text,
