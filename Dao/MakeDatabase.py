@@ -37,16 +37,15 @@ def create_tables(semester_year: str, output_function: Callable) -> None:
 	DROP TABLE IF EXISTS instructors;
 	CREATE TABLE instructors (
 	person_id TEXT NOT NULL PRIMARY KEY,
+	byu_id TEXT,
+	net_id TEXT,
 	first_name TEXT,
 	last_name TEXT,
 	sort_name TEXT NOT NULL,
-	byu_id TEXT,
-	net_id TEXT,
-	phone_number TEXT,
 	preferred_first_name TEXT,
 	rest_of_name TEXT,
 	surname TEXT,
-	found_rmp INTEGER,
+	phone_number TEXT,
 	avg_rating REAL,
 	avg_helpful REAL,
 	num_ratings INTEGER,
@@ -64,17 +63,17 @@ def create_tables(semester_year: str, output_function: Callable) -> None:
 	CREATE TABLE courses (
 	curriculum_id_title_code TEXT NOT NULL PRIMARY KEY,
 	curriculum_id TEXT NOT NULL,
+	title_code TEXT,
+	dept_name TEXT NOT NULL,
 	catalog_number TEXT NOT NULL,
 	catalog_suffix TEXT,
-	dept_name TEXT NOT NULL,
-	full_title TEXT,
 	title TEXT,
-	title_code TEXT,
+	full_title TEXT,
 	credit_hours TEXT,
 	description TEXT,
 	effective_date TEXT,
-	effective_year_term TEXT,
 	expired_date TEXT,
+	effective_year_term TEXT,
 	expired_year_term TEXT,
 	honors_approved TEXT,
 	lab_hours TEXT,
@@ -115,17 +114,17 @@ def create_tables(semester_year: str, output_function: Callable) -> None:
 	cirriculum_id_title_code TEXT NOT NULL,
 	section_number TEXT NOT NULL,
 	begin_time TEXT,
-	building TEXT,
 	end_time TEXT,
-	fri TEXT,
-	mon TEXT,
+	building TEXT,
 	room TEXT,
-	sat TEXT,
-	sequence_number TEXT,
 	sun TEXT,
-	thu TEXT,
+	mon TEXT,
 	tue TEXT,
-	wed TEXT);"""
+	wed TEXT,
+	thu TEXT,
+	fri TEXT,
+	sat TEXT,
+	sequence_number TEXT);"""
 
 	cursor.executescript(sql_cmd)
 	connection.commit()
@@ -187,7 +186,8 @@ def save(yso: Tuple, use_rmp: bool, append_function: Callable = print, replace_f
 	append_function("Saving instructors...")
 	for instructor in semester_result["instructor_list"]:
 		sql_cmd = """INSERT INTO instructors VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"""
-		values = [instructor["id"], instructor["first_name"], instructor["last_name"], instructor["sort_name"]] + [None] * 12
+		values = [instructor["id"], None, None, instructor["first_name"], instructor["last_name"],
+		          instructor["sort_name"]] + [None] * 10
 		try:
 			cursor.execute(sql_cmd, values)
 		except sqlite3.IntegrityError:
@@ -215,12 +215,13 @@ def save(yso: Tuple, use_rmp: bool, append_function: Callable = print, replace_f
 		sql_cmd = """INSERT INTO courses VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"""
 		values = [course["curriculum_id"] + course["title_code"],
 		          course["curriculum_id"],
+		          course["title_code"],
+		          course["dept_name"],
 		          course["catalog_number"],
 		          course["catalog_suffix"],
-		          course["dept_name"],
-		          course["full_title"],
 		          course["title"],
-		          course["title_code"]] + [None] * 14
+		          course["full_title"]
+		          ] + [None] * 14
 		try:
 			cursor.execute(sql_cmd, values)
 		except sqlite3.IntegrityError:
@@ -295,17 +296,17 @@ def save(yso: Tuple, use_rmp: bool, append_function: Callable = print, replace_f
 				values = (curriculum_id_title_code,
 				          section_number,
 				          time["begin_time"],
-				          time["building"],
 				          time["end_time"],
-				          time["fri"],
-				          time["mon"],
+				          time["building"],
 				          time["room"],
-				          time["sat"],
-				          time["sequence_number"],
 				          time["sun"],
-				          time["thu"],
+				          time["mon"],
 				          time["tue"],
-				          time["wed"])
+				          time["wed"],
+				          time["thu"],
+				          time["fri"],
+				          time["sat"],
+				          time["sequence_number"])
 				try:
 					cursor.execute(sql_cmd, values)
 				except sqlite3.IntegrityError:
@@ -352,7 +353,7 @@ def save(yso: Tuple, use_rmp: bool, append_function: Callable = print, replace_f
 	try:
 		connection.commit()
 	except BaseException as e:
-		append_function("Error comitting changes\n")
+		append_function("Error committing changes\n")
 		connection.close()
 		raise e
 

@@ -5,6 +5,7 @@ from typing import Dict
 import Dao.Paths
 
 
+# TODO pretty much everything here needs to be changed
 def load_classes(semester_year: str, data: Dict) -> None:
 	sql_cmd = """SELECT * FROM courses;"""
 
@@ -130,21 +131,20 @@ def load_instructors(semester_year: str, data: Dict) -> None:
 
 		for i, instructor in enumerate(cursor.fetchall()):
 			instructor_data = {"person_id": instructor[0],
-			                   "first_name": instructor[1],
-			                   "last_name": instructor[2],
-			                   "sort_name": instructor[3],
-			                   "byu_id": instructor[4],
-			                   "net_id": instructor[5],
-			                   "phone_number": instructor[6],
-			                   "preferred_first_name": instructor[7],
-			                   "rest_of_name": instructor[8],
-			                   "surname": instructor[9],
-			                   "found_rmp": instructor[10],
-			                   "avg_rating": instructor[11],
-			                   "avg_helpful": instructor[12],
-			                   "num_ratings": instructor[13],
-			                   "avg_easy_score": instructor[14],
-			                   "avg_clarity_score": instructor[15],
+			                   "byu_id": instructor[1],
+			                   "net_id": instructor[2],
+			                   "first_name": instructor[3],
+			                   "last_name": instructor[4],
+			                   "sort_name": instructor[5],
+			                   "preferred_first_name": instructor[6],
+			                   "rest_of_name": instructor[7],
+			                   "surname": instructor[8],
+			                   "phone_number": instructor[9],
+			                   "avg_rating": instructor[10],
+			                   "avg_helpful": instructor[11],
+			                   "num_ratings": instructor[12],
+			                   "avg_easy_score": instructor[13],
+			                   "avg_clarity_score": instructor[14],
 			                   "classes_taught": []}
 			for key in instructor_data.keys():
 				if instructor_data[key] is None:
