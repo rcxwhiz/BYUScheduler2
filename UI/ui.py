@@ -1,6 +1,5 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-import UI.browse_instructor_window
 import UI.instructor_dialog
 import UI.title_popup_dialog
 
@@ -8,7 +7,7 @@ import UI.title_popup_dialog
 class Ui_MainWindow(object):
 	# Setup
 	# ----------------------------------------------------------------------------------
-	def setup_ui(self, MainWindowIn: QtWidgets.QMainWindow):
+	def setup_ui(self, MainWindowIn: QtWidgets.QMainWindow) -> None:
 		self.setup_window(MainWindowIn)
 
 		self.setup_title_page()
@@ -16,7 +15,7 @@ class Ui_MainWindow(object):
 
 		self.finish_setup_window()
 
-	def setup_window(self, MainWindowIn: QtWidgets.QMainWindow):
+	def setup_window(self, MainWindowIn: QtWidgets.QMainWindow) -> None:
 		self.main_window = MainWindowIn
 		self.main_window.setObjectName("MainWindow")
 
@@ -35,7 +34,7 @@ class Ui_MainWindow(object):
 		self.font = QtGui.QFont()
 		self.font.setFamily("Arial")
 
-	def finish_setup_window(self):
+	def finish_setup_window(self) -> None:
 		self.main_window_grid_layout.addWidget(self.main_window_stacked_widget, 0, 0, 1, 1)
 		self.main_window.setCentralWidget(self.main_window_central_widget)
 
@@ -46,7 +45,7 @@ class Ui_MainWindow(object):
 
 		self.goto_title_page()
 
-	def setup_title_page(self):
+	def setup_title_page(self) -> None:
 		self.title_page = QtWidgets.QWidget()
 		self.title_page.setObjectName("page")
 
@@ -147,7 +146,7 @@ class Ui_MainWindow(object):
 		self.title_grid_layout_1.addLayout(self.title_vertical_layout_1, 0, 0, 1, 1)
 		self.main_window_stacked_widget.addWidget(self.title_page)
 
-	def setup_browse_instructor_page(self):
+	def setup_browse_instructor_page(self) -> None:
 		self.loaded_data = {}
 
 		self.instructor_page = QtWidgets.QWidget()
@@ -252,7 +251,7 @@ class Ui_MainWindow(object):
 		self.instructor_grid_layout.addLayout(self.instructor_horizontal_layout, 0, 0, 1, 1)
 		self.main_window_stacked_widget.addWidget(self.instructor_page)
 
-	def retranslate_ui(self):
+	def retranslate_ui(self) -> None:
 		_translate = QtCore.QCoreApplication.translate
 		self.title_big_title.setText(_translate("MainWindow", "BYU Scheduler 2"))
 		self.title_name.setText(_translate("MainWindow", "By Josh Bedwell"))
@@ -272,7 +271,7 @@ class Ui_MainWindow(object):
 		self.instructor_course_label.setText(_translate("MainWindow", "Course Taught"))
 		self.instructor_return_button.setText(_translate("MainWindow", "Return to Menu"))
 
-	def hook_buttons(self):
+	def hook_buttons(self) -> None:
 		self.title_course_button.clicked.connect(self.browse_course_action)
 		self.title_section_button.clicked.connect(self.browse_section_action)
 		self.title_instructor_button.clicked.connect(self.browse_instructor_action)
@@ -287,46 +286,52 @@ class Ui_MainWindow(object):
 	# Common Functions
 	# ----------------------------------------------------------------------------------
 
-	def goto_title_page(self):
+	def goto_title_page(self) -> None:
 		self.main_window.resize(800, 380)
 		self.main_window_stacked_widget.setCurrentIndex(0)
 		self.main_window.setWindowTitle("BYU Scheduler 2")
 		self.loaded_data.clear()
 
-	def goto_instructor_page(self):
-		self.main_window.resize(1100, 700)
+	def goto_instructor_page(self) -> None:
+		if self.title_rmp_check.isChecked():
+			self.main_window.resize(1150, 700)
+		else:
+			self.main_window.resize(830, 700)
+		self.instructor_first_name_input.clear()
+		self.instructor_last_name_input.clear()
+		self.insctructor_course_input.clear()
 		self.main_window_stacked_widget.setCurrentIndex(1)
 		self.main_window.setWindowTitle("Browse Instructors")
 		self.populate_table()
 
-	def goto_browse_course(self):
+	def goto_browse_course(self) -> None:
 		print("browse course")
 
-	def goto_browse_section(self):
+	def goto_browse_section(self) -> None:
 		print("browse section")
 
-	def goto_make_schedule(self):
+	def goto_make_schedule(self) -> None:
 		print("make schedule")
 
 	# Title Functions
 	# ----------------------------------------------------------------------------------
 
-	def browse_instructor_action(self):
+	def browse_instructor_action(self) -> None:
 		self.loaded_data.clear()
 		self.show_popup()
 		if len(self.loaded_data) > 0:
 			self.goto_instructor_page()
 
-	def browse_course_action(self):
+	def browse_course_action(self) -> None:
 		self.show_popup()
 
-	def browse_section_action(self):
+	def browse_section_action(self) -> None:
 		self.show_popup()
 
-	def make_schedule_action(self):
+	def make_schedule_action(self) -> None:
 		self.show_popup()
 
-	def show_popup(self):
+	def show_popup(self) -> None:
 		popup_dialog = QtWidgets.QDialog()
 		popup_ui = UI.title_popup_dialog.Ui_Dialog()
 		popup_ui.setupUi(popup_dialog,
@@ -339,10 +344,12 @@ class Ui_MainWindow(object):
 	# Instructor Functions
 	# ----------------------------------------------------------------------------------
 
-	def populate_table(self):
+	def populate_table(self) -> None:
 		self.instructor_table.setColumnCount(8)
 		self.instructor_table.setRowCount(len(self.loaded_data))
-		self.instructor_table.setHorizontalHeaderLabels(["First Name", "Last Name", "Sort Name", "# Courses Taught", "# RMP Ratings", "RMP Rating", "RMP Difficulty", "HIDDEN"])
+		self.instructor_table.setHorizontalHeaderLabels(
+			["First Name", "Last Name", "Sort Name", "# Courses Taught", "# RMP Ratings", "RMP Rating",
+			 "RMP Difficulty", "HIDDEN"])
 		for i, key in enumerate(self.loaded_data.keys()):
 			self.instructor_table.setItem(i, 0, QtWidgets.QTableWidgetItem(self.loaded_data[key]["first_name"]))
 			self.instructor_table.setItem(i, 1, QtWidgets.QTableWidgetItem(self.loaded_data[key]["last_name"]))
@@ -380,7 +387,7 @@ class Ui_MainWindow(object):
 		self.instructor_table.setSortingEnabled(True)
 		self.instructor_table.resizeColumnsToContents()
 
-	def filter_table(self):
+	def filter_table(self) -> None:
 		first_filter = self.instructor_first_name_input.text().lower()
 		last_filter = self.instructor_last_name_input.text().lower()
 		num_filter = self.insctructor_course_input.text().lower()
@@ -405,7 +412,7 @@ class Ui_MainWindow(object):
 			else:
 				self.instructor_table.hideRow(index)
 
-	def show_instructor(self, row, column):
+	def show_instructor(self, row: int, column: int) -> None:
 		instructor_dialog = QtWidgets.QDialog()
 		instructor_ui = UI.instructor_dialog.Ui_Dialog()
 		instructor_ui.setupUi(instructor_dialog, self.loaded_data[self.instructor_table.item(row, 7).text()])

@@ -19,7 +19,7 @@ import Dao.Paths
 
 
 class Ui_Dialog(object):
-	def setupUi(self, DialogIn: QtWidgets.QDialog, semester: str, year: int, data: Dict, useRMP: bool):
+	def setupUi(self, DialogIn: QtWidgets.QDialog, semester: str, year: int, data: Dict, useRMP: bool) -> None:
 		self.dialog = DialogIn
 		self.semester = semester
 		self.year = str(year)
@@ -86,7 +86,7 @@ class Ui_Dialog(object):
 
 		self.dialog.cancel_action = self.cancel_action
 
-	def retranslateUi(self):
+	def retranslateUi(self) -> None:
 		_translate = QtCore.QCoreApplication.translate
 		self.dialog.setWindowTitle(_translate("Dialog", "Load Semester Data"))
 		self.message.setPlainText(_translate("Dialog", "Loading data..."))
@@ -94,12 +94,12 @@ class Ui_Dialog(object):
 		self.download_new_button.setText(_translate("Dialog", "Download New Result"))
 		self.cancel_button.setText(_translate("Dialog", "Cancel"))
 
-	def hook_buttons(self):
+	def hook_buttons(self) -> None:
 		self.cancel_button.clicked.connect(self.cancel_action)
 		self.download_new_button.clicked.connect(self.download_action)
 		self.cached_result_button.clicked.connect(self.load_action)
 
-	def check_to_close(self):
+	def check_to_close(self) -> None:
 		while True:
 			try:
 				empty = self.kill_queue.empty()
@@ -115,10 +115,10 @@ class Ui_Dialog(object):
 			if message == "exit":
 				self.dialog.close()
 
-	def exit(self):
+	def exit(self) -> None:
 		self.dialog.close()
 
-	def cancel_action(self):
+	def cancel_action(self) -> None:
 		self.append_message_timer.disconnect()
 		self.manager.shutdown()
 
@@ -127,16 +127,16 @@ class Ui_Dialog(object):
 
 		self.exit()
 
-	def change_text(self, message):
+	def change_text(self, message: str) -> None:
 		self.message_queue.put({"operation": "change", "message": message})
 
-	def append_text(self, message):
+	def append_text(self, message: str) -> None:
 		self.message_queue.put({"operation": "append", "message": message})
 
-	def replace_line(self, message):
+	def replace_line(self, message: str) -> None:
 		self.message_queue.put({"operation": "replace", "message": message})
 
-	def handle_queue(self):
+	def handle_queue(self) -> None:
 		while not self.message_queue.empty():
 			message = self.message_queue.get()
 			if message["operation"] == "change":
@@ -146,18 +146,18 @@ class Ui_Dialog(object):
 			elif message["operation"] == "replace":
 				self.apply_replace(message["message"])
 
-	def apply_append(self, message_in):
+	def apply_append(self, message_in: str) -> None:
 		self.message.appendPlainText(message_in)
 
-	def apply_change(self, message_in):
+	def apply_change(self, message_in: str) -> None:
 		self.message.setPlainText(message_in)
 
-	def apply_replace(self, message_in):
+	def apply_replace(self, message_in: str) -> None:
 		current_text = self.message.toPlainText().split("\n")
 		current_text[-1] = message_in
 		self.message.setPlainText("\n".join(current_text))
 
-	def load_action(self):
+	def load_action(self) -> None:
 		self.download_new_button.setEnabled(False)
 		self.cached_result_button.setEnabled(False)
 		self.cancel_button.setEnabled(False)
@@ -166,14 +166,12 @@ class Ui_Dialog(object):
 		self.append_text("This event cannot be cancelled beacuse sqlite3 is incompatible with multi-threading\n")
 		threading.Thread(target=self.load_work).start()
 
-	def load_work(self):
-		temp = Dao.Load.load_instructors(self.semester_year)
-		for key in temp.keys():
-			self.return_data[key] = temp[key]
+	def load_work(self) -> None:
+		Dao.Load.load_instructors(self.semester_year, self.return_data)
 		self.replace_line(f"Loaded {self.semester} {self.year}")
 		self.cancel_action()
 
-	def download_action(self):
+	def download_action(self) -> None:
 		self.download_new_button.setEnabled(False)
 		self.cached_result_button.setEnabled(False)
 		self.cancel_button.setEnabled(False)
@@ -183,7 +181,7 @@ class Ui_Dialog(object):
 		self.append_text("This event cannot be cancelled beacuse sqlite3 is incompatible with multi-threading\n")
 		threading.Thread(target=self.download_work).start()
 
-	def download_work(self):
+	def download_work(self) -> None:
 		try:
 			Dao.MakeDatabase.save(BYUAPI.get(self.semester.lower(),
 			                                 str(self.year),
@@ -201,11 +199,13 @@ class Ui_Dialog(object):
 			return None
 		self.load_action()
 
-	def determine_availablilty(self):
+	def determine_availablilty(self) -> None:
 		if Dao.Paths.check_exists_1(self.semester_year):
-			self.message.setPlainText(f"{self.semester} {self.year} is already cached ({Dao.Paths.check_date_1(self.semester_year)}). Would you like to use that data or download new data?")
+			self.message.setPlainText(
+				f"{self.semester} {self.year} is already cached ({Dao.Paths.check_date_1(self.semester_year)}). Would you like to use that data or download new data?")
 			self.cached_result_button.setEnabled(True)
 			self.download_new_button.setEnabled(True)
 		else:
-			self.message.setPlainText(f"{self.semester} {self.year} is not already cached. Would you like to download new data for this semester?")
+			self.message.setPlainText(
+				f"{self.semester} {self.year} is not already cached. Would you like to download new data for this semester?")
 			self.download_new_button.setEnabled(True)

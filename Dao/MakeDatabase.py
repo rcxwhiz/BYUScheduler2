@@ -1,11 +1,12 @@
 import os
 import sqlite3
+from typing import Callable, Tuple
 
 import Dao.Paths
 import RateMyProfessorAPI
 
 
-def create_tables(semester_year, output_function):
+def create_tables(semester_year: str, output_function: Callable) -> None:
 	if not os.path.exists(Dao.Paths.database_path_1(semester_year)):
 		output_function(f"Could not find {Dao.Paths.database_path_1(semester_year)}. Making new database...")
 		with open(Dao.Paths.database_path_1(semester_year), "w") as _:
@@ -127,13 +128,11 @@ def create_tables(semester_year, output_function):
 	wed TEXT);"""
 
 	cursor.executescript(sql_cmd)
-	cursor.close()
 	connection.commit()
 	connection.close()
 
 
-def save(yso, use_rmp, append_function=print, replace_function=print):
-	# (semester_year, semester_result, classes_result, [section_result])
+def save(yso: Tuple, use_rmp: bool, append_function: Callable = print, replace_function: Callable = print) -> None:
 	semester_year, semester_result, classes_result, section_results = yso
 	if not os.path.exists(Dao.Paths.database_path_1(semester_year)):
 		append_function(f"Could not find {Dao.Paths.database_path_1(semester_year)}. Making new database...")

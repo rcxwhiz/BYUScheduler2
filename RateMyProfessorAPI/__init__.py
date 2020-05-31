@@ -1,6 +1,9 @@
-import requests
-import time
+import sqlite3
 import threading
+import time
+from typing import List, Dict, Callable
+
+import requests
 
 url1 = "https://search-production.ratemyprofessors.com/solr/rmp/select/?solrformat=true&rows=2&wt=json&q="
 url2 = "+AND+schoolid_s%3A135"
@@ -15,7 +18,7 @@ rest_time = 0.5
 sql_cmd = """UPDATE instructors SET found_rmp = ?, avg_rating = ?, avg_helpful = ?, num_ratings = ?, avg_easy_score = ?, avg_clarity_score = ? WHERE person_id = ?;"""
 
 
-def get_rating(person_id, first_name, last_name, rest_of_name, surname, data_stream):
+def get_rating(person_id: str, first_name: str, last_name: str, rest_of_name: str, surname: str, data_stream: List):
 	url = url1 + first_name.replace(" ", "+") + "+" + last_name.replace(" ", "+") + url2
 	response = requests.post(url=url).json()["response"]
 
@@ -38,7 +41,8 @@ def get_rating(person_id, first_name, last_name, rest_of_name, surname, data_str
 	data_stream.append(values)
 
 
-def append_rmp_info(profs, cursor, append_function=print, replace_function=print):
+def append_rmp_info(profs: Dict, cursor: sqlite3.Cursor, append_function: Callable = print,
+                    replace_function: Callable = print):
 	start_time = time.time()
 	prof_iter = iter(profs)
 	threads = []
