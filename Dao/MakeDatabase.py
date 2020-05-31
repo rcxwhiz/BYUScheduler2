@@ -153,9 +153,9 @@ def save(yso: Tuple, use_rmp: bool, append_function: Callable = print, replace_f
 		try:
 			cursor.execute(sql_cmd, values)
 		except sqlite3.IntegrityError:
-			append_function(f"Got duplicate: {values}\n")
+			append_function(f"Got duplicate: {values}")
 		except:
-			append_function(f"Error adding: {values}\n")
+			append_function(f"Error adding: {values}")
 	replace_function("Saved department map")
 
 	append_function("Saving department list...")
@@ -166,9 +166,9 @@ def save(yso: Tuple, use_rmp: bool, append_function: Callable = print, replace_f
 		try:
 			cursor.execute(sql_cmd, values)
 		except sqlite3.IntegrityError:
-			append_function(f"Got duplicate: {values}\n")
+			append_function(f"Got duplicate: {values}")
 		except:
-			append_function(f"Error adding: {values}\n")
+			append_function(f"Error adding: {values}")
 	replace_function("Saved department list")
 
 	append_function("Saving section types...")
@@ -178,9 +178,9 @@ def save(yso: Tuple, use_rmp: bool, append_function: Callable = print, replace_f
 		try:
 			cursor.execute(sql_cmd, values)
 		except sqlite3.IntegrityError:
-			append_function(f"Got duplicate: {values}\n")
+			append_function(f"Got duplicate: {values}")
 		except:
-			append_function(f"Error adding: {values}\n")
+			append_function(f"Error adding: {values}")
 	replace_function("Saved section types")
 
 	append_function("Saving instructors...")
@@ -191,9 +191,9 @@ def save(yso: Tuple, use_rmp: bool, append_function: Callable = print, replace_f
 		try:
 			cursor.execute(sql_cmd, values)
 		except sqlite3.IntegrityError:
-			append_function(f'Got duplicate: {values}\n')
+			append_function(f'Got duplicate: {values}')
 		except:
-			append_function(f'Error adding: {values}\n')
+			append_function(f'Error adding: {values}')
 	replace_function("Saved instructors")
 
 	append_function("Saving building list...")
@@ -203,9 +203,9 @@ def save(yso: Tuple, use_rmp: bool, append_function: Callable = print, replace_f
 		try:
 			cursor.execute(sql_cmd, values)
 		except sqlite3.IntegrityError:
-			append_function(f"Got duplicate: {values}\n")
+			append_function(f"Got duplicate: {values}")
 		except:
-			append_function(f"Error adding: {values}\n")
+			append_function(f"Error adding: {values}")
 	replace_function("Saved building list")
 
 	append_function("Saving course list...")
@@ -225,9 +225,9 @@ def save(yso: Tuple, use_rmp: bool, append_function: Callable = print, replace_f
 		try:
 			cursor.execute(sql_cmd, values)
 		except sqlite3.IntegrityError:
-			append_function(f"Got duplicate: {values}\n")
+			append_function(f"Got duplicate: {values}")
 		except:
-			append_function(f"Error adding: {values}\n")
+			append_function(f"Error adding: {values}")
 	replace_function("Saved course list")
 
 	for i, course in enumerate(section_results):
@@ -260,9 +260,9 @@ def save(yso: Tuple, use_rmp: bool, append_function: Callable = print, replace_f
 			try:
 				cursor.execute(sql_cmd, values)
 			except sqlite3.IntegrityError:
-				append_function(f"Got duplicate: {values}\n")
+				append_function(f"Got duplicate: {values}")
 			except:
-				append_function(f"Error adding: {values}\n")
+				append_function(f"Error adding: {values}")
 
 			for instructor in section["instructors"]:
 				sql_cmd = """UPDATE instructors SET byu_id = ?, net_id = ?, surname = ?, rest_of_name = ?, preferred_first_name = ?, phone_number = ? WHERE person_id = ?;"""
@@ -276,9 +276,9 @@ def save(yso: Tuple, use_rmp: bool, append_function: Callable = print, replace_f
 				try:
 					cursor.execute(sql_cmd, values)
 				except sqlite3.IntegrityError:
-					append_function(f"Got duplicate: {values}\n")
+					append_function(f"Got duplicate: {values}")
 				except:
-					append_function(f"Error adding: {values}\n")
+					append_function(f"Error adding: {values}")
 
 				sql_cmd = """INSERT INTO course_instructors VALUES(?, ?, ?);"""
 				values = (curriculum_id_title_code,
@@ -287,9 +287,9 @@ def save(yso: Tuple, use_rmp: bool, append_function: Callable = print, replace_f
 				try:
 					cursor.execute(sql_cmd, values)
 				except sqlite3.IntegrityError:
-					append_function(f"Got duplicate: {values}\n")
+					append_function(f"Got duplicate: {values}")
 				except:
-					append_function(f"Error adding: {values}\n")
+					append_function(f"Error adding: {values}")
 
 			for time in section["times"]:
 				sql_cmd = """INSERT INTO times VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"""
@@ -310,9 +310,9 @@ def save(yso: Tuple, use_rmp: bool, append_function: Callable = print, replace_f
 				try:
 					cursor.execute(sql_cmd, values)
 				except sqlite3.IntegrityError:
-					append_function(f"Got duplicate: {values}\n")
+					append_function(f"Got duplicate: {values}")
 				except:
-					append_function(f"Error adding: {values}\n")
+					append_function(f"Error adding: {values}")
 
 		catalog = course["catalog"]
 		sql_cmd = """UPDATE courses SET credit_hours = ?, description = ?, effective_date = ?, effective_year_term = ?, expired_date = ?, expired_year_term = ?, honors_approved = ?, lab_hours = ?, lecture_hours = ?, note = ?, offered = ?, prerequisite = ?, recommended = ?, when_taught = ? WHERE curriculum_id = ?;"""
@@ -334,9 +334,9 @@ def save(yso: Tuple, use_rmp: bool, append_function: Callable = print, replace_f
 		try:
 			cursor.execute(sql_cmd, values)
 		except sqlite3.IntegrityError:
-			append_function(f"Got duplicate: {values}\n")
+			append_function(f"Got duplicate: {values}")
 		except:
-			append_function(f"Error adding: {values}\n")
+			append_function(f"Error adding: {values}")
 
 		replace_function(f"Saved {i + 1}/{len(section_results)} sections...")
 
@@ -353,7 +353,7 @@ def save(yso: Tuple, use_rmp: bool, append_function: Callable = print, replace_f
 	try:
 		connection.commit()
 	except BaseException as e:
-		append_function("Error committing changes\n")
+		append_function("Error committing changes")
 		connection.close()
 		raise e
 
