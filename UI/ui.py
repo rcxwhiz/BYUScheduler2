@@ -293,7 +293,13 @@ class Ui_MainWindow(object):
 		self.loaded_data.clear()
 
 	def goto_instructor_page(self) -> None:
-		self.main_window.resize(1100, 700)
+		if self.title_rmp_check.isChecked():
+			self.main_window.resize(1150, 700)
+		else:
+			self.main_window.resize(830, 700)
+		self.instructor_first_name_input.clear()
+		self.instructor_last_name_input.clear()
+		self.insctructor_course_input.clear()
 		self.main_window_stacked_widget.setCurrentIndex(1)
 		self.main_window.setWindowTitle("Browse Instructors")
 		self.populate_table()
