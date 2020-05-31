@@ -122,16 +122,23 @@
              </font>
             </property>
             <property name="buttonSymbols">
-             <enum>QAbstractSpinBox::PlusMinus</enum>
+                <enum>QAbstractSpinBox::PlusMinus</enum>
             </property>
-            <property name="minimum">
-             <number>2010</number>
-            </property>
-            <property name="maximum">
-             <number>2030</number>
-            </property>
+               <property name="minimum">
+                   <number>2010</number>
+               </property>
+               <property name="maximum">
+                   <number>2030</number>
+               </property>
            </widget>
           </item>
+             <item>
+                 <widget class="QLabel" name="label">
+                     <property name="text">
+                         <string/>
+                     </property>
+                 </widget>
+             </item>
          </layout>
         </item>
         <item>

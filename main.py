@@ -1,6 +1,6 @@
 import BYUAPI
-import Dao.MakeDatabase
-import Dao.Paths
+import Dao.make_database
+import Dao.paths
 import UI
 
 
@@ -13,15 +13,16 @@ def get_db_terminal():
 		semester = input("Enter semester: ").lower()
 
 	download_semester = True
-	if Dao.Paths.check_exists(semester, year):
+	if Dao.paths.check_exists(semester, year):
 		answer = ""
 		while answer != "y" and answer != "n":
-			answer = input(f"{semester}_{year} is already cached ({Dao.Paths.check_date(semester, year)}) Use that result? (y/n) ").lower()
+			answer = input(
+				f"{semester}_{year} is already cached ({Dao.paths.check_date(semester, year)}) Use that result? (y/n) ").lower()
 		download_semester = answer == "n"
 
 	if download_semester:
 		try:
-			Dao.MakeDatabase.save(True, BYUAPI.get(semester, year))
+			Dao.make_database.save(True, BYUAPI.get(semester, year))
 		except BaseException as e:
 			print(f"Error getting {semester} {year}: {str(e)}")
 

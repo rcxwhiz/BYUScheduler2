@@ -10,12 +10,12 @@ import multiprocessing
 import threading
 from typing import Dict
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 
 import BYUAPI
-import Dao.Load
-import Dao.MakeDatabase
-import Dao.Paths
+import Dao.load
+import Dao.make_database
+import Dao.paths
 
 
 class Ui_Dialog(object):
@@ -31,9 +31,6 @@ class Ui_Dialog(object):
 		self.message_queue = self.manager.Queue()
 		self.kill_queue = self.manager.Queue()
 
-		font = QtGui.QFont()
-		font.setFamily("Arial")
-
 		self.dialog.setObjectName("Dialog")
 		self.dialog.resize(500, 550)
 		self.gridLayout = QtWidgets.QGridLayout(self.dialog)
@@ -44,7 +41,6 @@ class Ui_Dialog(object):
 		self.message = QtWidgets.QPlainTextEdit()
 		self.message.setReadOnly(True)
 		self.message.setObjectName("message")
-		self.message.setFont(font)
 
 		self.verticalLayout.addWidget(self.message)
 		self.horizontalLayout = QtWidgets.QHBoxLayout()
@@ -52,21 +48,18 @@ class Ui_Dialog(object):
 
 		self.cached_result_button = QtWidgets.QPushButton(self.dialog)
 		self.cached_result_button.setObjectName("cached_result_button")
-		self.cached_result_button.setFont(font)
 		self.cached_result_button.setEnabled(False)
 
 		self.horizontalLayout.addWidget(self.cached_result_button)
 
 		self.download_new_button = QtWidgets.QPushButton(self.dialog)
 		self.download_new_button.setObjectName("download_new_button")
-		self.download_new_button.setFont(font)
 		self.download_new_button.setEnabled(False)
 
 		self.horizontalLayout.addWidget(self.download_new_button)
 
 		self.cancel_button = QtWidgets.QPushButton(self.dialog)
 		self.cancel_button.setObjectName("cancel_button")
-		self.cancel_button.setFont(font)
 
 		self.horizontalLayout.addWidget(self.cancel_button)
 		self.verticalLayout.addLayout(self.horizontalLayout)
@@ -167,7 +160,7 @@ class Ui_Dialog(object):
 		threading.Thread(target=self.load_work).start()
 
 	def load_work(self) -> None:
-		Dao.Load.load_instructors(self.semester_year, self.return_data)
+		Dao.load.load_instructors(self.semester_year, self.return_data)
 		self.replace_line(f"Loaded {self.semester} {self.year}")
 		self.cancel_action()
 
@@ -183,13 +176,13 @@ class Ui_Dialog(object):
 
 	def download_work(self) -> None:
 		try:
-			Dao.MakeDatabase.save(BYUAPI.get(self.semester.lower(),
-			                                 str(self.year),
-			                                 append_function=self.append_text,
-			                                 replace_function=self.replace_line),
-			                      self.use_rmp,
-			                      append_function=self.append_text,
-			                      replace_function=self.replace_line)
+			Dao.make_database.save(BYUAPI.get(self.semester.lower(),
+			                                  str(self.year),
+			                                  append_function=self.append_text,
+			                                  replace_function=self.replace_line),
+			                       self.use_rmp,
+			                       append_function=self.append_text,
+			                       replace_function=self.replace_line)
 		except Exception as e:
 			print("got a downlading error")
 			self.append_text(f"\nError getting {self.semester} {self.year} (it might not exist)")
@@ -200,9 +193,9 @@ class Ui_Dialog(object):
 		self.load_action()
 
 	def determine_availablilty(self) -> None:
-		if Dao.Paths.check_exists_1(self.semester_year):
+		if Dao.paths.check_exists_1(self.semester_year):
 			self.message.setPlainText(
-				f"{self.semester} {self.year} is already cached ({Dao.Paths.check_date_1(self.semester_year)}). Would you like to use that data or download new data?")
+				f"{self.semester} {self.year} is already cached ({Dao.paths.check_date_1(self.semester_year)}). Would you like to use that data or download new data?")
 			self.cached_result_button.setEnabled(True)
 			self.download_new_button.setEnabled(True)
 		else:

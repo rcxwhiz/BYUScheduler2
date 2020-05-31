@@ -28,12 +28,6 @@ class Ui_MainWindow(object):
 		self.main_window_stacked_widget = QtWidgets.QStackedWidget(self.main_window_central_widget)
 		self.main_window_stacked_widget.setObjectName("stackedWidget")
 
-		self.title_font = QtGui.QFont()
-		self.title_font.setFamily("Arial")
-		self.title_font.setPointSize(36)
-		self.font = QtGui.QFont()
-		self.font.setFamily("Arial")
-
 	def finish_setup_window(self) -> None:
 		self.main_window_grid_layout.addWidget(self.main_window_stacked_widget, 0, 0, 1, 1)
 		self.main_window.setCentralWidget(self.main_window_central_widget)
@@ -56,7 +50,9 @@ class Ui_MainWindow(object):
 		self.title_vertical_layout_1.setObjectName("verticalLayout")
 
 		self.title_big_title = QtWidgets.QLabel(self.title_page)
-		self.title_big_title.setFont(self.title_font)
+		title_font = QtGui.QFont()
+		title_font.setPointSize(36)
+		self.title_big_title.setFont(title_font)
 		self.title_big_title.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignHCenter)
 		self.title_big_title.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
 		self.title_big_title.setObjectName("big_title")
@@ -64,7 +60,6 @@ class Ui_MainWindow(object):
 		self.title_vertical_layout_1.addWidget(self.title_big_title)
 
 		self.title_name = QtWidgets.QLabel(self.title_page)
-		self.title_name.setFont(self.font)
 		self.title_name.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignTop)
 		self.title_name.setObjectName("name_title")
 
@@ -75,28 +70,24 @@ class Ui_MainWindow(object):
 		self.title_vertical_layout_2.setObjectName("verticalLayout_2")
 
 		self.title_semester_label = QtWidgets.QLabel(self.title_page)
-		self.title_semester_label.setFont(self.font)
 		self.title_semester_label.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft)
 		self.title_semester_label.setObjectName("semester_label")
 
 		self.title_vertical_layout_2.addWidget(self.title_semester_label)
 
 		self.title_semester_picker = QtWidgets.QComboBox(self.title_page)
-		self.title_semester_picker.setFont(self.font)
 		self.title_semester_picker.setObjectName("semester_picker")
 		self.title_semester_picker.addItems([""] * 4)
 
 		self.title_vertical_layout_2.addWidget(self.title_semester_picker)
 
 		self.title_year_label = QtWidgets.QLabel(self.title_page)
-		self.title_year_label.setFont(self.font)
 		self.title_year_label.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft)
 		self.title_year_label.setObjectName("year_label")
 
 		self.title_vertical_layout_2.addWidget(self.title_year_label)
 
 		self.title_year_picker = QtWidgets.QSpinBox(self.title_page)
-		self.title_year_picker.setFont(self.font)
 		self.title_year_picker.setButtonSymbols(QtWidgets.QAbstractSpinBox.PlusMinus)
 		self.title_year_picker.setMinimum(2010)
 		self.title_year_picker.setMaximum(2030)
@@ -105,37 +96,32 @@ class Ui_MainWindow(object):
 
 		self.title_vertical_layout_2.addWidget(self.title_year_picker)
 
-		self.title_rmp_check = QtWidgets.QCheckBox(self.title_page)
-		self.title_rmp_check.setChecked(True)
+		self.title_spacer = QtWidgets.QLabel(self.title_page)
 
-		self.title_vertical_layout_2.addWidget(self.title_rmp_check)
+		self.title_vertical_layout_2.addWidget(self.title_spacer)
 
 		self.title_horizontal_layout.addLayout(self.title_vertical_layout_2)
 		self.title_grid_layout_2 = QtWidgets.QGridLayout()
 		self.title_grid_layout_2.setObjectName("gridLayout_2")
 
 		self.title_schedule_button = QtWidgets.QPushButton(self.title_page)
-		self.title_schedule_button.setFont(self.font)
 		self.title_schedule_button.setObjectName("make_schedule_button")
 		self.title_schedule_button.setEnabled(False)
 
 		self.title_grid_layout_2.addWidget(self.title_schedule_button, 2, 1, 1, 1)
 
 		self.title_instructor_button = QtWidgets.QPushButton(self.title_page)
-		self.title_instructor_button.setFont(self.font)
 		self.title_instructor_button.setObjectName("browse_instructor_button")
 
 		self.title_grid_layout_2.addWidget(self.title_instructor_button, 0, 1, 1, 1)
 
 		self.title_section_button = QtWidgets.QPushButton(self.title_page)
-		self.title_section_button.setFont(self.font)
 		self.title_section_button.setObjectName("browse_section_button")
 		self.title_section_button.setEnabled(False)
 
 		self.title_grid_layout_2.addWidget(self.title_section_button, 2, 0, 1, 1)
 
 		self.title_course_button = QtWidgets.QPushButton(self.title_page)
-		self.title_course_button.setFont(self.font)
 		self.title_course_button.setObjectName("browse_course_button")
 		self.title_course_button.setEnabled(False)
 
@@ -164,7 +150,6 @@ class Ui_MainWindow(object):
 
 		self.instructor_first_name_label = QtWidgets.QLabel(self.instructor_page)
 		self.instructor_first_name_label.setObjectName("label5")
-		self.instructor_first_name_label.setFont(self.font)
 
 		self.instructor_vertical_layout.addWidget(self.instructor_first_name_label)
 
@@ -177,13 +162,11 @@ class Ui_MainWindow(object):
 
 		self.instructor_first_name_input.setSizePolicy(sizePolicy)
 		self.instructor_first_name_input.setObjectName("lineEdit")
-		self.instructor_first_name_input.setFont(self.font)
 
 		self.instructor_vertical_layout.addWidget(self.instructor_first_name_input)
 
 		self.instructor_last_name_label = QtWidgets.QLabel(self.instructor_page)
 		self.instructor_last_name_label.setObjectName("label6")
-		self.instructor_last_name_label.setFont(self.font)
 
 		self.instructor_vertical_layout.addWidget(self.instructor_last_name_label)
 
@@ -196,13 +179,11 @@ class Ui_MainWindow(object):
 
 		self.instructor_last_name_input.setSizePolicy(sizePolicy)
 		self.instructor_last_name_input.setObjectName("lineEdit_2")
-		self.instructor_last_name_input.setFont(self.font)
 
 		self.instructor_vertical_layout.addWidget(self.instructor_last_name_input)
 
 		self.instructor_course_label = QtWidgets.QLabel(self.instructor_page)
 		self.instructor_course_label.setObjectName("label7")
-		self.instructor_course_label.setFont(self.font)
 
 		self.instructor_vertical_layout.addWidget(self.instructor_course_label)
 
@@ -215,7 +196,6 @@ class Ui_MainWindow(object):
 
 		self.insctructor_course_input.setSizePolicy(sizePolicy)
 		self.insctructor_course_input.setObjectName("lineEdit_3")
-		self.insctructor_course_input.setFont(self.font)
 
 		self.instructor_vertical_layout.addWidget(self.insctructor_course_input)
 
@@ -228,7 +208,6 @@ class Ui_MainWindow(object):
 		self.instructor_horizontal_layout.addLayout(self.instructor_vertical_layout)
 
 		self.instructor_return_button = QtWidgets.QPushButton(self.instructor_page)
-		self.instructor_return_button.setFont(self.font)
 		self.instructor_return_button.setObjectName("instructor_return_button")
 
 		self.instructor_vertical_layout.addWidget(self.instructor_return_button)
@@ -242,7 +221,6 @@ class Ui_MainWindow(object):
 
 		self.instructor_table.setSizePolicy(sizePolicy)
 		self.instructor_table.setObjectName("tableView")
-		self.instructor_table.setFont(self.font)
 		self.instructor_table.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
 		self.instructor_table.setAlternatingRowColors(True)
 		self.instructor_table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
@@ -261,7 +239,7 @@ class Ui_MainWindow(object):
 		self.title_semester_picker.setItemText(2, _translate("MainWindow", "Summer"))
 		self.title_semester_picker.setItemText(3, _translate("MainWindow", "Fall"))
 		self.title_year_label.setText(_translate("MainWindow", "Year"))
-		self.title_rmp_check.setText(_translate("MainWindow", "Include RateMyProfessor Data"))
+		self.title_spacer.setText(_translate("MainWindow", ""))
 		self.title_schedule_button.setText(_translate("MainWindow", "Make Schedule"))
 		self.title_instructor_button.setText(_translate("MainWindow", "Browse Instructors"))
 		self.title_section_button.setText(_translate("MainWindow", "Browse Sections"))
@@ -293,7 +271,7 @@ class Ui_MainWindow(object):
 		self.loaded_data.clear()
 
 	def goto_instructor_page(self) -> None:
-		if self.title_rmp_check.isChecked():
+		if self.title_spacer.isChecked():
 			self.main_window.resize(1150, 700)
 		else:
 			self.main_window.resize(830, 700)
@@ -338,7 +316,7 @@ class Ui_MainWindow(object):
 		                 self.title_semester_picker.currentText(),
 		                 self.title_year_picker.value(),
 		                 self.loaded_data,
-		                 self.title_rmp_check.isChecked())
+		                 self.title_spacer.isChecked())
 		popup_dialog.exec_()
 
 	# Instructor Functions
@@ -384,7 +362,7 @@ class Ui_MainWindow(object):
 			self.instructor_table.setItem(i, 7, QtWidgets.QTableWidgetItem(key))
 		self.instructor_table.hideColumn(7)
 
-		if not self.title_rmp_check.isChecked():
+		if not self.title_spacer.isChecked():
 			self.instructor_table.hideColumn(4)
 			self.instructor_table.hideColumn(5)
 			self.instructor_table.hideColumn(6)

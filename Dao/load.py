@@ -2,14 +2,14 @@ import sqlite3
 from contextlib import closing
 from typing import Dict
 
-import Dao.Paths
+import Dao.paths
 
 
 # TODO pretty much everything here needs to be changed
 def load_classes(semester_year: str, data: Dict) -> None:
 	sql_cmd = """SELECT * FROM courses;"""
 
-	with closing(sqlite3.connect(Dao.Paths.database_path_1(semester_year))) as connection:
+	with closing(sqlite3.connect(Dao.paths.database_path_1(semester_year))) as connection:
 		cursor = connection.cursor()
 
 		cursor.execute(sql_cmd)
@@ -123,7 +123,7 @@ def sort_times(val: Dict) -> str:
 
 
 def load_instructors(semester_year: str, data: Dict) -> None:
-	with closing(sqlite3.connect(Dao.Paths.database_path_1(semester_year))) as connection:
+	with closing(sqlite3.connect(Dao.paths.database_path_1(semester_year))) as connection:
 		cursor = connection.cursor()
 
 		sql_cmd = """SELECT * FROM instructors;"""

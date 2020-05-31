@@ -2,16 +2,16 @@ import os
 import sqlite3
 from typing import Callable, Tuple
 
-import Dao.Paths
+import Dao.paths
 import RateMyProfessorAPI
 
 
 def create_tables(semester_year: str, output_function: Callable) -> None:
-	if not os.path.exists(Dao.Paths.database_path_1(semester_year)):
-		output_function(f"Could not find {Dao.Paths.database_path_1(semester_year)}. Making new database...")
-		with open(Dao.Paths.database_path_1(semester_year), "w") as _:
+	if not os.path.exists(Dao.paths.database_path_1(semester_year)):
+		output_function(f"Could not find {Dao.paths.database_path_1(semester_year)}. Making new database...")
+		with open(Dao.paths.database_path_1(semester_year), "w") as _:
 			pass
-	connection = sqlite3.connect(Dao.Paths.database_path_1(semester_year))
+	connection = sqlite3.connect(Dao.paths.database_path_1(semester_year))
 	cursor = connection.cursor()
 
 	sql_cmd = """
@@ -133,16 +133,16 @@ def create_tables(semester_year: str, output_function: Callable) -> None:
 
 def save(yso: Tuple, use_rmp: bool, append_function: Callable = print, replace_function: Callable = print) -> None:
 	semester_year, semester_result, classes_result, section_results = yso
-	if not os.path.exists(Dao.Paths.database_path_1(semester_year)):
-		append_function(f"Could not find {Dao.Paths.database_path_1(semester_year)}. Making new database...")
-		if not os.path.exists(os.path.dirname(Dao.Paths.database_path_1(semester_year))):
-			os.makedirs(os.path.dirname(Dao.Paths.database_path_1(semester_year)))
-		with open(Dao.Paths.database_path_1(semester_year), "w") as _:
+	if not os.path.exists(Dao.paths.database_path_1(semester_year)):
+		append_function(f"Could not find {Dao.paths.database_path_1(semester_year)}. Making new database...")
+		if not os.path.exists(os.path.dirname(Dao.paths.database_path_1(semester_year))):
+			os.makedirs(os.path.dirname(Dao.paths.database_path_1(semester_year)))
+		with open(Dao.paths.database_path_1(semester_year), "w") as _:
 			pass
 
 	create_tables(semester_year, append_function)
 
-	connection = sqlite3.connect(Dao.Paths.database_path_1(semester_year))
+	connection = sqlite3.connect(Dao.paths.database_path_1(semester_year))
 	cursor = connection.cursor()
 
 	append_function("Saving department map...")
@@ -360,5 +360,5 @@ def save(yso: Tuple, use_rmp: bool, append_function: Callable = print, replace_f
 	connection.close()
 	replace_function("Changes committed")
 
-	db_size = os.path.getsize(Dao.Paths.database_path_1(semester_year)) / 1e6
+	db_size = os.path.getsize(Dao.paths.database_path_1(semester_year)) / 1e6
 	append_function(f"Database entry for {semester_year} created ({db_size:.1f} MB)")
