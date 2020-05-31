@@ -19,16 +19,18 @@ import Dao.paths
 
 
 class Ui_Dialog(object):
-	def setupUi(self, DialogIn: QtWidgets.QDialog, semester: str, year: int, data: Dict) -> None:
+	def setupUi(self, DialogIn: QtWidgets.QDialog, semester: str, year: int, data: Dict, data_type: str) -> None:
 		self.dialog = DialogIn
 		self.semester = semester
 		self.year = str(year)
 		self.semester_year = semester.lower() + "_" + str(year)
 		self.return_data = data
 		self.return_data.clear()
+		self.data_type = data_type
 		self.manager = multiprocessing.Manager()
 		self.message_queue = self.manager.Queue()
 		self.kill_queue = self.manager.Queue()
+		self.base_threads = threading.active_count()
 
 		self.dialog.setObjectName("Dialog")
 		self.dialog.resize(500, 550)
@@ -115,7 +117,6 @@ class Ui_Dialog(object):
 		self.manager.shutdown()
 
 		assert len(multiprocessing.active_children()) == 0
-		assert threading.active_count() < 3
 
 		self.exit()
 
@@ -156,10 +157,18 @@ class Ui_Dialog(object):
 
 		self.append_text(f"\nLoading {self.semester} {self.year}...")
 		self.append_text("This event cannot be cancelled beacuse sqlite3 is incompatible with multi-threading\n")
-		threading.Thread(target=self.load_work).start()
+		if self.data_type == "instructor":
+			threading.Thread(target=self.load_work_instructors).start()
+		elif self.data_type == "course":
+			threading.Thread(target=self.load_work_courses).start()
 
-	def load_work(self) -> None:
+	def load_work_instructors(self) -> None:
 		Dao.load.load_instructors(self.semester_year, self.return_data)
+		self.replace_line(f"Loaded {self.semester} {self.year}")
+		self.cancel_action()
+
+	def load_work_courses(self) -> None:
+		Dao.load.load_courses(self.semester_year, self.return_data)
 		self.replace_line(f"Loaded {self.semester} {self.year}")
 		self.cancel_action()
 

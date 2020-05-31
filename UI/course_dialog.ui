@@ -19,7 +19,7 @@
                     <item>
                         <layout class="QVBoxLayout" name="verticalLayout_2">
                             <item>
-                                <widget class="QLabel" name="label_4">
+                                <widget class="QLabel" name="indi_dept_label">
                                     <property name="text">
                                         <string>Dept
                                             ---
@@ -28,7 +28,7 @@
                                 </widget>
                             </item>
                             <item>
-                                <widget class="QLabel" name="label">
+                                <widget class="QLabel" name="indi_num_label">
                                     <property name="text">
                                         <string>Num
                                             ---
@@ -37,7 +37,7 @@
                                 </widget>
                             </item>
                             <item>
-                                <widget class="QLabel" name="label_5">
+                                <widget class="QLabel" name="indi_credits_label">
                                     <property name="text">
                                         <string>Credits
                                             ---
@@ -46,7 +46,7 @@
                                 </widget>
                             </item>
                             <item>
-                                <widget class="QLabel" name="label_6">
+                                <widget class="QLabel" name="indi_title_label">
                                     <property name="text">
                                         <string>Title
                                             ---
@@ -55,7 +55,7 @@
                                 </widget>
                             </item>
                             <item>
-                                <widget class="QLabel" name="label_7">
+                                <widget class="QLabel" name="indi_lab_hours_label">
                                     <property name="text">
                                         <string>Lab Hours
                                             ---
@@ -64,7 +64,7 @@
                                 </widget>
                             </item>
                             <item>
-                                <widget class="QLabel" name="label_8">
+                                <widget class="QLabel" name="indi_lecture_hours_label">
                                     <property name="text">
                                         <string>Lecture Hours
                                             ---
@@ -73,16 +73,7 @@
                                 </widget>
                             </item>
                             <item>
-                                <widget class="QLabel" name="label_16">
-                                    <property name="text">
-                                        <string>Minimum Hours
-                                            ---
-                                        </string>
-                                    </property>
-                                </widget>
-                            </item>
-                            <item>
-                                <widget class="QLabel" name="label_9">
+                                <widget class="QLabel" name="indi_honors_label">
                                     <property name="text">
                                         <string>Honors
                                             ---
@@ -91,14 +82,14 @@
                                 </widget>
                             </item>
                             <item>
-                                <widget class="QLabel" name="label_10">
+                                <widget class="QLabel" name="indi_description_label">
                                     <property name="text">
                                         <string>Description</string>
                                     </property>
                                 </widget>
                             </item>
                             <item>
-                                <widget class="QTextBrowser" name="textBrowser">
+                                <widget class="QTextBrowser" name="indi_description_display">
                                     <property name="sizePolicy">
                                         <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
                                             <horstretch>0</horstretch>
@@ -131,10 +122,13 @@
                                             big and long description of a class that's super long and verbose.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
                                         </string>
                                     </property>
+                                    <property name="textInteractionFlags">
+                                        <set>Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+                                    </property>
                                 </widget>
                             </item>
                             <item>
-                                <widget class="QLabel" name="label_11">
+                                <widget class="QLabel" name="indi_note_label">
                                     <property name="text">
                                         <string>Note
                                             ---
@@ -143,7 +137,7 @@
                                 </widget>
                             </item>
                             <item>
-                                <widget class="QLabel" name="label_12">
+                                <widget class="QLabel" name="indi_offered_label">
                                     <property name="text">
                                         <string>Offered
                                             ---
@@ -152,7 +146,7 @@
                                 </widget>
                             </item>
                             <item>
-                                <widget class="QLabel" name="label_13">
+                                <widget class="QLabel" name="indi_preqs_label">
                                     <property name="text">
                                         <string>Prerequisites
                                             ---
@@ -161,7 +155,7 @@
                                 </widget>
                             </item>
                             <item>
-                                <widget class="QLabel" name="label_14">
+                                <widget class="QLabel" name="indi_recommended_label">
                                     <property name="text">
                                         <string>Recommended
                                             ---
@@ -170,7 +164,7 @@
                                 </widget>
                             </item>
                             <item>
-                                <widget class="QLabel" name="label_15">
+                                <widget class="QLabel" name="indi_when_taught_label">
                                     <property name="text">
                                         <string>When Taught
                                             ---
@@ -196,14 +190,14 @@
                     <item>
                         <layout class="QVBoxLayout" name="verticalLayout">
                             <item>
-                                <widget class="QLabel" name="label_2">
+                                <widget class="QLabel" name="indi_sections_label">
                                     <property name="text">
                                         <string>Sections</string>
                                     </property>
                                 </widget>
                             </item>
                             <item>
-                                <widget class="QTableWidget" name="tableWidget">
+                                <widget class="QTableWidget" name="indi_sections_table">
                                     <column>
                                         <property name="text">
                                             <string>Section Num</string>
@@ -267,14 +261,14 @@
                                 </widget>
                             </item>
                             <item>
-                                <widget class="QLabel" name="label_3">
+                                <widget class="QLabel" name="indi_instructors_label">
                                     <property name="text">
                                         <string>Instructors</string>
                                     </property>
                                 </widget>
                             </item>
                             <item>
-                                <widget class="QTableWidget" name="tableWidget_2">
+                                <widget class="QTableWidget" name="indi_instructors_table">
                                     <column>
                                         <property name="text">
                                             <string>Sections</string>

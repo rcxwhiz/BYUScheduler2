@@ -112,7 +112,10 @@ def load_courses(semester_year: str, data: Dict) -> None:
 						                   "num_ratings": instructor[12],
 						                   "avg_easy_score": instructor[13],
 						                   "avg_clarity_score": instructor[14]}
-					except TypeError:
+					except TypeError as e:
+						print(
+							f"cannot find instructor for {course_data['dept_name']} {course_data['catalog_number']} section {section_data['section_number']} with id {person_id[0]}")
+						print(e)
 						instructor_data = None
 					section_data["instructor"] = instructor_data
 

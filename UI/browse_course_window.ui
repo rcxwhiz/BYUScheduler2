@@ -23,14 +23,14 @@
                                     <enum>QLayout::SetDefaultConstraint</enum>
                                 </property>
                                 <item>
-                                    <widget class="QLabel" name="label">
+                                    <widget class="QLabel" name="course_dept_label">
                                         <property name="text">
                                             <string>Dept</string>
                                         </property>
                                     </widget>
                                 </item>
                                 <item>
-                                    <widget class="QLineEdit" name="lineEdit">
+                                    <widget class="QLineEdit" name="course_dept_edit">
                                         <property name="sizePolicy">
                                             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                                                 <horstretch>0</horstretch>
@@ -40,14 +40,14 @@
                                     </widget>
                                 </item>
                                 <item>
-                                    <widget class="QLabel" name="label_2">
+                                    <widget class="QLabel" name="course_course_num_label">
                                         <property name="text">
                                             <string>Course Number</string>
                                         </property>
                                     </widget>
                                 </item>
                                 <item>
-                                    <widget class="QLineEdit" name="lineEdit_2">
+                                    <widget class="QLineEdit" name="course_course_num_edit">
                                         <property name="sizePolicy">
                                             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                                                 <horstretch>0</horstretch>
@@ -57,14 +57,14 @@
                                     </widget>
                                 </item>
                                 <item>
-                                    <widget class="QCheckBox" name="checkBox">
+                                    <widget class="QCheckBox" name="course_credit_hours_check">
                                         <property name="text">
                                             <string>Credit Hours</string>
                                         </property>
                                     </widget>
                                 </item>
                                 <item>
-                                    <widget class="QDoubleSpinBox" name="doubleSpinBox">
+                                    <widget class="QDoubleSpinBox" name="course_credit_hour_spinner">
                                         <property name="decimals">
                                             <number>1</number>
                                         </property>
@@ -74,14 +74,14 @@
                                     </widget>
                                 </item>
                                 <item>
-                                    <widget class="QLabel" name="label_3">
+                                    <widget class="QLabel" name="course_title_label">
                                         <property name="text">
                                             <string>Title</string>
                                         </property>
                                     </widget>
                                 </item>
                                 <item>
-                                    <widget class="QLineEdit" name="lineEdit_3">
+                                    <widget class="QLineEdit" name="course_title_edit">
                                         <property name="sizePolicy">
                                             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                                                 <horstretch>0</horstretch>
@@ -91,14 +91,14 @@
                                     </widget>
                                 </item>
                                 <item>
-                                    <widget class="QLabel" name="label_4">
+                                    <widget class="QLabel" name="course_instructor_label">
                                         <property name="text">
                                             <string>Instructor</string>
                                         </property>
                                     </widget>
                                 </item>
                                 <item>
-                                    <widget class="QLineEdit" name="lineEdit_4">
+                                    <widget class="QLineEdit" name="course_instructor_edit">
                                         <property name="sizePolicy">
                                             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                                                 <horstretch>0</horstretch>
@@ -108,14 +108,14 @@
                                     </widget>
                                 </item>
                                 <item>
-                                    <widget class="QCheckBox" name="checkBox_2">
+                                    <widget class="QCheckBox" name="course_lab_hours_check">
                                         <property name="text">
                                             <string>Lab Hours</string>
                                         </property>
                                     </widget>
                                 </item>
                                 <item>
-                                    <widget class="QDoubleSpinBox" name="doubleSpinBox_2">
+                                    <widget class="QDoubleSpinBox" name="course_lab_hours_spinner">
                                         <property name="decimals">
                                             <number>1</number>
                                         </property>
@@ -125,14 +125,14 @@
                                     </widget>
                                 </item>
                                 <item>
-                                    <widget class="QCheckBox" name="checkBox_3">
+                                    <widget class="QCheckBox" name="course_lecture_hours_spinner">
                                         <property name="text">
                                             <string>Lecture Hours</string>
                                         </property>
                                     </widget>
                                 </item>
                                 <item>
-                                    <widget class="QDoubleSpinBox" name="doubleSpinBox">
+                                    <widget class="QDoubleSpinBox" name="course_lecture_hours_spinner_2">
                                         <property name="decimals">
                                             <number>1</number>
                                         </property>
@@ -142,26 +142,32 @@
                                     </widget>
                                 </item>
                                 <item>
-                                    <widget class="QCheckBox" name="checkBox_4">
+                                    <widget class="QCheckBox" name="course_honors_check">
                                         <property name="text">
                                             <string>Honors</string>
                                         </property>
                                     </widget>
                                 </item>
                                 <item>
-                                    <widget class="QLabel" name="label_5">
+                                    <widget class="QLabel" name="course_description_label">
                                         <property name="text">
                                             <string>Description</string>
                                         </property>
                                     </widget>
                                 </item>
                                 <item>
-                                    <widget class="QLineEdit" name="lineEdit_5">
+                                    <widget class="QTextEdit" name="course_description_edit">
                                         <property name="sizePolicy">
-                                            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                                            <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
                                                 <horstretch>0</horstretch>
                                                 <verstretch>0</verstretch>
                                             </sizepolicy>
+                                        </property>
+                                        <property name="maximumSize">
+                                            <size>
+                                                <width>120</width>
+                                                <height>16777215</height>
+                                            </size>
                                         </property>
                                     </widget>
                                 </item>
@@ -179,7 +185,7 @@
                                     </spacer>
                                 </item>
                                 <item>
-                                    <widget class="QPushButton" name="pushButton">
+                                    <widget class="QPushButton" name="course_return_to_menu_button">
                                         <property name="text">
                                             <string>Return to Menu</string>
                                         </property>
@@ -188,7 +194,7 @@
                             </layout>
                         </item>
                         <item>
-                            <widget class="QTableWidget" name="tableWidget">
+                            <widget class="QTableWidget" name="course_table">
                                 <property name="sizePolicy">
                                     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                                         <horstretch>0</horstretch>
