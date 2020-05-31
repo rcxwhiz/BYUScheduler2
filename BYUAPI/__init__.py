@@ -67,14 +67,16 @@ def get(semester: str, year: str, append_function: Callable = print, replace_fun
 				course = classes_response[next(keys)]
 			except StopIteration:
 				break
-			new_thread = threading.Thread(target=get_section, args=(course, session_id, year, semester, section_responses))
+			new_thread = threading.Thread(target=get_section,
+			                              args=(course, session_id, year, semester, section_responses))
 			new_thread.start()
 			threads.append(new_thread)
 
-			if (len(threads) + 1) % 10 == 0:
+			if len(threads) % 10 == 0:
 				elapsed = time.time() - start_time
-				seconds_left = elapsed * len(classes_response) / (len(threads) + 1) - elapsed
-				replace_function(f"Got sections for {len(threads) + 1}/{len(classes_response)} classes... ETA ~{int(seconds_left / 60):02}:{int(seconds_left % 60):02}")
+				seconds_left = elapsed * len(classes_response) / len(threads) - elapsed
+				replace_function(
+					f"Got sections for {len(threads)}/{len(classes_response)} classes... ETA ~{int(seconds_left / 60):02}:{int(seconds_left % 60):02}")
 		else:
 			time.sleep(rest_time)
 

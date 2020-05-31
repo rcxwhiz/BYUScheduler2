@@ -185,9 +185,9 @@ def save(yso: Tuple, use_rmp: bool, append_function: Callable = print, replace_f
 
 	append_function("Saving instructors...")
 	for instructor in semester_result["instructor_list"]:
-		sql_cmd = """INSERT INTO instructors VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"""
+		sql_cmd = """INSERT INTO instructors VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"""
 		values = [instructor["id"], None, None, instructor["first_name"], instructor["last_name"],
-		          instructor["sort_name"]] + [None] * 10
+		          instructor["sort_name"]] + [None] * 9
 		try:
 			cursor.execute(sql_cmd, values)
 		except sqlite3.IntegrityError:

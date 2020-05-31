@@ -56,15 +56,15 @@ def append_rmp_info(profs: List, cursor: sqlite3.Cursor, append_function: Callab
 			except StopIteration:
 				break
 			new_thread = threading.Thread(target=get_rating, args=(
-			professor[0], professor[3], professor[4], professor[8], professor[9], data_stream))
+				professor[0], professor[3], professor[4], professor[7], professor[8], data_stream))
 			new_thread.start()
 			threads.append(new_thread)
 
-			if (len(threads) + 1) % 10 == 0:
+			if len(threads) % 10 == 0:
 				elapsed = time.time() - start_time
-				seconds_left = elapsed * len(profs) / (len(threads) + 1) - elapsed
+				seconds_left = elapsed * len(profs) / len(threads) - elapsed
 				replace_function(
-					f"Got Rate My Professor data for {len(threads) + 1}/{len(profs)} instructors... ETA ~{int(seconds_left / 60):02}:{int(seconds_left % 60):02}")
+					f"Got Rate My Professor data for {len(threads)}/{len(profs)} instructors... ETA ~{int(seconds_left / 60):02}:{int(seconds_left % 60):02}")
 		else:
 			time.sleep(rest_time)
 
