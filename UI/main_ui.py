@@ -315,8 +315,7 @@ class Ui_MainWindow(object):
 		popup_ui.setupUi(popup_dialog,
 		                 self.title_semester_picker.currentText(),
 		                 self.title_year_picker.value(),
-		                 self.loaded_data,
-		                 self.title_spacer.isChecked())
+		                 self.loaded_data)
 		popup_dialog.exec_()
 
 	# Instructor Functions

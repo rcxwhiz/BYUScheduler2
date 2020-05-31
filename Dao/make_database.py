@@ -131,7 +131,7 @@ def create_tables(semester_year: str, output_function: Callable) -> None:
 	connection.close()
 
 
-def save(yso: Tuple, use_rmp: bool, append_function: Callable = print, replace_function: Callable = print) -> None:
+def save(yso: Tuple, append_function: Callable = print, replace_function: Callable = print) -> None:
 	semester_year, semester_result, classes_result, section_results = yso
 	if not os.path.exists(Dao.paths.database_path_1(semester_year)):
 		append_function(f"Could not find {Dao.paths.database_path_1(semester_year)}. Making new database...")
@@ -342,11 +342,10 @@ def save(yso: Tuple, use_rmp: bool, append_function: Callable = print, replace_f
 
 	replace_function(f"Saved {len(section_results)} sections")
 
-	if use_rmp:
-		sql_cmd = """SELECT * FROM instructors;"""
-		cursor.execute(sql_cmd)
-		profs = cursor.fetchall()
-		RateMyProfessorAPI.append_rmp_info(profs, cursor, append_function, replace_function)
+	sql_cmd = """SELECT * FROM instructors;"""
+	cursor.execute(sql_cmd)
+	profs = cursor.fetchall()
+	RateMyProfessorAPI.append_rmp_info(profs, cursor, append_function, replace_function)
 
 	append_function("Commiting changes...")
 	cursor.close()

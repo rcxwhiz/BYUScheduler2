@@ -5,131 +5,151 @@ from typing import Dict
 import Dao.paths
 
 
-# TODO pretty much everything here needs to be changed
-def load_classes(semester_year: str, data: Dict) -> None:
-	sql_cmd = """SELECT * FROM courses;"""
-
+def load_courses(semester_year: str, data: Dict) -> None:
 	with closing(sqlite3.connect(Dao.paths.database_path_1(semester_year))) as connection:
 		cursor = connection.cursor()
 
+		sql_cmd = """SELECT * FROM courses"""
 		cursor.execute(sql_cmd)
 
 		for course in cursor.fetchall():
-			data[course[0]] = {"curriculum_id_title_code": course[0],
-			                   "curriculum_id": course[1],
-			                   "catalog_number": course[2],
-			                   "catalog_suffix": course[3],
-			                   "dept_name": course[4],
-			                   "full_title": course[5],
-			                   "title": course[6],
-			                   "title_code": course[7],
-			                   "credit_hours": course[8],
-			                   "description": course[9],
-			                   "effective_date": course[10],
-			                   "effective_year_term": course[11],
-			                   "expired_date": course[12],
-			                   "expired_year_term": course[13],
-			                   "honors_approved": course[14],
-			                   "lab_hours": course[15],
-			                   "lecture_hours": course[16],
-			                   "note": course[17],
-			                   "offered": course[18],
-			                   "prerequisite": course[19],
-			                   "recommended": course[20],
-			                   "when_taught": course[21],
-			                   "sections": {}}
-		sql_cmd = """SELECT * FROM sections;"""
-		cursor.execute(sql_cmd)
+			course_data = {"curriculum_id_title_code": course[0],
+			               "curriculum_id": course[1],
+			               "title_code": course[2],
+			               "dept_name": course[3],
+			               "catalog_number": course[4],
+			               "catalog_suffix": course[5],
+			               "title": course[6],
+			               "full_title": course[7],
+			               "credit_hours": course[8],
+			               "description": course[9],
+			               "effective_date": course[10],
+			               "expired_date": course[11],
+			               "effective_year_term": course[12],
+			               "expired_year_term": course[13],
+			               "honors_approved": course[14],
+			               "lab_hours": course[15],
+			               "lecture_hours": course[16],
+			               "note": course[17],
+			               "offered": course[18],
+			               "prerequisite": course[19],
+			               "recommended": course[20],
+			               "when_taught": course[21],
+			               "sections": [],
+			               "instructors": []}
 
-		for section in cursor.fetchall():
-			section_data = {"class_size": section[1],
-			                "seats_available": section[2],
-			                "waitlist_size": section[3],
-			                "catalog_number": section[4],
-			                "catalog_suffix": section[5],
-			                "credit_hours": section[6],
-			                "credit_type": section[7],
-			                "curriculum_id": section[8],
-			                "dept_name": section[9],
-			                "end_date": section[10],
-			                "fixed_or_variable": section[11],
-			                "honors": section[12],
-			                "minimum_credit_hours": section[13],
-			                "mode": section[14],
-			                "mode_desc": section[15],
-			                "section_number": section[16],
-			                "section_type": section[17],
-			                "start_date": section[18],
-			                "title_code": section[19],
-			                "year_term": section[20],
-			                "instructors": [],
-			                "times": []}
+			sql_cmd = """SELECT * FROM sections WHERE curriculum_id_title_code = ?"""
+			cursor.execute(sql_cmd, (course_data["curriculum_id_title_code"],))
 
-			data[section[0]]["sections"][section[16]] = section_data
+			for section in cursor.fetchall():
+				section_data = {"curriculum_id_title_code": section[0],
+				                "class_size": section[1],
+				                "seats_available": section[2],
+				                "waitlist_size": section[3],
+				                "catalog_number": section[4],
+				                "catalog_suffix": section[5],
+				                "credit_hours": section[6],
+				                "credit_type": section[7],
+				                "curriculum_id": section[8],
+				                "dept_name": section[9],
+				                "end_date": section[10],
+				                "fixed_or_variable": section[11],
+				                "honors": section[12],
+				                "minimum_credit_hours": section[13],
+				                "mode": section[14],
+				                "mode_desc": section[15],
+				                "section_number": section[16],
+				                "section_type": section[17],
+				                "start_date": section[18],
+				                "title_code": section[19],
+				                "year_term": section[20],
+				                "times": [],
+				                "instructor": None}
 
-		sql_cmd = """SELECT * FROM course_instructors;"""
-		cursor.execute(sql_cmd)
+				sql_cmd = """SELECT * FROM times WHERE cirriculum_id_title_code = ? AND section_number = ?"""
+				cursor.execute(sql_cmd, (section_data["curriculum_id_title_code"], section_data["section_number"]))
 
-		for instructor in cursor.fetchall():
-			sql_cmd = """SELECT * FROM instructors WHERE person_id = ?;"""
-			cursor.execute(sql_cmd, (instructor[2],))
-			data_found = cursor.fetchone()
-			if data_found is not None:
-				data_to_insert = {"person_id": data_found[0],
-				                  "first_name": data_found[1],
-				                  "last_name": data_found[2],
-				                  "sort_name": data_found[3],
-				                  "byu_id": data_found[4],
-				                  "net_id": data_found[5],
-				                  "phone_number": data_found[6],
-				                  "preferred_first_name": data_found[7],
-				                  "rest_of_name": data_found[8],
-				                  "surname": data_found[9]}
-			else:
-				data_to_insert = {"person_id": "COULD NOT FIND INSTRUCTOR",
-				                  "first_name": "COULD NOT FIND INSTRUCTOR",
-				                  "last_name": "COULD NOT FIND INSTRUCTOR",
-				                  "sort_name": "COULD NOT FIND INSTRUCTOR",
-				                  "byu_id": "COULD NOT FIND INSTRUCTOR",
-				                  "net_id": "COULD NOT FIND INSTRUCTOR",
-				                  "phone_number": "COULD NOT FIND INSTRUCTOR",
-				                  "preferred_first_name": "COULD NOT FIND INSTRUCTOR",
-				                  "rest_of_name": "COULD NOT FIND INSTRUCTOR",
-				                  "surname": "COULD NOT FIND INSTRUCTOR"}
-			data[instructor[0]]["sections"][instructor[1]]["instructors"].append(data_to_insert)
+				for time in cursor.fetchall():
+					time_data = {"curriculum_id_title_code": time[0],
+					             "section_number": time[1],
+					             "begin_time": time[2],
+					             "end_time": time[3],
+					             "building": time[4],
+					             "room": time[5],
+					             "sun": time[6],
+					             "mon": time[7],
+					             "tue": time[8],
+					             "wed": time[9],
+					             "thu": time[10],
+					             "fri": time[11],
+					             "sat": time[12],
+					             "sequence_number": time[13]}
+					section_data["times"].append(time_data)
+				section_data["times"].sort(key=sort_times)
 
-		sql_cmd = """SELECT * FROM times;"""
-		cursor.execute(sql_cmd)
+				sql_cmd = """SELECT person_id FROM course_instructors WHERE curriculum_id_title_code = ? AND section_number = ?"""
+				cursor.execute(sql_cmd, (section_data["curriculum_id_title_code"], section_data["section_number"]))
 
-		for time in cursor.fetchall():
-			time_data = {"begin_time": time[2],
-			             "building": time[3],
-			             "end_time": time[4],
-			             "fri": time[5],
-			             "mon": time[6],
-			             "room": time[7],
-			             "sat": time[8],
-			             "sequence_number": time[9],
-			             "sun": time[10],
-			             "thu": time[11],
-			             "tue": time[12],
-			             "wed": time[13]}
-			data[time[0]]["sections"][time[1]]["times"].append(time_data)
-			data[time[0]]["sections"][time[1]]["times"].sort(key=sort_times)
+				person_id = cursor.fetchone()
+
+				if person_id is not None:
+					sql_cmd = """SELECT * FROM instructors WHERE person_id = ?"""
+					cursor.execute(sql_cmd, (person_id[0],))
+					instructor = cursor.fetchone()
+					try:
+						instructor_data = {"person_id": instructor[0],
+						                   "byu_id": instructor[1],
+						                   "net_id": instructor[2],
+						                   "first_name": instructor[3],
+						                   "last_name": instructor[4],
+						                   "sort_name": instructor[5],
+						                   "preferred_first_name": instructor[6],
+						                   "rest_of_name": instructor[7],
+						                   "surname": instructor[8],
+						                   "phone_number": instructor[9],
+						                   "avg_rating": instructor[10],
+						                   "avg_helpful": instructor[11],
+						                   "num_ratings": instructor[12],
+						                   "avg_easy_score": instructor[13],
+						                   "avg_clarity_score": instructor[14]}
+					except TypeError:
+						instructor_data = None
+					section_data["instructor"] = instructor_data
+
+				course_data["sections"].append(section_data)
+			course_data["sections"].sort(key=sort_sections)
+			for section in course_data["sections"]:
+				add_instructor = True
+				for instructor in course_data["instructors"]:
+					try:
+						if section["instructor"]["person_id"] == instructor["person_id"]:
+							add_instructor = False
+							break
+					except TypeError:
+						add_instructor = False
+						break
+				if add_instructor:
+					course_data["instructors"].append(section["instructor"])
+
+			data[course_data["curriculum_id_title_code"]] = course_data
 
 
-def sort_times(val: Dict) -> str:
-	return val["sequence_number"]
+def sort_times(val: Dict) -> int:
+	return int(val["sequence_number"])
+
+
+def sort_sections(val: Dict) -> int:
+	return int(val["section_number"])
 
 
 def load_instructors(semester_year: str, data: Dict) -> None:
 	with closing(sqlite3.connect(Dao.paths.database_path_1(semester_year))) as connection:
 		cursor = connection.cursor()
 
-		sql_cmd = """SELECT * FROM instructors;"""
+		sql_cmd = """SELECT * FROM instructors"""
 		cursor.execute(sql_cmd)
 
-		for i, instructor in enumerate(cursor.fetchall()):
+		for instructor in cursor.fetchall():
 			instructor_data = {"person_id": instructor[0],
 			                   "byu_id": instructor[1],
 			                   "net_id": instructor[2],
@@ -149,10 +169,10 @@ def load_instructors(semester_year: str, data: Dict) -> None:
 			for key in instructor_data.keys():
 				if instructor_data[key] is None:
 					instructor_data[key] = ""
-			sql_cmd = """SELECT curriculum_id_title_code, section_number FROM course_instructors WHERE person_id = ?;"""
+			sql_cmd = """SELECT curriculum_id_title_code, section_number FROM course_instructors WHERE person_id = ?"""
 			cursor.execute(sql_cmd, (instructor[0],))
 			for course in cursor.fetchall():
-				sql_cmd = """SELECT catalog_number, catalog_suffix, dept_name FROM sections WHERE curriculum_id_title_code = ? AND section_number = ?;"""
+				sql_cmd = """SELECT catalog_number, catalog_suffix, dept_name FROM sections WHERE curriculum_id_title_code = ? AND section_number = ?"""
 				cursor.execute(sql_cmd, course)
 				for section in cursor.fetchall():
 					suffix = section[1]
@@ -163,3 +183,10 @@ def load_instructors(semester_year: str, data: Dict) -> None:
 
 					instructor_data["classes_taught"].append(class_data)
 			data[instructor[0]] = instructor_data
+
+
+if __name__ == '__main__':
+	test = {}
+	load_courses("summer_2020", test)
+
+	print("done")

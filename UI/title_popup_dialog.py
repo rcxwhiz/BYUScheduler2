@@ -19,13 +19,12 @@ import Dao.paths
 
 
 class Ui_Dialog(object):
-	def setupUi(self, DialogIn: QtWidgets.QDialog, semester: str, year: int, data: Dict, useRMP: bool) -> None:
+	def setupUi(self, DialogIn: QtWidgets.QDialog, semester: str, year: int, data: Dict) -> None:
 		self.dialog = DialogIn
 		self.semester = semester
 		self.year = str(year)
 		self.semester_year = semester.lower() + "_" + str(year)
 		self.return_data = data
-		self.use_rmp = useRMP
 		self.return_data.clear()
 		self.manager = multiprocessing.Manager()
 		self.message_queue = self.manager.Queue()
@@ -180,7 +179,6 @@ class Ui_Dialog(object):
 			                                  str(self.year),
 			                                  append_function=self.append_text,
 			                                  replace_function=self.replace_line),
-			                       self.use_rmp,
 			                       append_function=self.append_text,
 			                       replace_function=self.replace_line)
 		except Exception as e:

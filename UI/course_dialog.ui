@@ -6,8 +6,8 @@
             <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>850</width>
-                <height>602</height>
+                <width>1200</width>
+                <height>640</height>
             </rect>
         </property>
         <property name="windowTitle">
@@ -67,6 +67,15 @@
                                 <widget class="QLabel" name="label_8">
                                     <property name="text">
                                         <string>Lecture Hours
+                                            ---
+                                        </string>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item>
+                                <widget class="QLabel" name="label_16">
+                                    <property name="text">
+                                        <string>Minimum Hours
                                             ---
                                         </string>
                                     </property>
@@ -197,12 +206,17 @@
                                 <widget class="QTableWidget" name="tableWidget">
                                     <column>
                                         <property name="text">
-                                            <string>New Column</string>
+                                            <string>Section Num</string>
                                         </property>
                                     </column>
                                     <column>
                                         <property name="text">
-                                            <string>Section Num</string>
+                                            <string>Type</string>
+                                        </property>
+                                    </column>
+                                    <column>
+                                        <property name="text">
+                                            <string>Instructor</string>
                                         </property>
                                     </column>
                                     <column>
@@ -222,7 +236,32 @@
                                     </column>
                                     <column>
                                         <property name="text">
+                                            <string>Building</string>
+                                        </property>
+                                    </column>
+                                    <column>
+                                        <property name="text">
+                                            <string>Room</string>
+                                        </property>
+                                    </column>
+                                    <column>
+                                        <property name="text">
                                             <string>Term</string>
+                                        </property>
+                                    </column>
+                                    <column>
+                                        <property name="text">
+                                            <string>Class Size</string>
+                                        </property>
+                                    </column>
+                                    <column>
+                                        <property name="text">
+                                            <string>Seats Available</string>
+                                        </property>
+                                    </column>
+                                    <column>
+                                        <property name="text">
+                                            <string>Waitlist Size</string>
                                         </property>
                                     </column>
                                 </widget>
@@ -248,17 +287,17 @@
                                     </column>
                                     <column>
                                         <property name="text">
-                                            <string>New Column</string>
-                                        </property>
-                                    </column>
-                                    <column>
-                                        <property name="text">
                                             <string>Last Name</string>
                                         </property>
                                     </column>
                                     <column>
                                         <property name="text">
                                             <string># RMP Ratings</string>
+                                        </property>
+                                    </column>
+                                    <column>
+                                        <property name="text">
+                                            <string>RMP Rating</string>
                                         </property>
                                     </column>
                                     <column>
