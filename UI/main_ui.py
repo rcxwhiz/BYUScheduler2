@@ -690,8 +690,17 @@ class Ui_MainWindow(object):
 					if title_filter not in self.course_table.item(index, 3).text().lower():
 						show = False
 				if show and instructor_filter != "":
-					# TODO this is not implimented because instructor storage might change
-					i = 1
+					show = False
+					found = True
+					for instructor in self.loaded_data[self.course_table.item(index, 8).text()]["instructors"]:
+						if instructor is not None:
+							for part in instructor_parts:
+								if part not in instructor["sort_name"].lower():
+									found = False
+							if found:
+								show = True
+								break
+
 				if show and lab_hour_checked:
 					if lab_hour_filter != float(self.course_table.item(index, 6).text()):
 						show = False
@@ -707,8 +716,9 @@ class Ui_MainWindow(object):
 						"description"] is None or description_filter not in \
 							self.loaded_data[self.course_table.item(index, 8).text()]["description"].lower():
 						show = False
-			except:
+			except IOError as e:
 				print("error sorting")
+				print(e)
 				show = False
 
 			if show:
