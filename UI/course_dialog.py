@@ -14,7 +14,7 @@ class Ui_Dialog(object):
 	def setupUi(self, Dialog, data):
 		self.data = data
 		Dialog.setObjectName("Dialog")
-		Dialog.resize(1200, 640)
+		Dialog.resize(1200, 850)
 		self.gridLayout = QtWidgets.QGridLayout(Dialog)
 		self.gridLayout.setObjectName("gridLayout")
 		self.horizontalLayout = QtWidgets.QHBoxLayout()
@@ -52,9 +52,7 @@ class Ui_Dialog(object):
 		sizePolicy.setHeightForWidth(self.indi_description_display.sizePolicy().hasHeightForWidth())
 		self.indi_description_display.setSizePolicy(sizePolicy)
 		self.indi_description_display.setMinimumSize(QtCore.QSize(0, 0))
-		self.indi_description_display.setMaximumSize(QtCore.QSize(200, 16777215))
-		self.indi_description_display.setTextInteractionFlags(
-			QtCore.Qt.TextSelectableByKeyboard | QtCore.Qt.TextSelectableByMouse)
+		self.indi_description_display.setMaximumSize(QtCore.QSize(275, 16777215))
 		self.indi_description_display.setObjectName("indi_description_display")
 		self.verticalLayout_2.addWidget(self.indi_description_display)
 		self.indi_note_label = QtWidgets.QLabel(Dialog)
@@ -68,9 +66,7 @@ class Ui_Dialog(object):
 		sizePolicy.setHeightForWidth(self.indi_note_display.sizePolicy().hasHeightForWidth())
 		self.indi_note_display.setSizePolicy(sizePolicy)
 		self.indi_note_display.setMinimumSize(QtCore.QSize(0, 0))
-		self.indi_note_display.setMaximumSize(QtCore.QSize(200, 16777215))
-		self.indi_note_display.setTextInteractionFlags(
-			QtCore.Qt.TextSelectableByKeyboard | QtCore.Qt.TextSelectableByMouse)
+		self.indi_note_display.setMaximumSize(QtCore.QSize(275, 16777215))
 		self.indi_note_display.setObjectName("indi_note_display")
 		self.verticalLayout_2.addWidget(self.indi_note_display)
 
@@ -163,8 +159,44 @@ class Ui_Dialog(object):
 			self.indi_sections_table.setItem(i, 11, QtWidgets.QTableWidgetItem(section["waitlist_size"]))
 		self.indi_sections_table.resizeColumnsToContents()
 		self.indi_sections_table.resizeRowsToContents()
+		self.indi_instructors_table.setSortingEnabled(True)
+
+		self.indi_instructors_table.setColumnCount(6)
+		self.indi_instructors_table.setHorizontalHeaderLabels(
+			["Sections", "First Name", "Last Name", "# RMP Ratings", "RMP Rating", "RMP Difficulty"])
+		self.indi_instructors_table.setRowCount(len(self.data["instructors"]))
+		for i, instructor in enumerate(self.data["instructors"]):
+			sections_taught = []
+			for section in self.data["sections"]:
+				for section_instructor in section["instructors"]:
+					if section_instructor["person_id"] == instructor["person_id"]:
+						sections_taught.append(section["section_number"].lstrip("0"))
+						break
+			self.indi_instructors_table.setItem(i, 0, QtWidgets.QTableWidgetItem(", ".join(sections_taught)))
+			self.indi_instructors_table.setItem(i, 1, QtWidgets.QTableWidgetItem(instructor["first_name"]))
+			self.indi_instructors_table.setItem(i, 2, QtWidgets.QTableWidgetItem(instructor["last_name"]))
+			try:
+				item = QtWidgets.QTableWidgetItem()
+				item.setData(QtCore.Qt.DisplayRole, int(instructor["num_ratings"]))
+				self.indi_instructors_table.setItem(i, 3, item)
+			except:
+				self.indi_instructors_table.setItem(i, 3, QtWidgets.QTableWidgetItem(instructor["num_ratings"]))
+			try:
+				item = QtWidgets.QTableWidgetItem()
+				item.setData(QtCore.Qt.DisplayRole, float(instructor["avg_rating"]))
+				self.indi_instructors_table.setItem(i, 4, item)
+			except:
+				self.indi_instructors_table.setItem(i, 4, QtWidgets.QTableWidgetItem(instructor["avg_rating"]))
+			try:
+				item = QtWidgets.QTableWidgetItem()
+				item.setData(QtCore.Qt.DisplayRole, float(instructor["avg_easy_score"]))
+				self.indi_instructors_table.setItem(i, 5, item)
+			except:
+				self.indi_instructors_table.setItem(i, 5, QtWidgets.QTableWidgetItem(instructor["avg_easy_score"]))
 
 	def stamp_to_normal_time(self, time_in: str) -> str:
+		if time_in is None:
+			return ""
 		num_time = int(time_in)
 		if num_time >= 1200:
 			ampm = "PM"
@@ -177,39 +209,37 @@ class Ui_Dialog(object):
 
 	def retranslateUi(self, Dialog):
 		_translate = QtCore.QCoreApplication.translate
-		suffix = self.data["catalog_suffix"]
-		if suffix is None:
-			suffix = ""
-		Dialog.setWindowTitle(_translate("Dialog", f"{self.data['dept_name']} {self.data['catalog_number']}{suffix}"))
+		Dialog.setWindowTitle(_translate("Dialog",
+		                                 f"{self.data['dept_name']} {self.data['catalog_number']}{self.none_safe(self.data['catalog_suffix'])}"))
 		self.indi_dept_label.setText(_translate("Dialog", f"Dept:\n{self.data['dept_name']}"))
 		self.indi_num_label.setText(_translate("Dialog", f"Num:\n{self.data['catalog_number']}"))
-		self.indi_credits_label.setText(_translate("Dialog", f"Credits:\n{self.data['credit_hours']}"))
-		self.indi_instructors_label.setText(_translate("Dialog", "Instructors"))
-		title = self.data["full_title"]
-		if title.endswith("."):
-			title = title[:-1]
-		self.indi_title_label.setText(_translate("Dialog", f"Title:\n{title}"))
-		lab_hours = self.data["lab_hours"]
+		self.indi_credits_label.setText(_translate("Dialog", f"Credits:\n{self.none_safe(self.data['credit_hours'])}"))
+		self.indi_instructors_label.setText(_translate("Dialog", "Instructors:"))
+		self.indi_title_label.setText(
+			_translate("Dialog", f"Title:\n{self.none_safe(self.data['full_title']).rstrip('.')}"))
+		lab_hours = self.none_safe(self.data["lab_hours"])
 		if "arr" in lab_hours.lower():
 			lab_hours = "variable"
 		self.indi_lab_hours_label.setText(_translate("Dialog", f"Lab Hours:\n{lab_hours}"))
-		lecture_hours = self.data['lecture_hours']
+		lecture_hours = self.none_safe(self.data['lecture_hours'])
 		if "arr" in lecture_hours.lower():
 			lecture_hours = "variable"
 		self.indi_lecture_hours_label.setText(_translate("Dialog", f"Lecture Hours:\n{lecture_hours}"))
-		self.indi_honors_label.setText(_translate("Dialog", f"Honors:\n{self.data['honors_approved']}"))
-		self.indi_description_label.setText(_translate("Dialog", "Description"))
-		description = self.data["description"]
-		if description is None:
-			description = ""
-		self.indi_description_display.setText(_translate("Dialog", description))
+		self.indi_honors_label.setText(_translate("Dialog", f"Honors:\n{self.none_safe(self.data['honors_approved'])}"))
+		self.indi_description_label.setText(_translate("Dialog", "Description:"))
+		self.indi_description_display.setText(_translate("Dialog", self.none_safe(self.data['description'])))
 		self.indi_note_label.setText(_translate("Dialog", "Note:"))
-		note = self.data["note"]
-		if note is None:
-			note = ""
-		self.indi_note_display.setText(_translate("Dialog", note))
-		self.indi_offered_label.setText(_translate("Dialog", f"Offered:\n{self.data['offered']}"))
-		self.indi_preqs_label.setText(_translate("Dialog", f"Prerequisites:\n{self.data['prerequisite']}"))
-		self.indi_recommended_label.setText(_translate("Dialog", f"Recommended:\n{self.data['recommended']}"))
-		self.indi_when_taught_label.setText(_translate("Dialog", f"When Taught:\n{self.data['when_taught']}"))
+		self.indi_note_display.setText(_translate("Dialog", self.none_safe(self.data['note'])))
+		self.indi_offered_label.setText(_translate("Dialog", f"Offered:\n{self.none_safe(self.data['offered'])}"))
+		self.indi_preqs_label.setText(
+			_translate("Dialog", f"Prerequisites:\n{self.none_safe(self.data['prerequisite'])}"))
+		self.indi_recommended_label.setText(
+			_translate("Dialog", f"Recommended:\n{self.none_safe(self.data['recommended'])}"))
+		self.indi_when_taught_label.setText(
+			_translate("Dialog", f"When Taught:\n{self.none_safe(self.data['when_taught'])}"))
 		self.indi_sections_label.setText(_translate("Dialog", "Sections"))
+
+	def none_safe(self, item) -> str:
+		if item is None:
+			return ""
+		return item

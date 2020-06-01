@@ -115,6 +115,8 @@ def load_courses(semester_year: str, data: Dict) -> None:
 						pass
 
 				course_data["sections"].append(section_data)
+			# TODO when downloading new sections getting an error here
+			# getting 2020-06-15 instead of a section number
 			course_data["sections"].sort(key=sort_sections)
 
 			used_person_ids = set()
