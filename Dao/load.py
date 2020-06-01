@@ -85,7 +85,7 @@ def load_instructors(semester_year: str, data: Dict) -> None:
 
 		for instructor in cursor.fetchall():
 			instructor_data = {"classes_taught": []}
-			for i, key in Dao.instructors_schema.keys():
+			for i, key in enumerate(Dao.instructors_schema.keys()):
 				instructor_data[key] = instructor[i]
 
 			sql_cmd = """SELECT curriculum_id_title_code, section_number FROM course_instructors WHERE person_id = ?"""
