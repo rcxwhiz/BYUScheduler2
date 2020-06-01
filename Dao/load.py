@@ -38,30 +38,53 @@ def load_courses(semester_year: str, data: Dict) -> None:
 			               "sections": [],
 			               "instructors": []}
 
-			sql_cmd = """SELECT * FROM sections WHERE curriculum_id_title_code = ?"""
+			sql_cmd = """SELECT curriculum_id_title_code,
+			 curriculum_id,
+			 title_code,
+			 dept_name,
+			 catalog_suffix,
+			 section_number,
+			 section_type,
+			 credit_hours,
+			 minimum_credit_hours,
+			 credit_type,
+			 credit_hours,
+			 minimum_credit_hours,
+			 credit_type,
+			 fixed_or_variable,
+			 class_size,
+			 seats_available,
+			 waitlist_size,
+			 start_date,
+			 end_date,
+			 honors,
+			 mode,
+			 mode_desc,
+			 year_term
+			 FROM sections WHERE curriculum_id_title_code = ?"""
 			cursor.execute(sql_cmd, (course_data["curriculum_id_title_code"],))
 
 			for section in cursor.fetchall():
 				section_data = {"curriculum_id_title_code": section[0],
-				                "class_size": section[1],
-				                "seats_available": section[2],
-				                "waitlist_size": section[3],
+				                "curriculum_id": section[1],
+				                "title_code": section[2],
+				                "dept_name": section[3],
 				                "catalog_number": section[4],
 				                "catalog_suffix": section[5],
-				                "credit_hours": section[6],
-				                "credit_type": section[7],
-				                "curriculum_id": section[8],
-				                "dept_name": section[9],
-				                "end_date": section[10],
+				                "section_number": section[6],
+				                "section_type": section[7],
+				                "credit_hours": section[8],
+				                "minimum_credit_hours": section[9],
+				                "credit_type": section[10],
 				                "fixed_or_variable": section[11],
-				                "honors": section[12],
-				                "minimum_credit_hours": section[13],
-				                "mode": section[14],
-				                "mode_desc": section[15],
-				                "section_number": section[16],
-				                "section_type": section[17],
-				                "start_date": section[18],
-				                "title_code": section[19],
+				                "class_size": section[12],
+				                "seats_available": section[13],
+				                "waitlist_size": section[14],
+				                "start_date": section[15],
+				                "end_date": section[16],
+				                "honors": section[17],
+				                "mode": section[18],
+				                "mode_desc": section[19],
 				                "year_term": section[20],
 				                "times": [],
 				                "instructors": []}
@@ -115,8 +138,6 @@ def load_courses(semester_year: str, data: Dict) -> None:
 						pass
 
 				course_data["sections"].append(section_data)
-			# TODO when downloading new sections getting an error here
-			# getting 2020-06-15 instead of a section number
 			course_data["sections"].sort(key=sort_sections)
 
 			used_person_ids = set()

@@ -2,6 +2,7 @@ import os
 import sqlite3
 from typing import Callable, Tuple
 
+import Dao
 import Dao.paths
 import RateMyProfessorAPI
 
@@ -14,117 +15,33 @@ def create_tables(semester_year: str, output_function: Callable) -> None:
 	connection = sqlite3.connect(Dao.paths.database_path_1(semester_year))
 	cursor = connection.cursor()
 
-	sql_cmd = """
+	sql_cmd = f"""
 	DROP TABLE IF EXISTS buildings;
-	CREATE TABLE buildings (
-	building TEXT NOT NULL PRIMARY KEY);
+	CREATE TABLE buildings ({Dao.make_table_cmd(Dao.buildings_schema)});
 
 	DROP TABLE IF EXISTS dept_list;
-	CREATE TABLE dept_list (
-	dept_code TEXT NOT NULL PRIMARY KEY,
-	dept_name TEXT NOT NULL
-	);
+	CREATE TABLE dept_list ({Dao.make_table_cmd(Dao.dept_list_schema)});
 
 	DROP TABLE IF EXISTS section_types;
-	CREATE TABLE section_types (
-	section_type TEXT NOT NULL PRIMARY KEY);
+	CREATE TABLE section_types ({Dao.make_table_cmd(Dao.section_types_schema)});
 	
 	DROP TABLE IF EXISTS dept_map;
-	CREATE TABLE dept_map (
-	dept TEXT NOT NULL PRIMARY KEY,
-	dept_code TEXT NOT NULL);
+	CREATE TABLE dept_map ({Dao.make_table_cmd(Dao.dept_map_schema)});
 
 	DROP TABLE IF EXISTS instructors;
-	CREATE TABLE instructors (
-	person_id TEXT NOT NULL PRIMARY KEY,
-	byu_id TEXT,
-	net_id TEXT,
-	first_name TEXT,
-	last_name TEXT,
-	sort_name TEXT NOT NULL,
-	preferred_first_name TEXT,
-	rest_of_name TEXT,
-	surname TEXT,
-	phone_number TEXT,
-	avg_rating REAL,
-	avg_helpful REAL,
-	num_ratings INTEGER,
-	avg_easy_score REAL,
-	avg_clarity_score REAL
-	);
+	CREATE TABLE instructors ({Dao.make_table_cmd(Dao.instructors_schema)});
 
 	DROP TABLE IF EXISTS course_instructors;
-	CREATE TABLE course_instructors (
-	curriculum_id_title_code TEXT NOT NULL,
-	section_number TEXT NOT NULL,
-	person_id TEXT NOT NULL);
+	CREATE TABLE course_instructors ({Dao.make_table_cmd(Dao.course_instructors_schema)});
 
 	DROP TABLE IF EXISTS courses;
-	CREATE TABLE courses (
-	curriculum_id_title_code TEXT NOT NULL PRIMARY KEY,
-	curriculum_id TEXT NOT NULL,
-	title_code TEXT,
-	dept_name TEXT NOT NULL,
-	catalog_number TEXT NOT NULL,
-	catalog_suffix TEXT,
-	title TEXT,
-	full_title TEXT,
-	credit_hours TEXT,
-	description TEXT,
-	effective_date TEXT,
-	expired_date TEXT,
-	effective_year_term TEXT,
-	expired_year_term TEXT,
-	honors_approved TEXT,
-	lab_hours TEXT,
-	lecture_hours TEXT,
-	note TEXT,
-	offered TEXT,
-	prerequisite TEXT,
-	recommended TEXT,
-	when_taught TEXT
-	);
+	CREATE TABLE courses ({Dao.make_table_cmd(Dao.courses_schema)});
 
 	DROP TABLE IF EXISTS sections;
-	CREATE TABLE sections (
-	curriculum_id_title_code TEXT NOT NULL,
-	curriculum_id TEXT NOT NULL,
-	title_code TEXT,
-	dept_name TEXT NOT NULL,
-	catalog_number TEXT NOT NULL,
-	catalog_suffix TEXT,
-	section_number TEXT NOT NULL,
-	section_type TEXT,
-	credit_hours TEXT,
-	minimum_credit_hours TEXT,
-	credit_type TEXT,
-	fixed_or_variable TEXT,
-	class_size TEXT,
-	seats_available TEXT,
-	waitlist_size TEXT,
-	start_date TEXT,
-	end_date TEXT,
-	honors TEXT,
-	mode TEXT,
-	mode_desc TEXT,
-	year_term TEXT);
+	CREATE TABLE sections ({Dao.make_table_cmd(Dao.sections_schema)});
 
 	DROP TABLE IF EXISTS times;
-	CREATE TABLE times (
-	cirriculum_id_title_code TEXT NOT NULL,
-	section_number TEXT NOT NULL,
-	begin_time TEXT,
-	end_time TEXT,
-	building TEXT,
-	room TEXT,
-	sun TEXT,
-	mon TEXT,
-	tue TEXT,
-	wed TEXT,
-	thu TEXT,
-	fri TEXT,
-	sat TEXT,
-	sequence_number TEXT);"""
+	CREATE TABLE times ({Dao.make_table_cmd(Dao.times_schema)});"""
 
 	cursor.executescript(sql_cmd)
 	connection.commit()

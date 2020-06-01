@@ -119,7 +119,7 @@ class Ui_Dialog(object):
 			 "Seats Avail.", "Waitlist"])
 		self.indi_sections_table.setRowCount(len(self.data["sections"]))
 		for i, section in enumerate(self.data["sections"]):
-			section_num = section["section_number"]
+			section_num = self.none_safe(section["section_number"])
 			try:
 				section_num = int(section_num)
 				item = QtWidgets.QTableWidgetItem()
@@ -130,7 +130,7 @@ class Ui_Dialog(object):
 			self.indi_sections_table.setItem(i, 1, QtWidgets.QTableWidgetItem(section["section_type"]))
 			instructor_names = []
 			for instructor in section["instructors"]:
-				instructor_names.append(instructor["sort_name"])
+				instructor_names.append(self.none_safe(instructor["sort_name"]))
 			self.indi_sections_table.setItem(i, 2, QtWidgets.QTableWidgetItem("\n".join(instructor_names)))
 			start = []
 			end = []
@@ -138,15 +138,15 @@ class Ui_Dialog(object):
 			building = []
 			room = []
 			for time in section["times"]:
-				start.append(self.stamp_to_normal_time(time["begin_time"]))
-				end.append(self.stamp_to_normal_time(time["end_time"]))
+				start.append(self.none_safe(self.stamp_to_normal_time(time["begin_time"])))
+				end.append(self.none_safe(self.stamp_to_normal_time(time["end_time"])))
 				days_str = ""
 				for key in self.day_keys:
 					if time[key] is not None:
 						days_str += self.day_keys[key]
-				days.append(days_str)
-				building.append(time["building"])
-				room.append(time["room"])
+				days.append(self.none_safe(days_str))
+				building.append(self.none_safe(time["building"]))
+				room.append(self.none_safe(time["room"]))
 			self.indi_sections_table.setItem(i, 3, QtWidgets.QTableWidgetItem("\n".join(start)))
 			self.indi_sections_table.setItem(i, 4, QtWidgets.QTableWidgetItem("\n".join(end)))
 			self.indi_sections_table.setItem(i, 5, QtWidgets.QTableWidgetItem("\n".join(days)))
