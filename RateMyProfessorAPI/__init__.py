@@ -5,6 +5,8 @@ from typing import List, Callable
 
 import requests
 
+import Dao
+
 url1 = "https://search-production.ratemyprofessors.com/solr/rmp/select/?solrformat=true&rows=2&wt=json&q="
 url2 = "+AND+schoolid_s%3A135"
 
@@ -19,6 +21,11 @@ sql_cmd = """UPDATE instructors SET avg_rating = ?, avg_helpful = ?, num_ratings
 
 
 def get_rating(person_id: str, first_name: str, last_name: str, rest_of_name: str, surname: str, data_stream: List):
+	first_name = Dao.none_safe(first_name)
+	last_name = Dao.none_safe(last_name)
+	rest_of_name = Dao.none_safe(rest_of_name)
+	surname = Dao.none_safe(surname)
+
 	url = url1 + first_name.replace(" ", "+") + "+" + last_name.replace(" ", "+") + url2
 	response = requests.post(url=url).json()["response"]
 
@@ -56,7 +63,7 @@ def append_rmp_info(profs: List, cursor: sqlite3.Cursor, append_function: Callab
 			except StopIteration:
 				break
 			new_thread = threading.Thread(target=get_rating, args=(
-				professor[0], professor[3], professor[4], professor[7], professor[8], data_stream))
+			professor[0], professor[3], professor[4], professor[7], professor[8], data_stream))
 			new_thread.start()
 			threads.append(new_thread)
 

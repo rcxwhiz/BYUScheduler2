@@ -210,6 +210,7 @@ class Ui_Dialog(object):
 		return f"{time[:-2]}:{time[-2:]} {ampm}"
 
 	def retranslateUi(self, Dialog):
+		# TODO need a way to cut off text on all sections, probably don't need to be using text view boxes
 		_translate = QtCore.QCoreApplication.translate
 		Dialog.setWindowTitle(_translate("Dialog",
 		                                 f"{self.data['dept_name']} {self.data['catalog_number']}{Dao.none_safe(self.data['catalog_suffix'])}"))

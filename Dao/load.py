@@ -28,7 +28,7 @@ def load_courses(semester_year: str, data: Dict) -> None:
 				for i, key in enumerate(Dao.sections_schema.keys()):
 					section_data[key] = section[i]
 
-				sql_cmd = """SELECT * FROM times WHERE cirriculum_id_title_code = ? AND section_number = ?"""
+				sql_cmd = """SELECT * FROM times WHERE curriculum_id_title_code = ? AND section_number = ?"""
 				cursor.execute(sql_cmd, (section_data["curriculum_id_title_code"], section_data["section_number"]))
 
 				for time in cursor.fetchall():
