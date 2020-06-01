@@ -9,6 +9,8 @@
 
 from PyQt5 import QtCore, QtWidgets
 
+import Dao
+
 
 class Ui_Dialog(object):
 	def setupUi(self, Dialog, data):
@@ -119,7 +121,7 @@ class Ui_Dialog(object):
 			 "Seats Avail.", "Waitlist"])
 		self.indi_sections_table.setRowCount(len(self.data["sections"]))
 		for i, section in enumerate(self.data["sections"]):
-			section_num = self.none_safe(section["section_number"])
+			section_num = Dao.none_safe(section["section_number"])
 			try:
 				section_num = int(section_num)
 				item = QtWidgets.QTableWidgetItem()
@@ -130,7 +132,7 @@ class Ui_Dialog(object):
 			self.indi_sections_table.setItem(i, 1, QtWidgets.QTableWidgetItem(section["section_type"]))
 			instructor_names = []
 			for instructor in section["instructors"]:
-				instructor_names.append(self.none_safe(instructor["sort_name"]))
+				instructor_names.append(Dao.none_safe(instructor["sort_name"]))
 			self.indi_sections_table.setItem(i, 2, QtWidgets.QTableWidgetItem("\n".join(instructor_names)))
 			start = []
 			end = []
@@ -138,15 +140,15 @@ class Ui_Dialog(object):
 			building = []
 			room = []
 			for time in section["times"]:
-				start.append(self.none_safe(self.stamp_to_normal_time(time["begin_time"])))
-				end.append(self.none_safe(self.stamp_to_normal_time(time["end_time"])))
+				start.append(Dao.none_safe(self.stamp_to_normal_time(time["begin_time"])))
+				end.append(Dao.none_safe(self.stamp_to_normal_time(time["end_time"])))
 				days_str = ""
 				for key in self.day_keys:
 					if time[key] is not None:
 						days_str += self.day_keys[key]
-				days.append(self.none_safe(days_str))
-				building.append(self.none_safe(time["building"]))
-				room.append(self.none_safe(time["room"]))
+				days.append(Dao.none_safe(days_str))
+				building.append(Dao.none_safe(time["building"]))
+				room.append(Dao.none_safe(time["room"]))
 			self.indi_sections_table.setItem(i, 3, QtWidgets.QTableWidgetItem("\n".join(start)))
 			self.indi_sections_table.setItem(i, 4, QtWidgets.QTableWidgetItem("\n".join(end)))
 			self.indi_sections_table.setItem(i, 5, QtWidgets.QTableWidgetItem("\n".join(days)))
@@ -210,36 +212,31 @@ class Ui_Dialog(object):
 	def retranslateUi(self, Dialog):
 		_translate = QtCore.QCoreApplication.translate
 		Dialog.setWindowTitle(_translate("Dialog",
-		                                 f"{self.data['dept_name']} {self.data['catalog_number']}{self.none_safe(self.data['catalog_suffix'])}"))
+		                                 f"{self.data['dept_name']} {self.data['catalog_number']}{Dao.none_safe(self.data['catalog_suffix'])}"))
 		self.indi_dept_label.setText(_translate("Dialog", f"Dept:\n{self.data['dept_name']}"))
 		self.indi_num_label.setText(_translate("Dialog", f"Num:\n{self.data['catalog_number']}"))
-		self.indi_credits_label.setText(_translate("Dialog", f"Credits:\n{self.none_safe(self.data['credit_hours'])}"))
+		self.indi_credits_label.setText(_translate("Dialog", f"Credits:\n{Dao.none_safe(self.data['credit_hours'])}"))
 		self.indi_instructors_label.setText(_translate("Dialog", "Instructors:"))
 		self.indi_title_label.setText(
-			_translate("Dialog", f"Title:\n{self.none_safe(self.data['full_title']).rstrip('.')}"))
-		lab_hours = self.none_safe(self.data["lab_hours"])
+			_translate("Dialog", f"Title:\n{Dao.none_safe(self.data['full_title']).rstrip('.')}"))
+		lab_hours = Dao.none_safe(self.data["lab_hours"])
 		if "arr" in lab_hours.lower():
 			lab_hours = "variable"
 		self.indi_lab_hours_label.setText(_translate("Dialog", f"Lab Hours:\n{lab_hours}"))
-		lecture_hours = self.none_safe(self.data['lecture_hours'])
+		lecture_hours = Dao.none_safe(self.data['lecture_hours'])
 		if "arr" in lecture_hours.lower():
 			lecture_hours = "variable"
 		self.indi_lecture_hours_label.setText(_translate("Dialog", f"Lecture Hours:\n{lecture_hours}"))
-		self.indi_honors_label.setText(_translate("Dialog", f"Honors:\n{self.none_safe(self.data['honors_approved'])}"))
+		self.indi_honors_label.setText(_translate("Dialog", f"Honors:\n{Dao.none_safe(self.data['honors_approved'])}"))
 		self.indi_description_label.setText(_translate("Dialog", "Description:"))
-		self.indi_description_display.setText(_translate("Dialog", self.none_safe(self.data['description'])))
+		self.indi_description_display.setText(_translate("Dialog", Dao.none_safe(self.data['description'])))
 		self.indi_note_label.setText(_translate("Dialog", "Note:"))
-		self.indi_note_display.setText(_translate("Dialog", self.none_safe(self.data['note'])))
-		self.indi_offered_label.setText(_translate("Dialog", f"Offered:\n{self.none_safe(self.data['offered'])}"))
+		self.indi_note_display.setText(_translate("Dialog", Dao.none_safe(self.data['note'])))
+		self.indi_offered_label.setText(_translate("Dialog", f"Offered:\n{Dao.none_safe(self.data['offered'])}"))
 		self.indi_preqs_label.setText(
-			_translate("Dialog", f"Prerequisites:\n{self.none_safe(self.data['prerequisite'])}"))
+			_translate("Dialog", f"Prerequisites:\n{Dao.none_safe(self.data['prerequisite'])}"))
 		self.indi_recommended_label.setText(
-			_translate("Dialog", f"Recommended:\n{self.none_safe(self.data['recommended'])}"))
+			_translate("Dialog", f"Recommended:\n{Dao.none_safe(self.data['recommended'])}"))
 		self.indi_when_taught_label.setText(
-			_translate("Dialog", f"When Taught:\n{self.none_safe(self.data['when_taught'])}"))
+			_translate("Dialog", f"When Taught:\n{Dao.none_safe(self.data['when_taught'])}"))
 		self.indi_sections_label.setText(_translate("Dialog", "Sections"))
-
-	def none_safe(self, item) -> str:
-		if item is None:
-			return ""
-		return item

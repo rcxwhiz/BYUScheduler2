@@ -86,3 +86,9 @@ def make_table_cmd(schema):
 	for key in schema.keys():
 		columns.append(key + " " + schema[key])
 	return ", ".join(columns)
+
+
+def none_safe(item):
+	if item is None:
+		return ""
+	return item

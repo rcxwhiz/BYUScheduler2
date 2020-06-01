@@ -1,5 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+import Dao
 import UI.course_dialog
 import UI.instructor_dialog
 import UI.title_popup_dialog
@@ -531,9 +532,12 @@ class Ui_MainWindow(object):
 			["First Name", "Last Name", "Sort Name", "# Courses Taught", "# RMP Ratings", "RMP Rating",
 			 "RMP Difficulty", "HIDDEN"])
 		for i, key in enumerate(self.loaded_data.keys()):
-			self.instructor_table.setItem(i, 0, QtWidgets.QTableWidgetItem(self.loaded_data[key]["first_name"]))
-			self.instructor_table.setItem(i, 1, QtWidgets.QTableWidgetItem(self.loaded_data[key]["last_name"]))
-			self.instructor_table.setItem(i, 2, QtWidgets.QTableWidgetItem(self.loaded_data[key]["sort_name"]))
+			self.instructor_table.setItem(i, 0, QtWidgets.QTableWidgetItem(
+				Dao.none_safe(self.loaded_data[key]["first_name"])))
+			self.instructor_table.setItem(i, 1,
+			                              QtWidgets.QTableWidgetItem(Dao.none_safe(self.loaded_data[key]["last_name"])))
+			self.instructor_table.setItem(i, 2,
+			                              QtWidgets.QTableWidgetItem(Dao.none_safe(self.loaded_data[key]["sort_name"])))
 
 			different_classes_taught = set()
 			for section in self.loaded_data[key]["classes_taught"]:
@@ -542,32 +546,32 @@ class Ui_MainWindow(object):
 			item.setData(QtCore.Qt.DisplayRole, len(different_classes_taught))
 			self.instructor_table.setItem(i, 3, item)
 
-			if self.loaded_data[key]["num_ratings"] is None:
-				self.instructor_table.setItem(i, 4, QtWidgets.QTableWidgetItem(""))
-			else:
+			try:
 				item = QtWidgets.QTableWidgetItem()
 				item.setData(QtCore.Qt.DisplayRole, self.loaded_data[key]["num_ratings"])
 				self.instructor_table.setItem(i, 4, item)
-			if self.loaded_data[key]["avg_rating"] is None:
-				self.instructor_table.setItem(i, 5, QtWidgets.QTableWidgetItem(""))
-			else:
+			except:
+				self.instructor_table.setItem(i, 4, QtWidgets.QTableWidgetItem(
+					Dao.none_safe(self.loaded_data[key]["num_ratings"])))
+
+			try:
 				item = QtWidgets.QTableWidgetItem()
 				item.setData(QtCore.Qt.DisplayRole, self.loaded_data[key]["avg_rating"])
 				self.instructor_table.setItem(i, 5, item)
-			if self.loaded_data[key]["avg_easy_score"] is None:
-				self.instructor_table.setItem(i, 5, QtWidgets.QTableWidgetItem(""))
-			else:
+			except:
+				self.instructor_table.setItem(i, 5, QtWidgets.QTableWidgetItem(
+					Dao.none_safe(self.loaded_data[key]["avg_rating"])))
+
+			try:
 				item = QtWidgets.QTableWidgetItem()
 				item.setData(QtCore.Qt.DisplayRole, self.loaded_data[key]["avg_easy_score"])
 				self.instructor_table.setItem(i, 6, item)
+			except:
+				self.instructor_table.setItem(i, 5, QtWidgets.QTableWidgetItem(
+					Dao.none_safe(self.loaded_data[key]["avg_easy_score"])))
 
 			self.instructor_table.setItem(i, 7, QtWidgets.QTableWidgetItem(key))
 		self.instructor_table.hideColumn(7)
-
-		if not self.title_spacer.isChecked():
-			self.instructor_table.hideColumn(4)
-			self.instructor_table.hideColumn(5)
-			self.instructor_table.hideColumn(6)
 
 		self.instructor_table.setSortingEnabled(True)
 		self.instructor_table.resizeColumnsToContents()
@@ -613,14 +617,13 @@ class Ui_MainWindow(object):
 			["Dept", "Course Num", "Credits", "Title", "# Sections", "# Instructors", "Lab Hours", "Lecture Hours",
 			 "HIDDEN"])
 		for i, key in enumerate(self.loaded_data.keys()):
-			self.course_table.setItem(i, 0, QtWidgets.QTableWidgetItem(self.loaded_data[key]["dept_name"]))
-			suffix = self.loaded_data[key]["catalog_suffix"]
-			if suffix is None:
-				suffix = ""
-			self.course_table.setItem(i, 1,
-			                          QtWidgets.QTableWidgetItem(self.loaded_data[key]["catalog_number"] + suffix))
-			self.course_table.setItem(i, 2, QtWidgets.QTableWidgetItem(self.loaded_data[key]["credit_hours"]))
-			title = self.loaded_data[key]["full_title"]
+			self.course_table.setItem(i, 0,
+			                          QtWidgets.QTableWidgetItem(Dao.none_safe(self.loaded_data[key]["dept_name"])))
+			self.course_table.setItem(i, 1, QtWidgets.QTableWidgetItem(
+				self.loaded_data[key]["catalog_number"] + Dao.none_safe(self.loaded_data[key]["catalog_suffix"])))
+			self.course_table.setItem(i, 2,
+			                          QtWidgets.QTableWidgetItem(Dao.none_safe(self.loaded_data[key]["credit_hours"])))
+			title = Dao.none_safe(self.loaded_data[key]["full_title"])
 			if title.endswith("."):
 				title = title[:-1]
 			self.course_table.setItem(i, 3, QtWidgets.QTableWidgetItem(title))
@@ -630,28 +633,24 @@ class Ui_MainWindow(object):
 			item = QtWidgets.QTableWidgetItem()
 			item.setData(QtCore.Qt.DisplayRole, len(self.loaded_data[key]["instructors"]))
 			self.course_table.setItem(i, 5, item)
-			lab_hours = self.loaded_data[key]["lab_hours"]
+			lab_hours = Dao.none_safe(self.loaded_data[key]["lab_hours"])
 			try:
 				lab_hours = float(lab_hours)
 				item = QtWidgets.QTableWidgetItem()
 				item.setData(QtCore.Qt.DisplayRole, lab_hours)
 				self.course_table.setItem(i, 6, item)
 			except:
-				if lab_hours is None:
-					lab_hours = ""
-				elif "arr" in lab_hours.lower():
+				if "arr" in lab_hours.lower():
 					lab_hours = "variable"
 				self.course_table.setItem(i, 6, QtWidgets.QTableWidgetItem(lab_hours))
-			lecture_hours = self.loaded_data[key]["lecture_hours"]
+			lecture_hours = Dao.none_safe(self.loaded_data[key]["lecture_hours"])
 			try:
 				lecture_hours = float(lecture_hours)
 				item = QtWidgets.QTableWidgetItem()
 				item.setData(QtCore.Qt.DisplayRole, lecture_hours)
 				self.course_table.setItem(i, 7, item)
 			except:
-				if lecture_hours is None:
-					lecture_hours = ""
-				elif "arr" in lecture_hours.lower():
+				if "arr" in lecture_hours.lower():
 					lecture_hours = "variable"
 				self.course_table.setItem(i, 7, QtWidgets.QTableWidgetItem(lecture_hours))
 			self.course_table.setItem(i, 8,

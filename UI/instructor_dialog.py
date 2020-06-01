@@ -11,6 +11,8 @@ from typing import Dict
 
 from PyQt5 import QtCore, QtWidgets
 
+import Dao
+
 
 class Ui_Dialog(object):
 	def setupUi(self, Dialog: QtWidgets.QDialog, instructor: Dict) -> None:
@@ -84,16 +86,16 @@ class Ui_Dialog(object):
 
 		_translate = QtCore.QCoreApplication.translate
 		Dialog.setWindowTitle(_translate("Dialog", "Instructor Info"))
-		self.first_name_label.setText(_translate(f"Dialog", f"First Name:\n{instructor['first_name']}"))
-		self.last_name_label.setText(_translate("Dialog", f"Last Name:\n{instructor['last_name']}"))
-		self.sort_name_label.setText(_translate("Dialog", f"Sort Name:\n{instructor['sort_name']}"))
-		self.person_id_label.setText(_translate("Dialog", f"Person ID:\n{instructor['person_id']}"))
-		self.byu_id_label.setText(_translate("Dialog", f"BYU ID:\n{instructor['byu_id']}"))
-		self.net_id_label.setText(_translate("Dialog", f"NetID:\n{instructor['net_id']}"))
-		self.phone_label.setText(_translate("Dialog", f"Phone Number:\n{instructor['phone_number']}"))
-		self.num_ratings_label.setText(_translate("Dialog", f"Num. RMP Ratings:\n{num_ratings}"))
-		self.rating_label.setText(_translate("Dialog", f"RMP Rating:\n{avg_rating}"))
-		self.difficulty_label.setText(_translate("Dialog", f"RMP Difficulty:\n{avg_easy_score}"))
+		self.first_name_label.setText(_translate(f"Dialog", f"First Name:\n{Dao.none_safe(instructor['first_name'])}"))
+		self.last_name_label.setText(_translate("Dialog", f"Last Name:\n{Dao.none_safe(instructor['last_name'])}"))
+		self.sort_name_label.setText(_translate("Dialog", f"Sort Name:\n{Dao.none_safe(instructor['sort_name'])}"))
+		self.person_id_label.setText(_translate("Dialog", f"Person ID:\n{Dao.none_safe(instructor['person_id'])}"))
+		self.byu_id_label.setText(_translate("Dialog", f"BYU ID:\n{Dao.none_safe(instructor['byu_id'])}"))
+		self.net_id_label.setText(_translate("Dialog", f"NetID:\n{Dao.none_safe(instructor['net_id'])}"))
+		self.phone_label.setText(_translate("Dialog", f"Phone Number:\n{Dao.none_safe(instructor['phone_number'])}"))
+		self.num_ratings_label.setText(_translate("Dialog", f"Num. RMP Ratings:\n{Dao.none_safe(num_ratings)}"))
+		self.rating_label.setText(_translate("Dialog", f"RMP Rating:\n{Dao.none_safe(avg_rating)}"))
+		self.difficulty_label.setText(_translate("Dialog", f"RMP Difficulty:\n{Dao.none_safe(avg_easy_score)}"))
 		self.label.setText(_translate("Dialog", "Courses Taught:"))
 
 		self.tableView.setColumnCount(2)
