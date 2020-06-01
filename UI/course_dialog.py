@@ -7,6 +7,8 @@
 # WARNING! All changes made in this file will be lost!
 
 
+import re
+
 from PyQt5 import QtCore, QtWidgets
 
 import Dao
@@ -47,30 +49,16 @@ class Ui_Dialog(object):
 		self.indi_description_label = QtWidgets.QLabel(Dialog)
 		self.indi_description_label.setObjectName("indi_description_label")
 		self.verticalLayout_2.addWidget(self.indi_description_label)
-		self.indi_description_display = QtWidgets.QTextBrowser(Dialog)
-		sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Expanding)
-		sizePolicy.setHorizontalStretch(0)
-		sizePolicy.setVerticalStretch(0)
-		sizePolicy.setHeightForWidth(self.indi_description_display.sizePolicy().hasHeightForWidth())
-		self.indi_description_display.setSizePolicy(sizePolicy)
-		self.indi_description_display.setMinimumSize(QtCore.QSize(0, 0))
-		self.indi_description_display.setMaximumSize(QtCore.QSize(275, 16777215))
-		self.indi_description_display.setObjectName("indi_description_display")
-		self.verticalLayout_2.addWidget(self.indi_description_display)
+		# self.indi_description_display = QtWidgets.QLabel(Dialog)
+		# self.indi_description_display.setObjectName("indi_description_display")
+		# self.verticalLayout_2.addWidget(self.indi_description_display)
 		self.indi_note_label = QtWidgets.QLabel(Dialog)
 		self.indi_note_label.setObjectName("indi_note_label")
 		self.verticalLayout_2.addWidget(self.indi_note_label)
 
-		self.indi_note_display = QtWidgets.QTextBrowser(Dialog)
-		sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Expanding)
-		sizePolicy.setHorizontalStretch(0)
-		sizePolicy.setVerticalStretch(0)
-		sizePolicy.setHeightForWidth(self.indi_note_display.sizePolicy().hasHeightForWidth())
-		self.indi_note_display.setSizePolicy(sizePolicy)
-		self.indi_note_display.setMinimumSize(QtCore.QSize(0, 0))
-		self.indi_note_display.setMaximumSize(QtCore.QSize(275, 16777215))
-		self.indi_note_display.setObjectName("indi_note_display")
-		self.verticalLayout_2.addWidget(self.indi_note_display)
+		# self.indi_note_display = QtWidgets.QLabel(Dialog)
+		# self.indi_note_display.setObjectName("indi_note_display")
+		# self.verticalLayout_2.addWidget(self.indi_note_display)
 
 		self.indi_offered_label = QtWidgets.QLabel(Dialog)
 		self.indi_offered_label.setObjectName("indi_offered_label")
@@ -117,7 +105,7 @@ class Ui_Dialog(object):
 
 		self.indi_sections_table.setColumnCount(12)
 		self.indi_sections_table.setHorizontalHeaderLabels(
-			["Section Num", "Type", "Instructor", "Start", "End", "Days", "Bldg", "Room", "Start/End", "Class Size",
+			["Section", "Type", "Instructor", "Start", "End", "Days", "Bldg", "Room", "Start/End", "Class Size",
 			 "Seats Avail.", "Waitlist"])
 		self.indi_sections_table.setRowCount(len(self.data["sections"]))
 		for i, section in enumerate(self.data["sections"]):
@@ -210,7 +198,6 @@ class Ui_Dialog(object):
 		return f"{time[:-2]}:{time[-2:]} {ampm}"
 
 	def retranslateUi(self, Dialog):
-		# TODO need a way to cut off text on all sections, probably don't need to be using text view boxes
 		_translate = QtCore.QCoreApplication.translate
 		Dialog.setWindowTitle(_translate("Dialog",
 		                                 f"{self.data['dept_name']} {self.data['catalog_number']}{Dao.none_safe(self.data['catalog_suffix'])}"))
@@ -219,7 +206,7 @@ class Ui_Dialog(object):
 		self.indi_credits_label.setText(_translate("Dialog", f"Credits:\n{Dao.none_safe(self.data['credit_hours'])}"))
 		self.indi_instructors_label.setText(_translate("Dialog", "Instructors:"))
 		self.indi_title_label.setText(
-			_translate("Dialog", f"Title:\n{Dao.none_safe(self.data['full_title']).rstrip('.')}"))
+			_translate("Dialog", f"Title:\n{line_breaker(Dao.none_safe(self.data['full_title']).rstrip('.'))}"))
 		lab_hours = Dao.none_safe(self.data["lab_hours"])
 		if "arr" in lab_hours.lower():
 			lab_hours = "variable"
@@ -229,15 +216,49 @@ class Ui_Dialog(object):
 			lecture_hours = "variable"
 		self.indi_lecture_hours_label.setText(_translate("Dialog", f"Lecture Hours:\n{lecture_hours}"))
 		self.indi_honors_label.setText(_translate("Dialog", f"Honors:\n{Dao.none_safe(self.data['honors_approved'])}"))
-		self.indi_description_label.setText(_translate("Dialog", "Description:"))
-		self.indi_description_display.setText(_translate("Dialog", Dao.none_safe(self.data['description'])))
-		self.indi_note_label.setText(_translate("Dialog", "Note:"))
-		self.indi_note_display.setText(_translate("Dialog", Dao.none_safe(self.data['note'])))
-		self.indi_offered_label.setText(_translate("Dialog", f"Offered:\n{Dao.none_safe(self.data['offered'])}"))
+		self.indi_description_label.setText(
+			_translate("Dialog", f"Description:\n{line_breaker(Dao.none_safe(self.data['description']))}"))
+		# self.indi_description_display.setText(_translate("Dialog", Dao.none_safe(self.data['description'])))
+		self.indi_note_label.setText(_translate("Dialog", f"Note:\n{line_breaker(Dao.none_safe(self.data['note']))}"))
+		# self.indi_note_display.setText(_translate("Dialog", Dao.none_safe(self.data['note'])))
+		self.indi_offered_label.setText(
+			_translate("Dialog", f"Offered:\n{line_breaker(Dao.none_safe(self.data['offered']))}"))
 		self.indi_preqs_label.setText(
-			_translate("Dialog", f"Prerequisites:\n{Dao.none_safe(self.data['prerequisite'])}"))
+			_translate("Dialog", f"Prerequisites:\n{line_breaker(Dao.none_safe(self.data['prerequisite']))}"))
 		self.indi_recommended_label.setText(
-			_translate("Dialog", f"Recommended:\n{Dao.none_safe(self.data['recommended'])}"))
+			_translate("Dialog", f"Recommended:\n{line_breaker(Dao.none_safe(self.data['recommended']))}"))
 		self.indi_when_taught_label.setText(
-			_translate("Dialog", f"When Taught:\n{Dao.none_safe(self.data['when_taught'])}"))
+			_translate("Dialog", f"When Taught:\n{line_breaker(Dao.none_safe(self.data['when_taught']))}"))
 		self.indi_sections_label.setText(_translate("Dialog", "Sections"))
+
+
+link_re = re.compile(r"(<[aA].*?>)(.*?)(</[aA]>)")
+
+
+def line_breaker(line: str, width: int = 45) -> str:
+	while True:
+		match = re.search(link_re, line)
+		if match is not None:
+			print(f"replacing a match {''.join(match.groups())} to {match.group(2)}")
+			line = line.replace("".join(match.groups()), match.group(2))
+			print(f"new line:\n{line}")
+		else:
+			break
+
+	lines = []
+	while len(line) > 0:
+		if len(line) < width:
+			lines.append(line)
+			break
+		break_point = -1
+		for i in range(width, 0, -1):
+			if line[i] == " " or line[i] == "\n":
+				break_point = i
+				break
+		if break_point == -1:
+			lines.append(line[:width - 1] + "-")
+			line = line[width - 1:]
+		else:
+			lines.append(line[:break_point])
+			line = line[break_point:]
+	return "\n".join(lines)
