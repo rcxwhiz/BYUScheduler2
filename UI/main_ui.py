@@ -1,5 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+import UI.course_dialog
 import UI.instructor_dialog
 import UI.title_popup_dialog
 
@@ -450,6 +451,7 @@ class Ui_MainWindow(object):
 		self.course_lecture_hours_spinner_2.valueChanged.connect(self.filter_course_table)
 		self.course_honors_check.stateChanged.connect(self.filter_course_table)
 		self.course_description_edit.textChanged.connect(self.filter_course_table)
+		self.course_table.cellClicked.connect(self.show_course)
 
 	# Common Functions
 	# ----------------------------------------------------------------------------------
@@ -725,3 +727,9 @@ class Ui_MainWindow(object):
 				self.course_table.showRow(index)
 			else:
 				self.course_table.hideRow(index)
+
+	def show_course(self, row: int, column: int) -> None:
+		course_dialog = QtWidgets.QDialog()
+		course_ui = UI.course_dialog.Ui_Dialog()
+		course_ui.setupUi(course_dialog, self.loaded_data[self.course_table.item(row, 8).text()])
+		course_dialog.exec_()

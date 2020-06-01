@@ -64,7 +64,7 @@ def load_courses(semester_year: str, data: Dict) -> None:
 				                "title_code": section[19],
 				                "year_term": section[20],
 				                "times": [],
-				                "instructor": None}
+				                "instructors": []}
 
 				sql_cmd = """SELECT * FROM times WHERE cirriculum_id_title_code = ? AND section_number = ?"""
 				cursor.execute(sql_cmd, (section_data["curriculum_id_title_code"], section_data["section_number"]))
@@ -90,9 +90,7 @@ def load_courses(semester_year: str, data: Dict) -> None:
 				sql_cmd = """SELECT person_id FROM course_instructors WHERE curriculum_id_title_code = ? AND section_number = ?"""
 				cursor.execute(sql_cmd, (section_data["curriculum_id_title_code"], section_data["section_number"]))
 
-				person_id = cursor.fetchone()
-
-				if person_id is not None:
+				for person_id in cursor.fetchall():
 					sql_cmd = """SELECT * FROM instructors WHERE person_id = ?"""
 					cursor.execute(sql_cmd, (person_id[0],))
 					instructor = cursor.fetchone()
@@ -112,24 +110,19 @@ def load_courses(semester_year: str, data: Dict) -> None:
 						                   "num_ratings": instructor[12],
 						                   "avg_easy_score": instructor[13],
 						                   "avg_clarity_score": instructor[14]}
+						section_data["instructors"].append(instructor_data)
 					except TypeError:
-						instructor_data = None
-					section_data["instructor"] = instructor_data
+						pass
 
 				course_data["sections"].append(section_data)
 			course_data["sections"].sort(key=sort_sections)
+
+			used_person_ids = set()
 			for section in course_data["sections"]:
-				add_instructor = True
-				for instructor in course_data["instructors"]:
-					try:
-						if section["instructor"]["person_id"] == instructor["person_id"]:
-							add_instructor = False
-							break
-					except TypeError:
-						add_instructor = False
-						break
-				if add_instructor:
-					course_data["instructors"].append(section["instructor"])
+				for instructor in section["instructors"]:
+					if instructor["person_id"] not in used_person_ids:
+						course_data["instructors"].append(instructor)
+						used_person_ids.add(instructor["person_id"])
 
 			data[course_data["curriculum_id_title_code"]] = course_data
 
