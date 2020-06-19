@@ -109,7 +109,8 @@ def save(yso: Tuple, append_function: Callable = print, replace_function: Callab
 			cursor.execute(sql_cmd, values)
 		except sqlite3.IntegrityError:
 			append_function(f'Got duplicate: {values}')
-		except:
+		except Exception as e:
+			append_function(str(e))
 			append_function(f'Error adding: {values}')
 	replace_function("Saved instructors")
 
@@ -194,8 +195,10 @@ def save(yso: Tuple, append_function: Callable = print, replace_function: Callab
 					cursor.execute(sql_cmd, values)
 				except sqlite3.IntegrityError:
 					append_function(f"Got duplicate: {values}")
-				except:
-					append_function(f"Error adding: {values}")
+				except Exception as e:
+					# DEBUG
+					append_function(str(e))
+					append_function(f"Error updating: {values}")
 
 				sql_cmd = """INSERT INTO course_instructors VALUES(?, ?, ?);"""
 				values = (curriculum_id_title_code,

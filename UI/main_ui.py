@@ -453,6 +453,7 @@ class Ui_MainWindow(object):
 		self.course_honors_check.stateChanged.connect(self.filter_course_table)
 		self.course_description_edit.textChanged.connect(self.filter_course_table)
 		self.course_table.cellClicked.connect(self.show_course)
+		self.course_return_to_menu_button.clicked.connect(self.goto_title_page)
 
 	# Common Functions
 	# ----------------------------------------------------------------------------------

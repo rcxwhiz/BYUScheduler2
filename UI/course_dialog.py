@@ -236,15 +236,15 @@ link_re = re.compile(r"(<[aA].*?>)(.*?)(</[aA]>)")
 
 
 def line_breaker(line: str, width: int = 45) -> str:
+	# replace hyperlink tags with plain text
 	while True:
 		match = re.search(link_re, line)
 		if match is not None:
-			print(f"replacing a match {''.join(match.groups())} to {match.group(2)}")
 			line = line.replace("".join(match.groups()), match.group(2))
-			print(f"new line:\n{line}")
 		else:
 			break
 
+	# decide how many lines there are
 	lines = []
 	while len(line) > 0:
 		if len(line) < width:

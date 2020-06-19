@@ -10,7 +10,7 @@ import multiprocessing
 import threading
 from typing import Dict
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets, QtGui
 
 import BYUAPI
 import Dao.load
@@ -138,6 +138,7 @@ class Ui_Dialog(object):
 				self.apply_append(message["message"])
 			elif message["operation"] == "replace":
 				self.apply_replace(message["message"])
+		self.message.moveCursor(QtGui.QTextCursor.End)
 
 	def apply_append(self, message_in: str) -> None:
 		self.message.appendPlainText(message_in)
