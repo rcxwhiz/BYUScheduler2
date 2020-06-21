@@ -4,6 +4,7 @@ import Dao
 import UI.dialog_course
 import UI.dialog_instructor
 import UI.dialog_load
+import UI.Pages.page_title
 import UI.Pages.page_instructor
 
 
@@ -14,8 +15,16 @@ class Ui_MainWindow(object):
 		self.setup_window(MainWindowIn)
 		self.loaded_data = {}
 
-		self.title_semester_picker, self.title_year_picker = UI.Pages.page_instructor.add_instructor_page(self.main_window_stacked_widget, self.browse_course_action, self.browse_section_action, self.browse_instructor_action, self.make_schedule_action)
-		self.setup_browse_instructor_page()
+		self.title_semester_picker, self.title_year_picker = UI.Pages.page_title.add_title_page(self.main_window_stacked_widget, self.browse_course_action, self.browse_section_action, self.browse_instructor_action, self.make_schedule_action)
+
+		items = UI.Pages.page_instructor.add_instructor_page(self.main_window_stacked_widget,
+		                                                     self.filter_instructor_table, self.show_instructor,
+		                                                     self.goto_title_page)
+		self.instructor_first_name_input = items[0]
+		self.instructor_last_name_input = items[1]
+		self.instructor_course_input = items[2]
+		self.instructor_table = items[3]
+
 		self.setup_browse_course_page()
 
 		self.finish_setup_window()
@@ -24,9 +33,7 @@ class Ui_MainWindow(object):
 		self.main_window = MainWindowIn
 
 		self.main_window_central_widget = QtWidgets.QWidget(self.main_window)
-
 		self.main_window_grid_layout = QtWidgets.QGridLayout(self.main_window_central_widget)
-
 		self.main_window_stacked_widget = QtWidgets.QStackedWidget(self.main_window_central_widget)
 
 	def finish_setup_window(self) -> None:
@@ -39,101 +46,6 @@ class Ui_MainWindow(object):
 		self.hook_buttons()
 
 		self.goto_title_page()
-
-	def setup_browse_instructor_page(self) -> None:
-		self.instructor_page = QtWidgets.QWidget()
-		self.instructor_page.setObjectName("page2")
-
-		self.instructor_grid_layout = QtWidgets.QGridLayout(self.instructor_page)
-		self.instructor_grid_layout.setObjectName("gridLayout3")
-
-		self.instructor_horizontal_layout = QtWidgets.QHBoxLayout()
-		self.instructor_horizontal_layout.setObjectName("horizontalLayout3")
-
-		self.instructor_vertical_layout = QtWidgets.QVBoxLayout()
-		self.instructor_vertical_layout.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
-		self.instructor_vertical_layout.setObjectName("verticalLayout4")
-
-		self.instructor_first_name_label = QtWidgets.QLabel(self.instructor_page)
-		self.instructor_first_name_label.setObjectName("label5")
-
-		self.instructor_vertical_layout.addWidget(self.instructor_first_name_label)
-
-		self.instructor_first_name_input = QtWidgets.QLineEdit(self.instructor_page)
-
-		sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
-		sizePolicy.setHorizontalStretch(0)
-		sizePolicy.setVerticalStretch(0)
-		sizePolicy.setHeightForWidth(self.instructor_first_name_input.sizePolicy().hasHeightForWidth())
-
-		self.instructor_first_name_input.setSizePolicy(sizePolicy)
-		self.instructor_first_name_input.setObjectName("lineEdit")
-
-		self.instructor_vertical_layout.addWidget(self.instructor_first_name_input)
-
-		self.instructor_last_name_label = QtWidgets.QLabel(self.instructor_page)
-		self.instructor_last_name_label.setObjectName("label6")
-
-		self.instructor_vertical_layout.addWidget(self.instructor_last_name_label)
-
-		self.instructor_last_name_input = QtWidgets.QLineEdit(self.instructor_page)
-
-		sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
-		sizePolicy.setHorizontalStretch(0)
-		sizePolicy.setVerticalStretch(0)
-		sizePolicy.setHeightForWidth(self.instructor_last_name_input.sizePolicy().hasHeightForWidth())
-
-		self.instructor_last_name_input.setSizePolicy(sizePolicy)
-		self.instructor_last_name_input.setObjectName("lineEdit_2")
-
-		self.instructor_vertical_layout.addWidget(self.instructor_last_name_input)
-
-		self.instructor_course_label = QtWidgets.QLabel(self.instructor_page)
-		self.instructor_course_label.setObjectName("label7")
-
-		self.instructor_vertical_layout.addWidget(self.instructor_course_label)
-
-		self.insctructor_course_input = QtWidgets.QLineEdit(self.instructor_page)
-
-		sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
-		sizePolicy.setHorizontalStretch(0)
-		sizePolicy.setVerticalStretch(0)
-		sizePolicy.setHeightForWidth(self.insctructor_course_input.sizePolicy().hasHeightForWidth())
-
-		self.insctructor_course_input.setSizePolicy(sizePolicy)
-		self.insctructor_course_input.setObjectName("lineEdit_3")
-
-		self.instructor_vertical_layout.addWidget(self.insctructor_course_input)
-
-		sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
-		sizePolicy.setHorizontalStretch(0)
-		sizePolicy.setVerticalStretch(0)
-
-		spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-		self.instructor_vertical_layout.addItem(spacerItem)
-		self.instructor_horizontal_layout.addLayout(self.instructor_vertical_layout)
-
-		self.instructor_return_button = QtWidgets.QPushButton(self.instructor_page)
-		self.instructor_return_button.setObjectName("instructor_return_button")
-
-		self.instructor_vertical_layout.addWidget(self.instructor_return_button)
-
-		self.instructor_table = QtWidgets.QTableWidget(self.instructor_page)
-
-		sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-		sizePolicy.setHorizontalStretch(0)
-		sizePolicy.setVerticalStretch(0)
-		sizePolicy.setHeightForWidth(self.instructor_table.sizePolicy().hasHeightForWidth())
-
-		self.instructor_table.setSizePolicy(sizePolicy)
-		self.instructor_table.setObjectName("tableView")
-		self.instructor_table.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
-		self.instructor_table.setAlternatingRowColors(True)
-		self.instructor_table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
-
-		self.instructor_horizontal_layout.addWidget(self.instructor_table)
-		self.instructor_grid_layout.addLayout(self.instructor_horizontal_layout, 0, 0, 1, 1)
-		self.main_window_stacked_widget.addWidget(self.instructor_page)
 
 	def setup_browse_course_page(self) -> None:
 		self.course_page = QtWidgets.QWidget()
@@ -305,10 +217,6 @@ class Ui_MainWindow(object):
 
 	def retranslate_ui(self) -> None:
 		_translate = QtCore.QCoreApplication.translate
-		self.instructor_first_name_label.setText(_translate("MainWindow", "First Name"))
-		self.instructor_last_name_label.setText(_translate("MainWindow", "Last Name"))
-		self.instructor_course_label.setText(_translate("MainWindow", "Course Taught"))
-		self.instructor_return_button.setText(_translate("MainWindow", "Return to Menu"))
 		self.course_dept_label.setText(_translate("MainWindow", "Dept"))
 		self.course_course_num_label.setText(_translate("MainWindow", "Course Number"))
 		self.course_credit_hours_check.setText(_translate("MainWindow", "Credit Hours"))
@@ -321,12 +229,6 @@ class Ui_MainWindow(object):
 		self.course_return_to_menu_button.setText(_translate("MainWindow", "Return to Menu"))
 
 	def hook_buttons(self) -> None:
-		self.instructor_first_name_input.textChanged.connect(self.filter_instructor_table)
-		self.instructor_last_name_input.textChanged.connect(self.filter_instructor_table)
-		self.insctructor_course_input.textChanged.connect(self.filter_instructor_table)
-		self.instructor_table.cellClicked.connect(self.show_instructor)
-		self.instructor_return_button.clicked.connect(self.goto_title_page)
-
 		self.course_dept_edit.textChanged.connect(self.filter_course_table)
 		self.course_course_num_edit.textChanged.connect(self.filter_course_table)
 		self.course_credit_hours_check.stateChanged.connect(self.filter_course_table)
@@ -355,7 +257,7 @@ class Ui_MainWindow(object):
 		self.main_window.resize(1150, 700)
 		self.instructor_first_name_input.clear()
 		self.instructor_last_name_input.clear()
-		self.insctructor_course_input.clear()
+		self.instructor_course_input.clear()
 		self.main_window_stacked_widget.setCurrentIndex(1)
 		self.main_window.setWindowTitle("Browse Instructors")
 		self.populate_instructor_table()
@@ -467,7 +369,7 @@ class Ui_MainWindow(object):
 	def filter_instructor_table(self) -> None:
 		first_filter = self.instructor_first_name_input.text().lower()
 		last_filter = self.instructor_last_name_input.text().lower()
-		num_filter = self.insctructor_course_input.text().lower()
+		num_filter = self.instructor_course_input.text().lower()
 
 		for index in range(self.instructor_table.rowCount()):
 
