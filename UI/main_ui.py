@@ -1,9 +1,10 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 import Dao
-import UI.course_dialog
-import UI.instructor_dialog
-import UI.title_popup_dialog
+import UI.dialog_course
+import UI.dialog_instructor
+import UI.dialog_load
+import UI.Pages.page_instructor
 
 
 class Ui_MainWindow(object):
@@ -13,7 +14,7 @@ class Ui_MainWindow(object):
 		self.setup_window(MainWindowIn)
 		self.loaded_data = {}
 
-		self.setup_title_page()
+		self.title_semester_picker, self.title_year_picker = UI.Pages.page_instructor.add_instructor_page(self.main_window_stacked_widget, self.browse_course_action, self.browse_section_action, self.browse_instructor_action, self.make_schedule_action)
 		self.setup_browse_instructor_page()
 		self.setup_browse_course_page()
 
@@ -21,16 +22,12 @@ class Ui_MainWindow(object):
 
 	def setup_window(self, MainWindowIn: QtWidgets.QMainWindow) -> None:
 		self.main_window = MainWindowIn
-		self.main_window.setObjectName("MainWindow")
 
 		self.main_window_central_widget = QtWidgets.QWidget(self.main_window)
-		self.main_window_central_widget.setObjectName("centralwidget")
 
 		self.main_window_grid_layout = QtWidgets.QGridLayout(self.main_window_central_widget)
-		self.main_window_grid_layout.setObjectName("gridLayout")
 
 		self.main_window_stacked_widget = QtWidgets.QStackedWidget(self.main_window_central_widget)
-		self.main_window_stacked_widget.setObjectName("stackedWidget")
 
 	def finish_setup_window(self) -> None:
 		self.main_window_grid_layout.addWidget(self.main_window_stacked_widget, 0, 0, 1, 1)
@@ -42,98 +39,6 @@ class Ui_MainWindow(object):
 		self.hook_buttons()
 
 		self.goto_title_page()
-
-	def setup_title_page(self) -> None:
-		self.title_page = QtWidgets.QWidget()
-		self.title_page.setObjectName("page")
-
-		self.title_grid_layout_1 = QtWidgets.QGridLayout(self.title_page)
-		self.title_grid_layout_1.setObjectName("gridLayout1")
-
-		self.title_vertical_layout_1 = QtWidgets.QVBoxLayout()
-		self.title_vertical_layout_1.setObjectName("verticalLayout")
-
-		self.title_big_title = QtWidgets.QLabel(self.title_page)
-		title_font = QtGui.QFont()
-		title_font.setPointSize(36)
-		self.title_big_title.setFont(title_font)
-		self.title_big_title.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignHCenter)
-		self.title_big_title.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
-		self.title_big_title.setObjectName("big_title")
-
-		self.title_vertical_layout_1.addWidget(self.title_big_title)
-
-		self.title_name = QtWidgets.QLabel(self.title_page)
-		self.title_name.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignTop)
-		self.title_name.setObjectName("name_title")
-
-		self.title_vertical_layout_1.addWidget(self.title_name)
-		self.title_horizontal_layout = QtWidgets.QHBoxLayout()
-		self.title_horizontal_layout.setObjectName("horizontalLayout")
-		self.title_vertical_layout_2 = QtWidgets.QVBoxLayout()
-		self.title_vertical_layout_2.setObjectName("verticalLayout_2")
-
-		self.title_semester_label = QtWidgets.QLabel(self.title_page)
-		self.title_semester_label.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft)
-		self.title_semester_label.setObjectName("semester_label")
-
-		self.title_vertical_layout_2.addWidget(self.title_semester_label)
-
-		self.title_semester_picker = QtWidgets.QComboBox(self.title_page)
-		self.title_semester_picker.setObjectName("semester_picker")
-		self.title_semester_picker.addItems([""] * 4)
-
-		self.title_vertical_layout_2.addWidget(self.title_semester_picker)
-
-		self.title_year_label = QtWidgets.QLabel(self.title_page)
-		self.title_year_label.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft)
-		self.title_year_label.setObjectName("year_label")
-
-		self.title_vertical_layout_2.addWidget(self.title_year_label)
-
-		self.title_year_picker = QtWidgets.QSpinBox(self.title_page)
-		self.title_year_picker.setButtonSymbols(QtWidgets.QAbstractSpinBox.PlusMinus)
-		self.title_year_picker.setMinimum(2010)
-		self.title_year_picker.setMaximum(2030)
-		self.title_year_picker.setValue(2020)
-		self.title_year_picker.setObjectName("year_picker")
-
-		self.title_vertical_layout_2.addWidget(self.title_year_picker)
-
-		self.title_spacer = QtWidgets.QLabel(self.title_page)
-
-		self.title_vertical_layout_2.addWidget(self.title_spacer)
-
-		self.title_horizontal_layout.addLayout(self.title_vertical_layout_2)
-		self.title_grid_layout_2 = QtWidgets.QGridLayout()
-		self.title_grid_layout_2.setObjectName("gridLayout_2")
-
-		self.title_schedule_button = QtWidgets.QPushButton(self.title_page)
-		self.title_schedule_button.setObjectName("make_schedule_button")
-		self.title_schedule_button.setEnabled(False)
-
-		self.title_grid_layout_2.addWidget(self.title_schedule_button, 2, 1, 1, 1)
-
-		self.title_instructor_button = QtWidgets.QPushButton(self.title_page)
-		self.title_instructor_button.setObjectName("browse_instructor_button")
-
-		self.title_grid_layout_2.addWidget(self.title_instructor_button, 0, 1, 1, 1)
-
-		self.title_section_button = QtWidgets.QPushButton(self.title_page)
-		self.title_section_button.setObjectName("browse_section_button")
-		self.title_section_button.setEnabled(False)
-
-		self.title_grid_layout_2.addWidget(self.title_section_button, 2, 0, 1, 1)
-
-		self.title_course_button = QtWidgets.QPushButton(self.title_page)
-		self.title_course_button.setObjectName("browse_course_button")
-
-		self.title_grid_layout_2.addWidget(self.title_course_button, 0, 0, 1, 1)
-
-		self.title_horizontal_layout.addLayout(self.title_grid_layout_2)
-		self.title_vertical_layout_1.addLayout(self.title_horizontal_layout)
-		self.title_grid_layout_1.addLayout(self.title_vertical_layout_1, 0, 0, 1, 1)
-		self.main_window_stacked_widget.addWidget(self.title_page)
 
 	def setup_browse_instructor_page(self) -> None:
 		self.instructor_page = QtWidgets.QWidget()
@@ -400,19 +305,6 @@ class Ui_MainWindow(object):
 
 	def retranslate_ui(self) -> None:
 		_translate = QtCore.QCoreApplication.translate
-		self.title_big_title.setText(_translate("MainWindow", "BYU Scheduler 2"))
-		self.title_name.setText(_translate("MainWindow", "By Josh Bedwell"))
-		self.title_semester_label.setText(_translate("MainWindow", "Semester"))
-		self.title_semester_picker.setItemText(0, _translate("MainWindow", "Winter"))
-		self.title_semester_picker.setItemText(1, _translate("MainWindow", "Spring"))
-		self.title_semester_picker.setItemText(2, _translate("MainWindow", "Summer"))
-		self.title_semester_picker.setItemText(3, _translate("MainWindow", "Fall"))
-		self.title_year_label.setText(_translate("MainWindow", "Year"))
-		self.title_spacer.setText(_translate("MainWindow", ""))
-		self.title_schedule_button.setText(_translate("MainWindow", "Make Schedule"))
-		self.title_instructor_button.setText(_translate("MainWindow", "Browse Instructors"))
-		self.title_section_button.setText(_translate("MainWindow", "Browse Sections"))
-		self.title_course_button.setText(_translate("MainWindow", "Browse Courses"))
 		self.instructor_first_name_label.setText(_translate("MainWindow", "First Name"))
 		self.instructor_last_name_label.setText(_translate("MainWindow", "Last Name"))
 		self.instructor_course_label.setText(_translate("MainWindow", "Course Taught"))
@@ -429,11 +321,6 @@ class Ui_MainWindow(object):
 		self.course_return_to_menu_button.setText(_translate("MainWindow", "Return to Menu"))
 
 	def hook_buttons(self) -> None:
-		self.title_course_button.clicked.connect(self.browse_course_action)
-		self.title_section_button.clicked.connect(self.browse_section_action)
-		self.title_instructor_button.clicked.connect(self.browse_instructor_action)
-		self.title_schedule_button.clicked.connect(self.make_schedule_action)
-
 		self.instructor_first_name_input.textChanged.connect(self.filter_instructor_table)
 		self.instructor_last_name_input.textChanged.connect(self.filter_instructor_table)
 		self.insctructor_course_input.textChanged.connect(self.filter_instructor_table)
@@ -515,7 +402,7 @@ class Ui_MainWindow(object):
 
 	def show_popup(self, data_type: str) -> None:
 		popup_dialog = QtWidgets.QDialog()
-		popup_ui = UI.title_popup_dialog.Ui_Dialog()
+		popup_ui = UI.dialog_load.Ui_Dialog()
 		popup_ui.setupUi(popup_dialog,
 		                 self.title_semester_picker.currentText(),
 		                 self.title_year_picker.value(),
@@ -604,7 +491,7 @@ class Ui_MainWindow(object):
 
 	def show_instructor(self, row: int, column: int) -> None:
 		instructor_dialog = QtWidgets.QDialog()
-		instructor_ui = UI.instructor_dialog.Ui_Dialog()
+		instructor_ui = UI.dialog_instructor.Ui_Dialog()
 		instructor_ui.setupUi(instructor_dialog, self.loaded_data[self.instructor_table.item(row, 7).text()])
 		instructor_dialog.exec_()
 
@@ -730,6 +617,6 @@ class Ui_MainWindow(object):
 
 	def show_course(self, row: int, column: int) -> None:
 		course_dialog = QtWidgets.QDialog()
-		course_ui = UI.course_dialog.Ui_Dialog()
+		course_ui = UI.dialog_course.Ui_Dialog()
 		course_ui.setupUi(course_dialog, self.loaded_data[self.course_table.item(row, 8).text()])
 		course_dialog.exec_()
