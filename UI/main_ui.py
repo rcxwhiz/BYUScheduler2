@@ -1,12 +1,12 @@
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 
 import Dao
+import UI.Pages.page_course
+import UI.Pages.page_instructor
+import UI.Pages.page_title
 import UI.dialog_course
 import UI.dialog_instructor
 import UI.dialog_load
-import UI.Pages.page_title
-import UI.Pages.page_instructor
-import UI.Pages.page_course
 
 
 class Ui_MainWindow(object):
@@ -16,18 +16,23 @@ class Ui_MainWindow(object):
 		self.setup_window(MainWindowIn)
 		self.loaded_data = {}
 
-		self.title_semester_picker, self.title_year_picker = UI.Pages.page_title.add_title_page(self.main_window_stacked_widget, self.browse_course_action, self.browse_section_action, self.browse_instructor_action, self.make_schedule_action)
+		self.title_semester_picker, self.title_year_picker = UI.Pages.page_title.add_title_page(
+			self.main_window_stacked_widget, self.browse_course_action, self.browse_section_action,
+			self.browse_instructor_action, self.make_schedule_action)
 
-		items = UI.Pages.page_instructor.add_instructor_page(self.main_window_stacked_widget,
-		                                                     self.filter_instructor_table,
-		                                                     self.show_instructor,
-		                                                     self.goto_title_page)
-		self.instructor_first_name_input = items[0]
-		self.instructor_last_name_input = items[1]
-		self.instructor_course_input = items[2]
-		self.instructor_table = items[3]
+		# items = UI.Pages.page_instructor.add_instructor_page(self.main_window_stacked_widget,
+		#                                                      self.filter_instructor_table,
+		#                                                      self.show_instructor,
+		#                                                      self.goto_title_page)
+		# self.instructor_first_name_input = items[0]
+		# self.instructor_last_name_input = items[1]
+		# self.instructor_course_input = items[2]
+		# self.instructor_table = items[3]
+		self.instructor_page = UI.Pages.page_instructor.InstructorPage(self.main_window_stacked_widget,
+		                                                               self.goto_title_page, self.loaded_data)
 
-		items = UI.Pages.page_course.add_course_page(self.main_window_stacked_widget, self.filter_course_table, self.show_course, self.goto_title_page)
+		items = UI.Pages.page_course.add_course_page(self.main_window_stacked_widget, self.filter_course_table,
+		                                             self.show_course, self.goto_title_page)
 		self.course_dept_edit = items[0]
 		self.course_course_num_edit = items[1]
 		self.course_title_edit = items[2]
@@ -67,12 +72,9 @@ class Ui_MainWindow(object):
 
 	def goto_instructor_page(self) -> None:
 		self.main_window.resize(1150, 700)
-		self.instructor_first_name_input.clear()
-		self.instructor_last_name_input.clear()
-		self.instructor_course_input.clear()
+		self.instructor_page.initialize_page()
 		self.main_window_stacked_widget.setCurrentIndex(1)
 		self.main_window.setWindowTitle("Browse Instructors")
-		self.populate_instructor_table()
 
 	def goto_browse_course(self) -> None:
 		self.main_window.resize(1350, 700)
@@ -124,94 +126,6 @@ class Ui_MainWindow(object):
 		                 data_type)
 		popup_dialog.exec_()
 
-	# Instructor Functions
-	# ----------------------------------------------------------------------------------
-
-	def populate_instructor_table(self) -> None:
-		self.instructor_table.setColumnCount(8)
-		self.instructor_table.setRowCount(len(self.loaded_data))
-		self.instructor_table.setHorizontalHeaderLabels(
-			["First Name", "Last Name", "Sort Name", "# Courses Taught", "# RMP Ratings", "RMP Rating",
-			 "RMP Difficulty", "HIDDEN"])
-		for i, key in enumerate(self.loaded_data.keys()):
-			self.instructor_table.setItem(i, 0, QtWidgets.QTableWidgetItem(
-				Dao.none_safe(self.loaded_data[key]["first_name"])))
-			self.instructor_table.setItem(i, 1,
-			                              QtWidgets.QTableWidgetItem(Dao.none_safe(self.loaded_data[key]["last_name"])))
-			self.instructor_table.setItem(i, 2,
-			                              QtWidgets.QTableWidgetItem(Dao.none_safe(self.loaded_data[key]["sort_name"])))
-
-			different_classes_taught = set()
-			for section in self.loaded_data[key]["classes_taught"]:
-				different_classes_taught.add(section["course"])
-			item = QtWidgets.QTableWidgetItem()
-			item.setData(QtCore.Qt.DisplayRole, len(different_classes_taught))
-			self.instructor_table.setItem(i, 3, item)
-
-			try:
-				item = QtWidgets.QTableWidgetItem()
-				item.setData(QtCore.Qt.DisplayRole, self.loaded_data[key]["num_ratings"])
-				self.instructor_table.setItem(i, 4, item)
-			except:
-				self.instructor_table.setItem(i, 4, QtWidgets.QTableWidgetItem(
-					Dao.none_safe(self.loaded_data[key]["num_ratings"])))
-
-			try:
-				item = QtWidgets.QTableWidgetItem()
-				item.setData(QtCore.Qt.DisplayRole, self.loaded_data[key]["avg_rating"])
-				self.instructor_table.setItem(i, 5, item)
-			except:
-				self.instructor_table.setItem(i, 5, QtWidgets.QTableWidgetItem(
-					Dao.none_safe(self.loaded_data[key]["avg_rating"])))
-
-			try:
-				item = QtWidgets.QTableWidgetItem()
-				item.setData(QtCore.Qt.DisplayRole, self.loaded_data[key]["avg_easy_score"])
-				self.instructor_table.setItem(i, 6, item)
-			except:
-				self.instructor_table.setItem(i, 5, QtWidgets.QTableWidgetItem(
-					Dao.none_safe(self.loaded_data[key]["avg_easy_score"])))
-
-			self.instructor_table.setItem(i, 7, QtWidgets.QTableWidgetItem(key))
-		self.instructor_table.hideColumn(7)
-
-		self.instructor_table.setSortingEnabled(True)
-		self.instructor_table.resizeColumnsToContents()
-
-	def filter_instructor_table(self) -> None:
-		first_filter = self.instructor_first_name_input.text().lower()
-		last_filter = self.instructor_last_name_input.text().lower()
-		num_filter = self.instructor_course_input.text().lower()
-
-		for index in range(self.instructor_table.rowCount()):
-
-			show = True
-			if first_filter != "":
-				if first_filter not in self.instructor_table.item(index, 0).text().lower():
-					show = False
-			if show and last_filter != "":
-				if last_filter not in self.instructor_table.item(index, 1).text().lower():
-					show = False
-			if show and num_filter != "":
-				show = False
-				for course in self.loaded_data[self.instructor_table.item(index, 7).text()]["classes_taught"]:
-					if num_filter in course["course"].lower():
-						show = True
-						break
-			if show:
-				self.instructor_table.showRow(index)
-			else:
-				self.instructor_table.hideRow(index)
-
-	def show_instructor(self, row: int, column: int) -> None:
-		instructor_dialog = QtWidgets.QDialog()
-		instructor_ui = UI.dialog_instructor.Ui_Dialog()
-		instructor_ui.setupUi(instructor_dialog, self.loaded_data[self.instructor_table.item(row, 7).text()])
-		instructor_dialog.exec_()
-
-	# Course Functions
-	# ----------------------------------------------------------------------------------
-
 	def populate_course_table(self) -> None:
 		self.course_table.setColumnCount(9)
 		self.course_table.setRowCount(len(self.loaded_data))
@@ -261,6 +175,7 @@ class Ui_MainWindow(object):
 		self.course_table.setSortingEnabled(True)
 		self.course_table.resizeColumnsToContents()
 
+	# TODO put this in the class
 	def filter_course_table(self) -> None:
 		dept_filter = self.course_dept_edit.text().lower()
 		num_filter = self.course_course_num_edit.text().lower()
@@ -277,7 +192,6 @@ class Ui_MainWindow(object):
 		description_filter = self.course_description_edit.toPlainText().lower()
 
 		for index in range(self.course_table.rowCount()):
-
 			show = True
 			try:
 				if dept_filter != "":
