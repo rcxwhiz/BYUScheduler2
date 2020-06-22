@@ -1,10 +1,10 @@
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtWidgets
 
 
 def add_instructor_page(stacked_widget: QtWidgets.QStackedWidget,
                         filter_table_action: callable,
                         show_instructor_action: callable,
-                        return_button_action: callable) -> (QtWidgets.QLineEdit, QtWidgets.QLineEdit, QtWidgets.QLineEdit, QtWidgets.QTableWidget):
+                        return_button_action: callable):
 	page = QtWidgets.QWidget()
 
 	grid_layout_1 = QtWidgets.QGridLayout(page)
@@ -14,8 +14,7 @@ def add_instructor_page(stacked_widget: QtWidgets.QStackedWidget,
 	vertical_layout_1 = QtWidgets.QVBoxLayout()
 	vertical_layout_1.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
 
-	first_name_label = QtWidgets.QLabel(page)
-	first_name_label.setText("First Name")
+	first_name_label = QtWidgets.QLabel("First Name", page)
 	vertical_layout_1.addWidget(first_name_label)
 
 	first_name_input = QtWidgets.QLineEdit(page)
@@ -27,8 +26,7 @@ def add_instructor_page(stacked_widget: QtWidgets.QStackedWidget,
 	first_name_input.textChanged.connect(filter_table_action)
 	vertical_layout_1.addWidget(first_name_input)
 
-	last_name_label = QtWidgets.QLabel(page)
-	last_name_label.setText("Last Name")
+	last_name_label = QtWidgets.QLabel("Last Name", page)
 	vertical_layout_1.addWidget(last_name_label)
 
 	last_name_input = QtWidgets.QLineEdit(page)
@@ -36,8 +34,7 @@ def add_instructor_page(stacked_widget: QtWidgets.QStackedWidget,
 	last_name_input.textChanged.connect(filter_table_action)
 	vertical_layout_1.addWidget(last_name_input)
 
-	course_label = QtWidgets.QLabel(page)
-	course_label.setText("Course Taught")
+	course_label = QtWidgets.QLabel("Course Taught", page)
 	vertical_layout_1.addWidget(course_label)
 
 	course_input = QtWidgets.QLineEdit(page)
@@ -49,8 +46,7 @@ def add_instructor_page(stacked_widget: QtWidgets.QStackedWidget,
 	vertical_layout_1.addItem(spacer)
 	horizontal_layout_1.addLayout(vertical_layout_1)
 
-	return_button = QtWidgets.QPushButton(page)
-	return_button.setText("Return to Menu")
+	return_button = QtWidgets.QPushButton("Return to Menu", page)
 	return_button.clicked.connect(return_button_action)
 	vertical_layout_1.addWidget(return_button)
 

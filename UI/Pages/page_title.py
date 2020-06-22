@@ -5,25 +5,23 @@ def add_title_page(stacked_widget: QtWidgets.QStackedWidget,
                    course_button_action: callable,
                    section_button_action: callable,
                    instructor_button_action: callable,
-                   schedule_button_action: callable) -> (QtWidgets.QComboBox, QtWidgets.QSpinBox):
+                   schedule_button_action: callable):
 
 	page = QtWidgets.QWidget()
 
 	grid_layout_1 = QtWidgets.QGridLayout(page)
 	vertical_layout_1 = QtWidgets.QVBoxLayout()
 
-	big_title = QtWidgets.QLabel(page)
+	big_title = QtWidgets.QLabel("BYU Scheduler 2", page)
 	title_font = QtGui.QFont()
 	title_font.setPointSize(36)
 	big_title.setFont(title_font)
 	big_title.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignHCenter)
 	big_title.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
-	big_title.setText("BYU Scheduler 2")
 	vertical_layout_1.addWidget(big_title)
 
-	name = QtWidgets.QLabel(page)
+	name = QtWidgets.QLabel("By Josh Bedwell", page)
 	name.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
-	name.setText("By Josh Bedwell")
 	vertical_layout_1.addWidget(name)
 
 	horizontal_layout_1 = QtWidgets.QHBoxLayout()
@@ -37,9 +35,8 @@ def add_title_page(stacked_widget: QtWidgets.QStackedWidget,
 	semester_picker.addItems(["Winter", "Spring", "Summer", "Fall"])
 	vertical_layout_2.addWidget(semester_picker)
 
-	year_label = QtWidgets.QLabel(page)
+	year_label = QtWidgets.QLabel("Year", page)
 	year_label.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft)
-	year_label.setText("Year")
 	vertical_layout_2.addWidget(year_label)
 
 	year_picker = QtWidgets.QSpinBox(page)
@@ -55,23 +52,19 @@ def add_title_page(stacked_widget: QtWidgets.QStackedWidget,
 	horizontal_layout_1.addLayout(vertical_layout_2)
 	grid_layout_2 = QtWidgets.QGridLayout()
 
-	schedule_button = QtWidgets.QPushButton(page)
-	schedule_button.setText("Make Schedule")
+	schedule_button = QtWidgets.QPushButton("Make Schedule", page)
 	schedule_button.clicked.connect(schedule_button_action)
 	grid_layout_2.addWidget(schedule_button, 2, 1, 1, 1)
 
-	instructor_button = QtWidgets.QPushButton(page)
-	instructor_button.setText("Browse Instructors")
+	instructor_button = QtWidgets.QPushButton("Browse Instructors", page)
 	instructor_button.clicked.connect(instructor_button_action)
 	grid_layout_2.addWidget(instructor_button, 0, 1, 1, 1)
 
-	section_button = QtWidgets.QPushButton(page)
-	section_button.setText("Browse Sections")
+	section_button = QtWidgets.QPushButton("Browse Sections", page)
 	section_button.clicked.connect(section_button_action)
 	grid_layout_2.addWidget(section_button, 2, 0, 1, 1)
 
-	course_button = QtWidgets.QPushButton(page)
-	course_button.setText("Browse Courses")
+	course_button = QtWidgets.QPushButton("Browse Courses", page)
 	course_button.clicked.connect(course_button_action)
 	grid_layout_2.addWidget(course_button, 0, 0, 1, 1)
 
