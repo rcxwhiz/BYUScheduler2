@@ -16,8 +16,8 @@ class Ui_MainWindow(object):
 		self.loaded_data = {}
 
 		self.title_semester_picker, self.title_year_picker = UI.Pages.page_title.add_title_page(
-			self.main_window_stacked_widget, self.goto_browse_course, self.goto_browse_section,
-			self.goto_instructor_page, self.goto_make_schedule)
+			self.main_window_stacked_widget, self.goto_browse_course, self.goto_instructor_page,
+			self.goto_make_schedule)
 
 		self.instructor_page = UI.Pages.page_instructor.InstructorPage(self.main_window_stacked_widget,
 		                                                               self.goto_title_page, self.loaded_data)
@@ -67,11 +67,11 @@ class Ui_MainWindow(object):
 			self.main_window_stacked_widget.setCurrentIndex(2)
 			self.main_window.setWindowTitle("Browse Courses")
 
-	def goto_browse_section(self) -> None:
-		print("browse section")
-
 	def goto_make_schedule(self) -> None:
-		print("make schedule")
+		self.loaded_data.clear()
+		self.show_popup("schedule")
+		if len(self.loaded_data) > 0:
+			self.main_window.resize()
 
 	# Title Functions
 	# ----------------------------------------------------------------------------------

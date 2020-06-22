@@ -3,7 +3,6 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 def add_title_page(stacked_widget: QtWidgets.QStackedWidget,
                    course_button_action: callable,
-                   section_button_action: callable,
                    instructor_button_action: callable,
                    schedule_button_action: callable):
 
@@ -59,10 +58,6 @@ def add_title_page(stacked_widget: QtWidgets.QStackedWidget,
 	instructor_button = QtWidgets.QPushButton("Browse Instructors", page)
 	instructor_button.clicked.connect(instructor_button_action)
 	grid_layout_2.addWidget(instructor_button, 0, 1, 1, 1)
-
-	section_button = QtWidgets.QPushButton("Browse Sections", page)
-	section_button.clicked.connect(section_button_action)
-	grid_layout_2.addWidget(section_button, 2, 0, 1, 1)
 
 	course_button = QtWidgets.QPushButton("Browse Courses", page)
 	course_button.clicked.connect(course_button_action)

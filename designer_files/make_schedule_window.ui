@@ -4,10 +4,10 @@
  <widget class="QMainWindow" name="MainWindow">
   <property name="geometry">
    <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>1087</width>
-    <height>626</height>
+       <x>0</x>
+       <y>0</y>
+       <width>630</width>
+       <height>482</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,31 +22,15 @@
         <property name="sizeConstraint">
          <enum>QLayout::SetDefaultConstraint</enum>
         </property>
-        <item>
-         <widget class="QTableWidget" name="tableWidget">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>300</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>200</width>
-            <height>300</height>
-           </size>
-          </property>
-          <property name="alternatingRowColors">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
+           <item>
+               <widget class="QListWidget" name="listWidget">
+                   <item>
+                       <property name="text">
+                           <string>test</string>
+                       </property>
+                   </item>
+               </widget>
+           </item>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
@@ -67,97 +51,167 @@
           </item>
           <item>
            <widget class="QPushButton" name="pushButton">
-            <property name="text">
-             <string>Add Course</string>
-            </property>
+               <property name="text">
+                   <string>Add Course</string>
+               </property>
            </widget>
           </item>
          </layout>
         </item>
-        <item>
-         <widget class="QPushButton" name="pushButton_2">
-          <property name="text">
-           <string>Remove Course</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="verticalSpacer">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeType">
-           <enum>QSizePolicy::Expanding</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QPushButton" name="course_return_to_menu_button">
-          <property name="text">
-           <string>Return to Menu</string>
-          </property>
-         </widget>
-        </item>
+           <item>
+               <widget class="QPushButton" name="pushButton_2">
+                   <property name="text">
+                       <string>Remove Selected Course</string>
+                   </property>
+               </widget>
+           </item>
+           <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_3">
+                   <item>
+                       <widget class="QPushButton" name="pushButton_12">
+                           <property name="text">
+                               <string>Clear Classes</string>
+                           </property>
+                       </widget>
+                   </item>
+                   <item>
+                       <widget class="QPushButton" name="pushButton_13">
+                           <property name="text">
+                               <string>Clear Choices</string>
+                           </property>
+                       </widget>
+                   </item>
+               </layout>
+           </item>
+           <item>
+               <spacer name="verticalSpacer">
+                   <property name="orientation">
+                       <enum>Qt::Vertical</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                       <size>
+                           <width>20</width>
+                           <height>40</height>
+                       </size>
+                   </property>
+               </spacer>
+           </item>
+           <item>
+               <layout class="QGridLayout" name="gridLayout_2">
+                   <item row="0" column="0">
+                       <widget class="QPushButton" name="pushButton_4">
+                           <property name="text">
+                               <string>Late Classes</string>
+                           </property>
+                       </widget>
+                   </item>
+                   <item row="1" column="1">
+                       <widget class="QPushButton" name="pushButton_6">
+                           <property name="text">
+                               <string>Least Gaps</string>
+                           </property>
+                       </widget>
+                   </item>
+                   <item row="0" column="1">
+                       <widget class="QPushButton" name="pushButton_8">
+                           <property name="text">
+                               <string>Least Days</string>
+                           </property>
+                       </widget>
+                   </item>
+                   <item row="0" column="2">
+                       <widget class="QPushButton" name="pushButton_9">
+                           <property name="text">
+                               <string>Best Professors</string>
+                           </property>
+                       </widget>
+                   </item>
+                   <item row="1" column="0">
+                       <widget class="QPushButton" name="pushButton_3">
+                           <property name="text">
+                               <string>Early Classes</string>
+                           </property>
+                       </widget>
+                   </item>
+                   <item row="2" column="0">
+                       <widget class="QPushButton" name="pushButton_7">
+                           <property name="text">
+                               <string>Shortest Days</string>
+                           </property>
+                       </widget>
+                   </item>
+                   <item row="1" column="2">
+                       <widget class="QPushButton" name="pushButton_10">
+                           <property name="text">
+                               <string>Easiest Professors</string>
+                           </property>
+                       </widget>
+                   </item>
+                   <item row="2" column="1">
+                       <widget class="QPushButton" name="pushButton_5">
+                           <property name="text">
+                               <string>Smallest Gaps</string>
+                           </property>
+                       </widget>
+                   </item>
+                   <item row="2" column="2">
+                       <widget class="QPushButton" name="pushButton_11">
+                           <property name="text">
+                               <string>?</string>
+                           </property>
+                       </widget>
+                   </item>
+               </layout>
+           </item>
+           <item>
+               <spacer name="verticalSpacer_2">
+                   <property name="orientation">
+                       <enum>Qt::Vertical</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                       <size>
+                           <width>20</width>
+                           <height>40</height>
+                       </size>
+                   </property>
+               </spacer>
+           </item>
+           <item>
+               <widget class="QPushButton" name="course_return_to_menu_button">
+                   <property name="text">
+                       <string>Return to Menu</string>
+                   </property>
+               </widget>
+           </item>
        </layout>
       </item>
-      <item>
-       <widget class="QTableWidget" name="course_table">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="rowCount">
-         <number>1</number>
-        </property>
-        <property name="columnCount">
-         <number>7</number>
-        </property>
-        <row/>
-        <column>
-         <property name="text">
-          <string>Course</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Section</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Time</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Instructor</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string># Ratings</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Avg Rating</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Ease Rating</string>
-         </property>
-        </column>
-       </widget>
-      </item>
+         <item>
+             <layout class="QVBoxLayout" name="verticalLayout_2">
+                 <item>
+                     <widget class="QLabel" name="label">
+                         <property name="text">
+                             <string>Choose courses and optimize your schedule until
+                                 there is only 1 of each section left
+                             </string>
+                         </property>
+                     </widget>
+                 </item>
+                 <item>
+                     <widget class="QTableWidget" name="tableWidget_2">
+                         <column>
+                             <property name="text">
+                                 <string>Course</string>
+                             </property>
+                         </column>
+                         <column>
+                             <property name="text">
+                                 <string>Sections</string>
+                             </property>
+                         </column>
+                     </widget>
+                 </item>
+             </layout>
+         </item>
      </layout>
     </item>
    </layout>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+    <class>Dialog</class>
+    <widget class="QDialog" name="Dialog">
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>1132</width>
+                <height>388</height>
+            </rect>
+        </property>
+        <property name="windowTitle">
+            <string>Dialog</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout">
+            <item row="0" column="0">
+                <layout class="QVBoxLayout" name="verticalLayout">
+                    <item>
+                        <widget class="QTableWidget" name="tableWidget">
+                            <column>
+                                <property name="text">
+                                    <string>Section</string>
+                                </property>
+                            </column>
+                            <column>
+                                <property name="text">
+                                    <string>Time</string>
+                                </property>
+                            </column>
+                            <column>
+                                <property name="text">
+                                    <string>Day</string>
+                                </property>
+                            </column>
+                            <column>
+                                <property name="text">
+                                    <string>Room</string>
+                                </property>
+                            </column>
+                            <column>
+                                <property name="text">
+                                    <string>Instructor</string>
+                                </property>
+                            </column>
+                            <column>
+                                <property name="text">
+                                    <string>Ratings</string>
+                                </property>
+                            </column>
+                            <column>
+                                <property name="text">
+                                    <string>Avg Rating</string>
+                                </property>
+                            </column>
+                            <column>
+                                <property name="text">
+                                    <string>Ease Rating</string>
+                                </property>
+                            </column>
+                            <column>
+                                <property name="text">
+                                    <string>Seats</string>
+                                </property>
+                            </column>
+                            <column>
+                                <property name="text">
+                                    <string>Available</string>
+                                </property>
+                            </column>
+                            <column>
+                                <property name="text">
+                                    <string>Waitlist</string>
+                                </property>
+                            </column>
+                            <column>
+                                <property name="text">
+                                    <string/>
+                                </property>
+                            </column>
+                        </widget>
+                    </item>
+                    <item>
+                        <layout class="QHBoxLayout" name="horizontalLayout">
+                            <item>
+                                <widget class="QPushButton" name="pushButton">
+                                    <property name="text">
+                                        <string>Choose Section</string>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item>
+                                <widget class="QPushButton" name="pushButton_2">
+                                    <property name="text">
+                                        <string>Remove Section</string>
+                                    </property>
+                                </widget>
+                            </item>
+                        </layout>
+                    </item>
+                    <item>
+                        <widget class="QPushButton" name="pushButton_3">
+                            <property name="text">
+                                <string>Return</string>
+                            </property>
+                        </widget>
+                    </item>
+                </layout>
+            </item>
+        </layout>
+    </widget>
+    <resources/>
+    <connections/>
+</ui>
