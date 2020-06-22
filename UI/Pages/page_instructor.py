@@ -1,7 +1,7 @@
 from PyQt5 import QtCore, QtWidgets
 
 import Dao
-import UI.dialog_instructor
+import UI.Dialogs.dialog_instructor
 
 
 class InstructorPage:
@@ -142,7 +142,7 @@ class InstructorPage:
 
 	def show_instructor(self, row, column):
 		instructor_dialog = QtWidgets.QDialog()
-		instructor_ui = UI.dialog_instructor.Ui_Dialog()
+		instructor_ui = UI.Dialogs.dialog_instructor.Ui_Dialog()
 		instructor_ui.setupUi(instructor_dialog, self.data[self.table.item(row, 7).text()])
 		instructor_dialog.exec_()
 

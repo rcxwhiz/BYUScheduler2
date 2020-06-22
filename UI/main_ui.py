@@ -1,11 +1,11 @@
 from PyQt5 import QtCore, QtWidgets
 
+import UI.Dialogs.dialog_course
+import UI.Dialogs.dialog_instructor
+import UI.Dialogs.dialog_load
 import UI.Pages.page_course
 import UI.Pages.page_instructor
 import UI.Pages.page_title
-import UI.dialog_course
-import UI.dialog_instructor
-import UI.dialog_load
 
 
 class Ui_MainWindow(object):
@@ -78,7 +78,7 @@ class Ui_MainWindow(object):
 
 	def show_popup(self, data_type: str) -> None:
 		popup_dialog = QtWidgets.QDialog()
-		popup_ui = UI.dialog_load.Ui_Dialog()
+		popup_ui = UI.Dialogs.dialog_load.Ui_Dialog()
 		popup_ui.setupUi(popup_dialog,
 		                 self.title_semester_picker.currentText(),
 		                 self.title_year_picker.value(),

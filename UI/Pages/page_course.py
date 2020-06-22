@@ -1,7 +1,7 @@
 from PyQt5 import QtCore, QtWidgets
 
 import Dao
-import UI.dialog_course
+import UI.Dialogs.dialog_course
 
 
 class CoursePage:
@@ -234,7 +234,7 @@ class CoursePage:
 
 	def show_course(self, row, column):
 		course_dialog = QtWidgets.QDialog()
-		course_ui = UI.dialog_course.Ui_Dialog()
+		course_ui = UI.Dialogs.dialog_course.Ui_Dialog()
 		course_ui.setupUi(course_dialog, self.data[self.table.item(row, 8).text()])
 		course_dialog.exec_()
 
