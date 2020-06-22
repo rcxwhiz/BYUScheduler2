@@ -16,8 +16,8 @@ class Ui_MainWindow(object):
 		self.loaded_data = {}
 
 		self.title_semester_picker, self.title_year_picker = UI.Pages.page_title.add_title_page(
-			self.main_window_stacked_widget, self.browse_course_action, self.browse_section_action,
-			self.browse_instructor_action, self.make_schedule_action)
+			self.main_window_stacked_widget, self.goto_browse_course, self.goto_browse_section,
+			self.goto_instructor_page, self.goto_make_schedule)
 
 		self.instructor_page = UI.Pages.page_instructor.InstructorPage(self.main_window_stacked_widget,
 		                                                               self.goto_title_page, self.loaded_data)
@@ -49,17 +49,23 @@ class Ui_MainWindow(object):
 		self.loaded_data.clear()
 
 	def goto_instructor_page(self) -> None:
-		self.main_window.resize(1150, 700)
-		self.instructor_page.initialize_page()
-		self.main_window_stacked_widget.setCurrentIndex(1)
-		self.main_window.setWindowTitle("Browse Instructors")
+		self.loaded_data.clear()
+		self.show_popup("instructor")
+		if len(self.loaded_data) > 0:
+			self.main_window.resize(1150, 700)
+			self.instructor_page.initialize_page()
+			self.main_window_stacked_widget.setCurrentIndex(1)
+			self.main_window.setWindowTitle("Browse Instructors")
 
 	def goto_browse_course(self) -> None:
-		self.main_window.resize(1350, 700)
-		self.course_page.initialize_page()
-		self.course_page.populate_table()
-		self.main_window_stacked_widget.setCurrentIndex(2)
-		self.main_window.setWindowTitle("Browse Courses")
+		self.loaded_data.clear()
+		self.show_popup("course")
+		if len(self.loaded_data) > 0:
+			self.main_window.resize(1350, 700)
+			self.course_page.initialize_page()
+			self.course_page.populate_table()
+			self.main_window_stacked_widget.setCurrentIndex(2)
+			self.main_window.setWindowTitle("Browse Courses")
 
 	def goto_browse_section(self) -> None:
 		print("browse section")
@@ -69,24 +75,6 @@ class Ui_MainWindow(object):
 
 	# Title Functions
 	# ----------------------------------------------------------------------------------
-
-	def browse_instructor_action(self) -> None:
-		self.loaded_data.clear()
-		self.show_popup("instructor")
-		if len(self.loaded_data) > 0:
-			self.goto_instructor_page()
-
-	def browse_course_action(self) -> None:
-		self.loaded_data.clear()
-		self.show_popup("course")
-		if len(self.loaded_data) > 0:
-			self.goto_browse_course()
-
-	def browse_section_action(self) -> None:
-		self.show_popup()
-
-	def make_schedule_action(self) -> None:
-		self.show_popup()
 
 	def show_popup(self, data_type: str) -> None:
 		popup_dialog = QtWidgets.QDialog()
