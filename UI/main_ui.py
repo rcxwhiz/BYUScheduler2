@@ -16,13 +16,17 @@ class Ui_MainWindow(object):
 		self.loaded_data = {}
 
 		self.title_semester_picker, self.title_year_picker = UI.Pages.page_title.add_title_page(
-			self.main_window_stacked_widget, self.goto_browse_course, self.goto_instructor_page,
+			self.main_window_stacked_widget,
+			self.goto_browse_course,
+			self.goto_instructor_page,
 			self.goto_make_schedule)
 
 		self.instructor_page = UI.Pages.page_instructor.InstructorPage(self.main_window_stacked_widget,
-		                                                               self.goto_title_page, self.loaded_data)
+		                                                               self.goto_title_page,
+		                                                               self.loaded_data)
 
-		self.course_page = UI.Pages.page_course.CoursePage(self.main_window_stacked_widget, self.goto_title_page,
+		self.course_page = UI.Pages.page_course.CoursePage(self.main_window_stacked_widget,
+		                                                   self.goto_title_page,
 		                                                   self.loaded_data)
 
 		self.finish_setup_window()
@@ -71,10 +75,8 @@ class Ui_MainWindow(object):
 		self.loaded_data.clear()
 		self.show_popup("schedule")
 		if len(self.loaded_data) > 0:
+			# TODO don't know what to put here yet
 			self.main_window.resize()
-
-	# Title Functions
-	# ----------------------------------------------------------------------------------
 
 	def show_popup(self, data_type: str) -> None:
 		popup_dialog = QtWidgets.QDialog()
