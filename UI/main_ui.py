@@ -6,6 +6,7 @@ import UI.Dialogs.dialog_load
 import UI.Pages.page_course
 import UI.Pages.page_instructor
 import UI.Pages.page_title
+import UI.Pages.page_schedule
 
 
 class Ui_MainWindow(object):
@@ -28,6 +29,9 @@ class Ui_MainWindow(object):
 		self.course_page = UI.Pages.page_course.CoursePage(self.main_window_stacked_widget,
 		                                                   self.goto_title_page,
 		                                                   self.loaded_data)
+
+		self.schedule_page = UI.Pages.page_schedule.SchedulePage(self.main_window_stacked_widget,
+		                                                         self.loaded_data)
 
 		self.finish_setup_window()
 
@@ -59,7 +63,7 @@ class Ui_MainWindow(object):
 			self.main_window.resize(1150, 700)
 			self.instructor_page.initialize_page()
 			self.main_window_stacked_widget.setCurrentIndex(1)
-			self.main_window.setWindowTitle("Browse Instructors")
+			self.main_window.setWindowTitle("BYU Scheduler 2 - Browse Instructors")
 
 	def goto_browse_course(self) -> None:
 		self.loaded_data.clear()
@@ -69,14 +73,16 @@ class Ui_MainWindow(object):
 			self.course_page.initialize_page()
 			self.course_page.populate_table()
 			self.main_window_stacked_widget.setCurrentIndex(2)
-			self.main_window.setWindowTitle("Browse Courses")
+			self.main_window.setWindowTitle("BYU Scheduler 2 - Browse Courses")
 
 	def goto_make_schedule(self) -> None:
 		self.loaded_data.clear()
-		self.show_popup("schedule")
+		# TODO add new data structure for making schedules
+		self.show_popup("instructor")
 		if len(self.loaded_data) > 0:
-			# TODO don't know what to put here yet
-			self.main_window.resize()
+			self.main_window.resize(630, 480)
+			self.main_window_stacked_widget.setCurrentIndex(3)
+			self.main_window.setWindowTitle("BYU Scheduler 2 - Make Schedule")
 
 	def show_popup(self, data_type: str) -> None:
 		popup_dialog = QtWidgets.QDialog()
