@@ -5,11 +5,10 @@ import Dao.load
 
 
 class ScheduleCore:
-	def __init__(self, semester_year):
+	def __init__(self, semester_year, data):
 		self.courses = {}
 		self.semester_year = semester_year
-		self.data = {}
-		Dao.load.load_courses(semester_year, self.data)
+		self.data = data
 		self.possible_schedules = []
 
 	def add_course(self, course_name):
@@ -21,7 +20,7 @@ class ScheduleCore:
 
 		self.courses[class_code] = []
 		for section in self.data[class_code]["sections"]:
-			self.courses[class_code].append({"course": class_code, "data": section, "selected": False, "deselected": False})
+			self.courses[class_code].append({"course": class_code, "name": course_name, "data": section, "selected": False, "deselected": False})
 
 	def calculate_possible_schedules(self):
 		if len(self.courses) == 0:
@@ -49,14 +48,18 @@ class ScheduleCore:
 		schedules_to_remove = []
 		for schedule in self.possible_schedules:
 			for section in schedule:
-				if len(selected_courses[section["data"]["curriculum_id_title_code"]]) > 0 and not section["selected"]:
-					schedules_to_remove.append(schedule)
-					break
-				if section["deselected"]:
+				if not self.section_is_usable(section):
 					schedules_to_remove.append(schedule)
 					break
 		for schedule in schedules_to_remove:
 			self.possible_schedules.remove(schedule)
+
+	def section_is_usable(self, section):
+		if len(self.courses[section["data"]["curriculum_id_title_code"]]) > 0 and not section["selected"]:
+			return False
+		if section["deselected"]:
+			return False
+		return True
 
 	def select_section(self, course_name, section_num):
 		course_id = get_id_from_name(self.semester_year, course_name)

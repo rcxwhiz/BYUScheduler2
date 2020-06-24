@@ -78,12 +78,13 @@ class Ui_MainWindow(object):
 
 	def goto_make_schedule(self) -> None:
 		self.loaded_data.clear()
-		# TODO add new data structure for making schedules
-		self.show_popup("instructor")
+		self.show_popup("course")
 		if len(self.loaded_data) > 0:
 			self.main_window.resize(630, 480)
 			self.main_window_stacked_widget.setCurrentIndex(3)
 			self.main_window.setWindowTitle("BYU Scheduler 2 - Make Schedule")
+			self.schedule_page.init_core(self.title_semester_picker.currentText().lower() + "_" + str(self.title_year_picker.value()))
+			self.schedule_page.clear_classes_action()
 
 	def show_popup(self, data_type: str) -> None:
 		popup_dialog = QtWidgets.QDialog()

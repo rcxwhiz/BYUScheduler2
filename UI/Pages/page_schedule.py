@@ -1,8 +1,10 @@
 from PyQt5 import QtCore, QtWidgets
+import Model.schedule_core
 
 
 class SchedulePage:
 	def __init__(self, stacked_widget, return_function, data):
+		self.core = None
 		self.data = data
 		page = QtWidgets.QWidget()
 
@@ -11,8 +13,8 @@ class SchedulePage:
 		vertical_layout_1 = QtWidgets.QVBoxLayout()
 		vertical_layout_1.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
 
-		course_list = QtWidgets.QListWidget(page)
-		vertical_layout_1.addWidget(course_list)
+		self.course_list = QtWidgets.QListWidget(page)
+		vertical_layout_1.addWidget(self.course_list)
 
 		horizontal_layout_2 = QtWidgets.QHBoxLayout()
 
@@ -25,17 +27,20 @@ class SchedulePage:
 		self.course_edit.setMaximumSize(QtCore.QSize(120, 16777215))
 		horizontal_layout_2.addWidget(self.course_edit)
 
-		self.add_course_button = QtWidgets.QPushButton("Add Course", page)
-		horizontal_layout_2.addWidget(self.add_course_button)
+		add_course_button = QtWidgets.QPushButton("Add Course", page)
+		horizontal_layout_2.addWidget(add_course_button)
 		vertical_layout_1.addLayout(horizontal_layout_2)
+		add_course_button.clicked.connect(self.add_course_action)
 
-		self.remove_course_button = QtWidgets.QPushButton("Remove Selected Course", page)
-		vertical_layout_1.addWidget(self.remove_course_button)
+		remove_course_button = QtWidgets.QPushButton("Remove Selected Course", page)
+		vertical_layout_1.addWidget(remove_course_button)
+		remove_course_button.clicked.connect(self.remove_course_action)
 
 		horizontal_layout_3 = QtWidgets.QHBoxLayout()
 
-		self.clear_classes_button = QtWidgets.QPushButton("Clear Classes")
-		horizontal_layout_3.addWidget(self.clear_classes_button)
+		clear_classes_button = QtWidgets.QPushButton("Clear Classes")
+		horizontal_layout_3.addWidget(clear_classes_button)
+		clear_classes_button.clicked.connect(self.clear_classes_action)
 		
 		self.clear_choices_button = QtWidgets.QPushButton("Clear Choices")
 		horizontal_layout_3.addWidget(self.clear_choices_button)
@@ -85,3 +90,41 @@ class SchedulePage:
 		horizontal_layout_1.addLayout(vertical_layout_2)
 		grid_layout_1.addLayout(horizontal_layout_1, 0, 0, 1, 1)
 		stacked_widget.addWidget(page)
+
+	def init_core(self, semester_year):
+		self.core = Model.schedule_core.ScheduleCore(semester_year, self.data)
+
+	def add_course_action(self):
+		if self.course_edit.text() == "":
+			return
+		try:
+			self.core.add_course(self.course_edit.text().upper())
+		except ValueError:
+			self.course_edit.setText(f"Can't find {self.course_edit.text()}")
+			return
+		self.course_edit.clear()
+		self.refresh_list()
+		self.refresh_table()
+
+	def remove_course_action(self):
+		print(self.course_list.selectedIndexes())
+
+	def clear_classes_action(self):
+		self.core.courses.clear()
+		self.core.possible_schedules.clear()
+		self.refresh_list()
+		self.refresh_table()
+
+	def clear_choices_action(self):
+		print("clearing")
+
+	def refresh_list(self):
+		self.course_list.clear()
+		for key in self.core.courses.keys():
+			self.course_list.addItem(QtWidgets.QListWidgetItem(self.core.courses[key][0]["name"]))
+
+	def refresh_table(self):
+		self.table.setRowCount(len(self.core.courses))
+		for i, key in enumerate(self.core.courses.keys()):
+			self.table.setItem(i, 0, QtWidgets.QTableWidgetItem(self.core.courses[key][0]["name"]))
+			# TODO need to determine usable sections
