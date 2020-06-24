@@ -20,7 +20,15 @@ class ScheduleCore:
 
 		self.courses[class_code] = []
 		for section in self.data[class_code]["sections"]:
-			self.courses[class_code].append({"course": class_code, "name": course_name, "data": section, "selected": False, "deselected": False})
+			self.courses[class_code].append(
+				{"course": class_code, "name": course_name, "data": section, "selected": False, "deselected": False,
+				 "used": False})
+
+	def remove_course(self, course_name):
+		class_code = get_id_from_name(self.semester_year, course_name)
+		if class_code is None:
+			raise ValueError("course not found")
+		self.courses.pop(class_code, None)
 
 	def calculate_possible_schedules(self):
 		if len(self.courses) == 0:
@@ -45,17 +53,31 @@ class ScheduleCore:
 				elif section["deselected"]:
 					deselected_courses[course_id].append(section)
 
+		for course in self.courses.values():
+			for section in course:
+				section["used"] = False
+
 		schedules_to_remove = []
 		for schedule in self.possible_schedules:
 			for section in schedule:
 				if not self.section_is_usable(section):
 					schedules_to_remove.append(schedule)
 					break
+				else:
+					for section_2 in self.courses[section["course"]]:
+						if section_2["data"]["section_number"] == section["data"]["section_number"]:
+							section_2["used"] = True
+							break
 		for schedule in schedules_to_remove:
 			self.possible_schedules.remove(schedule)
 
 	def section_is_usable(self, section):
-		if len(self.courses[section["data"]["curriculum_id_title_code"]]) > 0 and not section["selected"]:
+		filtered_course = False
+		for section in self.courses[section["data"]["curriculum_id_title_code"]]:
+			if section["selected"]:
+				filtered_course = True
+				break
+		if filtered_course and not section["selected"]:
 			return False
 		if section["deselected"]:
 			return False

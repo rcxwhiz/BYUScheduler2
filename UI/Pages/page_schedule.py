@@ -1,4 +1,5 @@
 from PyQt5 import QtCore, QtWidgets
+
 import Model.schedule_core
 
 
@@ -79,10 +80,14 @@ class SchedulePage:
 		horizontal_layout_1.addLayout(vertical_layout_1)
 		vertical_layout_2 = QtWidgets.QVBoxLayout()
 
-		hint_label = QtWidgets.QLabel("Choose all_sections and optimize your schedule until\nthere is only 1 of each section left", page)
+		hint_label = QtWidgets.QLabel(
+			"Choose all_sections and optimize your schedule until\nthere is only 1 of each section left", page)
 		vertical_layout_2.addWidget(hint_label)
 
 		self.table = QtWidgets.QTableWidget(page)
+		self.table.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
+		self.table.setAlternatingRowColors(True)
+		self.table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
 		self.table.setColumnCount(2)
 		self.table.setHorizontalHeaderLabels(["Course", "Sections"])
 		vertical_layout_2.addWidget(self.table)
@@ -103,17 +108,24 @@ class SchedulePage:
 			self.course_edit.setText(f"Can't find {self.course_edit.text()}")
 			return
 		self.course_edit.clear()
+		self.refresh()
+
+	def refresh(self):
+		self.core.calculate_possible_schedules()
 		self.refresh_list()
 		self.refresh_table()
 
 	def remove_course_action(self):
-		print(self.course_list.selectedIndexes())
+		try:
+			self.core.remove_course(self.course_list.itemAt(self.course_list.selectedIndexes()[0].row(),
+			                                                self.course_list.selectedIndexes()[0].column()).text())
+			self.refresh()
+		except IndexError:
+			pass
 
 	def clear_classes_action(self):
 		self.core.courses.clear()
-		self.core.possible_schedules.clear()
-		self.refresh_list()
-		self.refresh_table()
+		self.refresh()
 
 	def clear_choices_action(self):
 		print("clearing")
@@ -127,4 +139,8 @@ class SchedulePage:
 		self.table.setRowCount(len(self.core.courses))
 		for i, key in enumerate(self.core.courses.keys()):
 			self.table.setItem(i, 0, QtWidgets.QTableWidgetItem(self.core.courses[key][0]["name"]))
-			# TODO need to determine usable sections
+			used_sections = []
+			for section in self.core.courses[key]:
+				if section["used"]:
+					used_sections.append(str(int(section["data"]["section_number"])))
+			self.table.setItem(i, 1, QtWidgets.QTableWidgetItem(", ".join(used_sections)))
