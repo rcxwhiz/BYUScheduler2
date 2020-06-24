@@ -35,6 +35,7 @@ class ScheduleCore:
 
 		self.courses[class_code] = []
 		for section in self.data[class_code]["sections"]:
+			# TODO need to make use of the selected and deselected tags when filtering possible schedules
 			self.courses[class_code].append({"course": class_code, "data": section, "selected": False, "deselected": False})
 
 	def calculate_possible_schedules(self):
