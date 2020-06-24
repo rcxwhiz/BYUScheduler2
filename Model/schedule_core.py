@@ -1,4 +1,5 @@
 import itertools
+import re
 
 import Dao.load
 
@@ -12,22 +13,7 @@ class ScheduleCore:
 		self.possible_schedules = []
 
 	def add_course(self, course_name):
-		# TODO fix this using re
-		dept = course_name.split(" ")[0]
-		num = ""
-		suffix = ""
-		switch = True
-		for ch in course_name.split(" ")[1]:
-			if switch and ch.isnumeric():
-				num += ch
-			else:
-				switch = False
-				if not ch.isnumeric():
-					suffix += ch
-				else:
-					break
-
-		class_code = Dao.load.get_class_code(self.semester_year, dept, num, suffix)
+		class_code = get_id_from_name(self.semester_year, course_name)
 		if class_code is None:
 			raise ValueError("course not found")
 		if class_code in self.courses.keys():
@@ -35,7 +21,6 @@ class ScheduleCore:
 
 		self.courses[class_code] = []
 		for section in self.data[class_code]["sections"]:
-			# TODO need to make use of the selected and deselected tags when filtering possible schedules
 			self.courses[class_code].append({"course": class_code, "data": section, "selected": False, "deselected": False})
 
 	def calculate_possible_schedules(self):
@@ -50,6 +35,41 @@ class ScheduleCore:
 				if sections_collide(*pair):
 					self.possible_schedules.remove(schedule)
 
+		selected_courses = {}
+		deselected_courses = {}
+		for course_id in self.courses.keys():
+			selected_courses[course_id] = []
+			deselected_courses[course_id] = []
+			for section in self.courses[course_id]:
+				if section["selected"]:
+					selected_courses[course_id].append(section)
+				elif section["deselected"]:
+					deselected_courses[course_id].append(section)
+
+		schedules_to_remove = []
+		for schedule in self.possible_schedules:
+			for section in schedule:
+				if len(selected_courses[section["data"]["curriculum_id_title_code"]]) > 0 and not section["selected"]:
+					schedules_to_remove.append(schedule)
+					break
+				if section["deselected"]:
+					schedules_to_remove.append(schedule)
+					break
+		for schedule in schedules_to_remove:
+			self.possible_schedules.remove(schedule)
+
+	def select_section(self, course_name, section_num):
+		course_id = get_id_from_name(self.semester_year, course_name)
+		for section in self.courses[course_id]:
+			if int(section["data"]["section_number"]) == section_num:
+				section["selected"] = True
+
+	def deselect_section(self, course_name, section_num):
+		course_id = get_id_from_name(self.semester_year, course_name)
+		for section in self.courses[course_id]:
+			if int(section["data"]["section_number"]) == section_num:
+				section["deselected"] = True
+
 
 def sections_collide(section_1, section_2):
 	for meeting_pair in itertools.product(section_1["data"]["times"], section_2["data"]["times"]):
@@ -62,12 +82,18 @@ def sections_collide(section_1, section_2):
 			return False
 		for day in days:
 			if meeting_pair[0][day] is not None and meeting_pair[1][day] is not None:
-				print("returning true because of overlapping times and days")
-				print(f"sections {meeting_pair[0]['section_number']} and {meeting_pair[1]['section_number']}")
 				return True
 		return False
 
 
+def get_id_from_name(semster_year, course_name):
+	found_parts = re.search(course_re, course_name)
+	if found_parts is None:
+		raise ValueError(f"course '{course_name}' not found")
+	return Dao.load.get_class_code(semster_year, found_parts[1], found_parts[2], found_parts[3])
+
+
+course_re = re.compile(r"([a-zA-Z ]+) ([0-9]+)(.?)")
 days = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"]
 
 
@@ -75,6 +101,7 @@ if __name__ == '__main__':
 	test = ScheduleCore("winter_2020")
 	test.add_course("math 113")
 	test.add_course("chem 105")
+	test.select_section("chem 105", 1)
 	test.calculate_possible_schedules()
 
 	print("done")
