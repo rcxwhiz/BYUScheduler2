@@ -189,7 +189,7 @@ class Ui_Dialog(object):
 			self.append_text(str(e))
 			self.append_text("Please choose another semester")
 			self.cancel_button.setEnabled(True)
-			return None
+			return
 		self.load_action()
 
 	def determine_availablilty(self) -> None:

@@ -1,6 +1,6 @@
 import sqlite3
 from contextlib import closing
-from typing import Dict, List
+from typing import Dict
 
 import Dao
 import Dao.paths
@@ -104,12 +104,11 @@ def load_instructors(semester_year: str, data: Dict) -> None:
 			data[instructor[0]] = instructor_data
 
 
-def load_course_sections(semester_year: str, dept: str, num: str, suffix: str) -> List:
+def get_class_code(semester_year: str, dept: str, num: str, suffix: str) -> str:
 	with closing(sqlite3.connect(Dao.paths.database_path_1(semester_year))) as connection:
 		cursor = connection.cursor()
-		sections = []
 
 		sql_cmd = """SELECT curriculum_id_title_code FROM courses WHERE dept_name = ? AND catalog_number = ? AND catalog_suffix = ?"""
 		cursor.execute(sql_cmd, (dept, num, suffix))
-		course_id = cursor.fetchone()
 
+		return cursor.fetchone()
