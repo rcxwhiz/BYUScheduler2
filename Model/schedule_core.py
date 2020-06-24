@@ -41,6 +41,7 @@ class ScheduleCore:
 			for pair in itertools.combinations(schedule, 2):
 				if sections_collide(*pair):
 					self.possible_schedules.remove(schedule)
+					break
 
 		selected_courses = {}
 		deselected_courses = {}

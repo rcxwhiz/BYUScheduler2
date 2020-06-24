@@ -100,6 +100,7 @@ class SchedulePage:
 		self.core = Model.schedule_core.ScheduleCore(semester_year, self.data)
 
 	def add_course_action(self):
+		# TODO when you add about 5 or 6 courses performance starts to get REALLY bad
 		if self.course_edit.text() == "":
 			return
 		try:
