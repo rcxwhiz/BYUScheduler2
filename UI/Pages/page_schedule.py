@@ -74,7 +74,7 @@ class SchedulePage:
 		horizontal_layout_1.addLayout(vertical_layout_1)
 		vertical_layout_2 = QtWidgets.QVBoxLayout()
 
-		hint_label = QtWidgets.QLabel("Choose courses and optimize your schedule until\nthere is only 1 of each section left", page)
+		hint_label = QtWidgets.QLabel("Choose all_sections and optimize your schedule until\nthere is only 1 of each section left", page)
 		vertical_layout_2.addWidget(hint_label)
 
 		self.table = QtWidgets.QTableWidget(page)

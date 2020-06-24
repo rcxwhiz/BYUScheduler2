@@ -34,8 +34,8 @@ def create_tables(semester_year: str, output_function: Callable) -> None:
 	DROP TABLE IF EXISTS course_instructors;
 	CREATE TABLE course_instructors ({Dao.make_table_cmd(Dao.course_instructors_schema)});
 
-	DROP TABLE IF EXISTS courses;
-	CREATE TABLE courses ({Dao.make_table_cmd(Dao.courses_schema)});
+	DROP TABLE IF EXISTS all_sections;
+	CREATE TABLE all_sections ({Dao.make_table_cmd(Dao.courses_schema)});
 
 	DROP TABLE IF EXISTS sections;
 	CREATE TABLE sections ({Dao.make_table_cmd(Dao.sections_schema)});
@@ -130,7 +130,7 @@ def save(yso: Tuple, append_function: Callable = print, replace_function: Callab
 	for rand_id in classes_result.keys():
 		course = classes_result[rand_id]
 
-		sql_cmd = """INSERT INTO courses VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"""
+		sql_cmd = """INSERT INTO all_sections VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"""
 		values = [course["curriculum_id"] + course["title_code"],
 		          course["curriculum_id"],
 		          course["title_code"],
@@ -235,7 +235,7 @@ def save(yso: Tuple, append_function: Callable = print, replace_function: Callab
 					append_function(f"Error adding: {values}")
 
 		catalog = course["catalog"]
-		sql_cmd = """UPDATE courses SET credit_hours = ?, description = ?, effective_date = ?, effective_year_term = ?, expired_date = ?, expired_year_term = ?, honors_approved = ?, lab_hours = ?, lecture_hours = ?, note = ?, offered = ?, prerequisite = ?, recommended = ?, when_taught = ? WHERE curriculum_id = ?;"""
+		sql_cmd = """UPDATE all_sections SET credit_hours = ?, description = ?, effective_date = ?, effective_year_term = ?, expired_date = ?, expired_year_term = ?, honors_approved = ?, lab_hours = ?, lecture_hours = ?, note = ?, offered = ?, prerequisite = ?, recommended = ?, when_taught = ? WHERE curriculum_id = ?;"""
 		values = (catalog["credit_hours"],
 		          catalog["description"],
 		          catalog["effective_date"],

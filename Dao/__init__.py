@@ -89,6 +89,4 @@ def make_table_cmd(schema):
 
 
 def none_safe(item):
-	if item is None:
-		return ""
-	return item
+	return item if item is not None else ""

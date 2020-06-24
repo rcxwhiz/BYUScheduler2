@@ -31,6 +31,7 @@ class Ui_MainWindow(object):
 		                                                   self.loaded_data)
 
 		self.schedule_page = UI.Pages.page_schedule.SchedulePage(self.main_window_stacked_widget,
+		                                                         self.goto_title_page,
 		                                                         self.loaded_data)
 
 		self.finish_setup_window()

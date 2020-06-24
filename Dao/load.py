@@ -106,9 +106,13 @@ def load_instructors(semester_year: str, data: Dict) -> None:
 
 def get_class_code(semester_year: str, dept: str, num: str, suffix: str) -> str:
 	with closing(sqlite3.connect(Dao.paths.database_path_1(semester_year))) as connection:
+		if suffix == "":
+			suffix = None
+
 		cursor = connection.cursor()
 
-		sql_cmd = """SELECT curriculum_id_title_code FROM courses WHERE dept_name = ? AND catalog_number = ? AND catalog_suffix = ?"""
-		cursor.execute(sql_cmd, (dept, num, suffix))
+		sql_cmd = """SELECT curriculum_id_title_code FROM courses WHERE dept_name = ? AND catalog_number = ? AND recommended IS ?"""
+		cursor.execute(sql_cmd, (dept.upper(), num, suffix))
 
-		return cursor.fetchone()
+		result = cursor.fetchone()
+		return result[0] if result is not None else None
