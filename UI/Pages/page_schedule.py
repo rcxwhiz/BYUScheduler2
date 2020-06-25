@@ -118,8 +118,11 @@ class SchedulePage:
 
 	def remove_course_action(self):
 		try:
-			self.core.remove_course(self.course_list.itemAt(self.course_list.selectedIndexes()[0].row(),
-			                                                self.course_list.selectedIndexes()[0].column()).text())
+			# TODO for some reason removing isnt working now
+			row = self.course_list.selectedIndexes()[0].row()
+			col = self.course_list.selectedIndexes()[0].column()
+			print(f"removing from {row}, {col}")
+			self.core.remove_course(self.course_list.itemAt(row, col).text())
 			self.refresh()
 		except IndexError:
 			pass
@@ -135,13 +138,11 @@ class SchedulePage:
 	def refresh_list(self):
 		self.course_list.clear()
 		for key in self.core.courses.keys():
-			self.course_list.addItem(QtWidgets.QListWidgetItem(self.core.courses[key][0]["name"]))
+			self.course_list.addItem(QtWidgets.QListWidgetItem(self.core.courses[key]["name"]))
 
 	def refresh_table(self):
 		self.table.setRowCount(len(self.core.courses))
 		for i, key in enumerate(self.core.courses.keys()):
-			self.table.setItem(i, 0, QtWidgets.QTableWidgetItem(self.core.courses[key][0]["name"]))
-			used_sections = []
-			for section in self.core.courses[key]:
-				used_sections.append(str(int(section["data"]["section_number"])))
-			self.table.setItem(i, 1, QtWidgets.QTableWidgetItem(", ".join(used_sections)))
+			self.table.setItem(i, 0, QtWidgets.QTableWidgetItem(self.core.courses[key]["name"]))
+			self.table.setItem(i, 1, QtWidgets.QTableWidgetItem(
+				", ".join(f"{n}" for n in self.core.courses[key]["used_sections"])))
