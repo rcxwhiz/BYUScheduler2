@@ -81,7 +81,7 @@ class SchedulePage:
 		vertical_layout_2 = QtWidgets.QVBoxLayout()
 
 		hint_label = QtWidgets.QLabel(
-			"Choose all_sections and optimize your schedule until\nthere is only 1 of each section left", page)
+			"Choose sections and optimize your schedule until\nthere is only 1 of each section left", page)
 		vertical_layout_2.addWidget(hint_label)
 
 		self.table = QtWidgets.QTableWidget(page)
@@ -121,14 +121,16 @@ class SchedulePage:
 			self.refresh()
 		except IndexError:
 			pass
+		except AttributeError:
+			pass
 
 	def clear_classes_action(self):
 		self.core.courses.clear()
+		self.core.schedules.clear()
 		self.refresh()
 
 	def clear_choices_action(self):
-		# TODO the point here is to undo all the manual and optimization deselections
-		print("clearing")
+		self.core.clear_choices()
 
 	def refresh_list(self):
 		self.course_list.clear()

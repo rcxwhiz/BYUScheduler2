@@ -85,6 +85,9 @@ class ScheduleCore:
 				new_schedules.append(old_schedule)
 		self.schedules = new_schedules
 
+	def clear_choices(self):
+		print("clearing crap")
+
 
 def sections_collide(section_1, section_2):
 	for meeting_pair in itertools.product(section_1["times"], section_2["times"]):
