@@ -13,7 +13,6 @@ class ScheduleCore:
 		self.new_courses = []
 
 	def add_course(self, course_name):
-		print(f"adding {course_name}")
 		class_code = get_id_from_name(self.semester_year, course_name)
 		if class_code is None:
 			raise ValueError("course not found")
@@ -31,6 +30,7 @@ class ScheduleCore:
 		self.courses.pop(class_code)
 		self.new_courses = list(self.courses.values())
 		self.courses = {}
+		self.schedules.clear()
 		self.calculate_possible_schedules()
 
 	def calculate_possible_schedules(self):

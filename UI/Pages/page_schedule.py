@@ -100,7 +100,6 @@ class SchedulePage:
 		self.core = Model.schedule_core.ScheduleCore(semester_year, self.data)
 
 	def add_course_action(self):
-		# TODO when you add about 5 or 6 courses performance starts to get REALLY bad
 		if self.course_edit.text() == "":
 			return
 		try:
@@ -118,11 +117,7 @@ class SchedulePage:
 
 	def remove_course_action(self):
 		try:
-			# TODO for some reason removing isnt working now
-			row = self.course_list.selectedIndexes()[0].row()
-			col = self.course_list.selectedIndexes()[0].column()
-			print(f"removing from {row}, {col}")
-			self.core.remove_course(self.course_list.itemAt(row, col).text())
+			self.core.remove_course(self.course_list.currentItem().text())
 			self.refresh()
 		except IndexError:
 			pass
