@@ -129,6 +129,7 @@ class SchedulePage:
 		self.refresh()
 
 	def clear_choices_action(self):
+		# TODO the point here is to undo all the manual and optimization deselections
 		print("clearing")
 
 	def refresh_list(self):
@@ -142,6 +143,5 @@ class SchedulePage:
 			self.table.setItem(i, 0, QtWidgets.QTableWidgetItem(self.core.courses[key][0]["name"]))
 			used_sections = []
 			for section in self.core.courses[key]:
-				if section["used"]:
-					used_sections.append(str(int(section["data"]["section_number"])))
+				used_sections.append(str(int(section["data"]["section_number"])))
 			self.table.setItem(i, 1, QtWidgets.QTableWidgetItem(", ".join(used_sections)))
