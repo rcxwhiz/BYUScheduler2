@@ -1,6 +1,7 @@
 from PyQt5 import QtCore, QtWidgets
 
 import Model.schedule_core
+import UI.Dialogs.dialog_schedule
 
 
 class SchedulePage:
@@ -88,8 +89,9 @@ class SchedulePage:
 		self.table.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
 		self.table.setAlternatingRowColors(True)
 		self.table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
-		self.table.setColumnCount(2)
+		self.table.setColumnCount(3)
 		self.table.setHorizontalHeaderLabels(["Course", "Sections"])
+		self.table.cellClicked.connect(self.show_course)
 		vertical_layout_2.addWidget(self.table)
 
 		horizontal_layout_1.addLayout(vertical_layout_2)
@@ -137,9 +139,17 @@ class SchedulePage:
 		for key in self.core.courses.keys():
 			self.course_list.addItem(QtWidgets.QListWidgetItem(self.core.courses[key]["name"]))
 
+	def show_course(self, row, column):
+		course_dialog = QtWidgets.QDialog()
+		course_ui = UI.Dialogs.dialog_schedule.Ui_Dialog()
+		course_ui.setupUi(course_dialog, self.data[self.table.item(row, 2).text()])
+		course_dialog.exec_()
+
 	def refresh_table(self):
 		self.table.setRowCount(len(self.core.courses))
 		for i, key in enumerate(self.core.courses.keys()):
 			self.table.setItem(i, 0, QtWidgets.QTableWidgetItem(self.core.courses[key]["name"]))
 			self.table.setItem(i, 1, QtWidgets.QTableWidgetItem(
 				", ".join(f"{n}" for n in self.core.courses[key]["used_sections"])))
+			self.table.setItem(i, 2, QtWidgets.QTableWidgetItem(self.core.courses[key]["course"]))
+		self.table.hideColumn(2)
