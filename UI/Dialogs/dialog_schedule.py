@@ -190,18 +190,11 @@ class Ui_Dialog(object):
 				self.indi_instructors_table.setItem(i, 5, QtWidgets.QTableWidgetItem(instructor["avg_easy_score"]))
 
 	def ask_course(self, row, column):
-		# TODO need to determine if deleting a row is allowed first by checking that there is more than one row
 		if len(self.core_course["sections"]) < 2:
 			return
 
 		if UI.Dialogs.yn_dialog.get_yn_answer(
 				f"Eliminate section {self.core_course['sections'][row]['section_number']}?", self.dialog):
-			# TODO this thing with hiding probably needs to change
-			# self.indi_sections_table.hideRow(row)
-			# self.core_course["sections"].pop(row)
-
-			# TODO this is the way it probably needs to happen and the table probably needs to get repopulated from here
-			# self.core_course["sections"].remove(int(self.core_course['sections'][row]))
 			self.core_course["sections"].pop(row)
 			self.populate_tables()
 

@@ -68,6 +68,7 @@ class ScheduleCore:
 
 		for schedule in self.schedules:
 			for section in schedule:
+				print(f"adding section {section['section_number']}")
 				self.courses[section["curriculum_id_title_code"]]["used_sections"].add(int(section["section_number"]))
 
 		for course in self.courses.values():
