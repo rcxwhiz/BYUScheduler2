@@ -9,9 +9,10 @@ import UI.Dialogs.yn_dialog
 # TODO allow the list to only include good sections
 # TODO add a button to ask if the class should be kept
 class Ui_Dialog(object):
-	def setupUi(self, Dialog, data):
+	def setupUi(self, Dialog, data, core_course):
 		self.dialog = Dialog
 		self.data = data
+		self.core_course = core_course
 		Dialog.setObjectName("Dialog")
 		Dialog.resize(1200, 850)
 		self.gridLayout = QtWidgets.QGridLayout(Dialog)
@@ -103,8 +104,13 @@ class Ui_Dialog(object):
 			["Section", "Type", "Instructor", "Start", "End", "Days", "Bldg", "Room", "Start/End", "Class Size",
 			 "Seats Avail.", "Waitlist"])
 		self.indi_sections_table.setRowCount(len(self.data["sections"]))
+		rows_to_hide = []
 		for i, section in enumerate(self.data["sections"]):
 			section_num = Dao.none_safe(section["section_number"])
+			if int(section_num) not in self.core_course["used_sections"]:
+				rows_to_hide.append(i)
+				continue
+
 			try:
 				section_num = int(section_num)
 				item = QtWidgets.QTableWidgetItem()
@@ -142,6 +148,8 @@ class Ui_Dialog(object):
 			self.indi_sections_table.setItem(i, 9, QtWidgets.QTableWidgetItem(section["class_size"]))
 			self.indi_sections_table.setItem(i, 10, QtWidgets.QTableWidgetItem(section["seats_available"]))
 			self.indi_sections_table.setItem(i, 11, QtWidgets.QTableWidgetItem(section["waitlist_size"]))
+		for row in rows_to_hide:
+			self.indi_sections_table.hideRow(row)
 		self.indi_sections_table.resizeColumnsToContents()
 		self.indi_sections_table.resizeRowsToContents()
 		self.indi_instructors_table.setSortingEnabled(True)
@@ -181,8 +189,13 @@ class Ui_Dialog(object):
 		self.indi_sections_table.cellClicked.connect(self.ask_course)
 
 	def ask_course(self, row, column):
-		if UI.Dialogs.yn_dialog.get_yn_answer(f"Eliminate section {row + 1}?", self.dialog):
-			self.indi_sections_table.hideRow(row)
+		# TODO need to determine if deleting a row is allowed first by checking that there is more than one row
+
+		if UI.Dialogs.yn_dialog.get_yn_answer(f"Eliminate section {self.core_course['sections'][row]['section_number']}?", self.dialog):
+			# TODO this thing with hiding probably needs to change
+			# self.indi_sections_table.hideRow(row)
+			# self.core_course["sections"].pop(row)
+			self.core_course["used_sections"].remove(int(self.core_course['sections'][row]['section_number']))
 
 	def stamp_to_normal_time(self, time_in: str) -> str:
 		if time_in is None:

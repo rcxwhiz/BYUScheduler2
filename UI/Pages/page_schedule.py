@@ -142,8 +142,9 @@ class SchedulePage:
 	def show_course(self, row, column):
 		course_dialog = QtWidgets.QDialog()
 		course_ui = UI.Dialogs.dialog_schedule.Ui_Dialog()
-		course_ui.setupUi(course_dialog, self.data[self.table.item(row, 2).text()])
+		course_ui.setupUi(course_dialog, self.data[self.table.item(row, 2).text()], self.core.courses[list(self.core.courses.keys())[row]])
 		course_dialog.exec_()
+		self.refresh()
 
 	def refresh_table(self):
 		self.table.setRowCount(len(self.core.courses))
